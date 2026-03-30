@@ -24,11 +24,11 @@ const stats = [
 ];
 
 const mockBooks = [
-  { id: "1", title: "유튜브 알고리즘 마스터", price: 19000, sales: 67, revenue: 1273000, status: "판매중", image: hero1 },
-  { id: "2", title: "인스타 릴스로 월 500만원", price: 15000, sales: 52, revenue: 780000, status: "판매중", image: hero2 },
-  { id: "3", title: "ChatGPT 자동화 파이프라인", price: 39000, sales: 31, revenue: 1209000, status: "판매중", image: hero3 },
-  { id: "4", title: "제휴마케팅 완전 가이드", price: 12000, sales: 12, revenue: 144000, status: "심사중", image: hero1 },
-  { id: "5", title: "퇴사 후 월 300만원 비결", price: 25000, sales: 0, revenue: 0, status: "작성중", image: hero2 },
+  { id: "1", title: "유튜브 알고리즘 마스터", price: 19000, sales: 67, revenue: 1273000, status: "판매중", category: "유튜브", image: hero1 },
+  { id: "2", title: "인스타 릴스로 월 500만원", price: 15000, sales: 52, revenue: 780000, status: "판매중", category: "인스타그램", image: hero2 },
+  { id: "3", title: "ChatGPT 자동화 파이프라인", price: 39000, sales: 31, revenue: 1209000, status: "판매중", category: "AI/자동화", image: hero3 },
+  { id: "4", title: "제휴마케팅 완전 가이드", price: 12000, sales: 12, revenue: 144000, status: "심사중", category: "제휴마케팅", image: hero1 },
+  { id: "5", title: "퇴사 후 월 300만원 비결", price: 25000, sales: 0, revenue: 0, status: "작성중", category: "재테크", image: hero2 },
 ];
 
 const recentSales = [
@@ -89,7 +89,7 @@ const InstructorDashboard = () => {
                   ))}
                 </nav>
                 <div className="mt-4 pt-4 border-t border-border">
-                  <Button size="sm" className="w-full rounded-lg gap-1.5 text-xs" asChild>
+                  <Button size="sm" variant="outline" className="w-full rounded-md gap-1.5 text-xs bg-foreground text-background hover:bg-foreground/90 hover:text-background border-foreground" asChild>
                     <Link to="/instructor/ebook/new"><Plus className="h-3.5 w-3.5" /> 새 전자책</Link>
                   </Button>
                 </div>
@@ -213,74 +213,90 @@ const OverviewContent = () => (
 );
 
 /* ─── Books Management ─── */
-const BooksContent = () => (
-  <div className="space-y-6">
-    <div className="flex items-center justify-between">
-      <h2 className="hidden desktop:block text-lg font-bold">전자책 관리</h2>
-      <p className="text-sm text-muted-foreground desktop:hidden">총 {mockBooks.length}권</p>
-      <Button size="sm" className="rounded-full gap-1.5 text-xs desktop:hidden" asChild>
-        <Link to="/instructor/ebook/new"><Plus className="h-3.5 w-3.5" /> 새 전자책</Link>
-      </Button>
-    </div>
-    <p className="hidden desktop:block text-sm text-muted-foreground -mt-4">총 {mockBooks.length}권의 전자책</p>
+const bookStatuses = ["전체", "판매중", "심사중", "작성중", "판매중지"] as const;
 
-    {/* Desktop table */}
-    <div className="hidden tablet:block rounded-xl border border-border overflow-hidden">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-border bg-secondary/50">
-            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">전자책</th>
-            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">가격</th>
-            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">판매량</th>
-            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">수익</th>
-            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">상태</th>
-            <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {mockBooks.map(book => (
-            <tr key={book.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-              <td className="px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <img src={book.image} alt="" className="w-10 h-14 rounded-lg object-cover" />
-                  <span className="text-sm font-medium">{book.title}</span>
-                </div>
-              </td>
-              <td className="px-4 py-3 text-sm">₩{book.price.toLocaleString()}</td>
-              <td className="px-4 py-3 text-sm">{book.sales}권</td>
-              <td className="px-4 py-3 text-sm font-medium">₩{book.revenue.toLocaleString()}</td>
-              <td className="px-4 py-3"><StatusBadge status={book.status} /></td>
-              <td className="px-4 py-3 text-right"><BookActions /></td>
-            </tr>
+const BooksContent = () => {
+  const [statusFilter, setStatusFilter] = useState<string>("전체");
+  const navigate = useNavigate();
+
+  const filteredBooks = statusFilter === "전체"
+    ? mockBooks
+    : mockBooks.filter(b => b.status === statusFilter);
+
+  const getCount = (status: string) =>
+    status === "전체" ? mockBooks.length : mockBooks.filter(b => b.status === status).length;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="hidden desktop:block text-lg font-bold">전자책 관리</h2>
+        <Button size="sm" className="rounded-md gap-1.5 text-xs bg-foreground text-background hover:bg-foreground/90 desktop:hidden" asChild>
+          <Link to="/instructor/ebook/new"><Plus className="h-3.5 w-3.5" /> 새 전자책</Link>
+        </Button>
+      </div>
+
+      {/* Status filter tabs */}
+      <div className="border-b border-border">
+        <div className="flex gap-0 overflow-x-auto scrollbar-hide">
+          {bookStatuses.map(status => (
+            <button
+              key={status}
+              onClick={() => setStatusFilter(status)}
+              className={cn(
+                "px-4 py-2.5 text-sm whitespace-nowrap border-b-2 transition-colors",
+                statusFilter === status
+                  ? "border-foreground text-foreground font-medium"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {status} {getCount(status)}
+            </button>
           ))}
-        </tbody>
-      </table>
-    </div>
-
-    {/* Mobile cards */}
-    <div className="tablet:hidden space-y-3">
-      {mockBooks.map(book => (
-        <div key={book.id} className="py-4 border-b border-border last:border-0">
-          <div className="flex gap-3">
-            <img src={book.image} alt="" className="w-14 h-20 rounded-lg object-cover shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-sm font-medium truncate">{book.title}</p>
-                <BookActions />
-              </div>
-              <p className="text-sm text-primary font-semibold mt-1">₩{book.price.toLocaleString()}</p>
-              <div className="flex items-center gap-3 mt-2">
-                <span className="text-xs text-muted-foreground">{book.sales}권 판매</span>
-                <span className="text-xs text-muted-foreground">₩{book.revenue.toLocaleString()}</span>
-              </div>
-              <div className="mt-2"><StatusBadge status={book.status} /></div>
-            </div>
-          </div>
         </div>
-      ))}
+      </div>
+
+      {/* Book list */}
+      {filteredBooks.length === 0 ? (
+        <div className="py-16 text-center text-sm text-muted-foreground">
+          해당 상태의 전자책이 없습니다.
+        </div>
+      ) : (
+        <div className="space-y-0">
+          {filteredBooks.map(book => (
+            <div key={book.id} className="py-4 border-b border-border last:border-0">
+              <div className="flex gap-4">
+                <img src={book.image} alt="" className="w-16 h-22 tablet:w-20 tablet:h-28 rounded-md object-cover shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <StatusBadge status={book.status} />
+                      <p className="text-sm font-semibold mt-1.5 truncate">{book.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{book.category}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-md text-xs shrink-0 h-8"
+                      onClick={() => navigate(`/instructor/ebook/edit?id=${book.id}`)}
+                    >
+                      편집하기
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-4 mt-3">
+                    <span className="text-sm font-semibold">₩{book.price.toLocaleString()}</span>
+                    {book.sales > 0 && (
+                      <span className="text-xs text-muted-foreground">{book.sales}권 판매</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 /* ─── Sales History ─── */
 const SalesContent = () => (
