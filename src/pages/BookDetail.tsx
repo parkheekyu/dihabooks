@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2, BookOpen, Eye } from "lucide-react";
+import { Star, Heart, ArrowLeft, Share2, BookOpen } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,29 +9,49 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const tableOfContents = [
   {
-    chapter: 1,
-    title: "프롤로그: 왜 지금 이 기술이 필요한가",
-    subtopics: ["변화하는 디지털 경제 환경", "이 책을 읽어야 하는 이유", "성공 사례 미리보기"],
+    chapter: "프롤로그",
+    title: "왜 지금 이 기술이 필요한가",
+    subtopics: [
+      { title: "변화하는 디지털 경제 환경", preview: true },
+      { title: "이 책을 읽어야 하는 이유", preview: false },
+      { title: "성공 사례 미리보기", preview: true },
+    ],
   },
   {
-    chapter: 2,
-    title: "제1장: 마인드셋과 도구 준비하기",
-    subtopics: ["성장형 사고방식 만들기", "필수 도구 세팅 가이드", "효율적인 워크플로우 구축"],
+    chapter: "Chapter 1",
+    title: "마인드셋과 도구 준비하기",
+    subtopics: [
+      { title: "성장형 사고방식 만들기", preview: true },
+      { title: "필수 도구 세팅 가이드", preview: false },
+      { title: "효율적인 워크플로우 구축", preview: false },
+    ],
   },
   {
-    chapter: 3,
-    title: "제2장: 0원에서 100만원을 만드는 핵심 알고리즘",
-    subtopics: ["수익화 구조 이해하기", "트래픽을 수익으로 전환하는 법", "실전 A/B 테스트 전략", "자동 수익 파이프라인 설계"],
+    chapter: "Chapter 2",
+    title: "0원에서 100만원을 만드는 핵심 알고리즘",
+    subtopics: [
+      { title: "수익화 구조 이해하기", preview: false },
+      { title: "트래픽을 수익으로 전환하는 법", preview: false },
+      { title: "실전 A/B 테스트 전략", preview: false },
+      { title: "자동 수익 파이프라인 설계", preview: false },
+    ],
   },
   {
-    chapter: 4,
-    title: "제3장: 지속 가능한 수익을 위한 자동화 시스템",
-    subtopics: ["자동화 툴 비교 분석", "노코드로 시스템 구축하기", "유지보수 최소화 전략"],
+    chapter: "Chapter 3",
+    title: "지속 가능한 수익을 위한 자동화 시스템",
+    subtopics: [
+      { title: "자동화 툴 비교 분석", preview: false },
+      { title: "노코드로 시스템 구축하기", preview: false },
+      { title: "유지보수 최소화 전략", preview: false },
+    ],
   },
   {
-    chapter: 5,
-    title: "에필로그: 당신의 항해를 응원하며",
-    subtopics: ["앞으로의 로드맵", "커뮤니티 활용법"],
+    chapter: "에필로그",
+    title: "당신의 항해를 응원하며",
+    subtopics: [
+      { title: "앞으로의 로드맵", preview: false },
+      { title: "커뮤니티 활용법", preview: false },
+    ],
   },
 ];
 
@@ -381,39 +401,37 @@ const BookDetail = () => {
 
           {/* TOC */}
           <div>
-            <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
+            <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-5 tablet:mb-6">
               <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
-              목차
+              전체목차
             </h2>
-            <div className="space-y-2">
-              {tableOfContents.map((item) => (
-                <div key={item.chapter} className="rounded-xl bg-secondary overflow-hidden">
-                  <div className="flex items-center gap-3 p-3">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold shrink-0">
-                      {item.chapter}
-                    </span>
-                    <span className="text-sm font-bold">{item.title}</span>
+            <div className="space-y-8">
+              {tableOfContents.map((section, si) => (
+                <div key={si}>
+                  {/* Chapter heading */}
+                  <h3 className="text-lg tablet:text-xl font-black mb-4">{section.chapter}. {section.title}</h3>
+                  {/* Subtopics */}
+                  <div className="space-y-0 divide-y divide-border">
+                    {section.subtopics.map((sub, j) => (
+                      <div key={j} className="flex items-center gap-3 py-3.5">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-sm font-bold shrink-0">
+                          {j + 1}
+                        </span>
+                        <span className="text-sm flex-1">{sub.title}</span>
+                        {sub.preview && (
+                          <button
+                            onClick={() => navigate(`/reader/${book.id}?preview=true`)}
+                            className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
+                          >
+                            미리보기
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                  {item.subtopics && (
-                    <div className="px-3 pb-3 pl-[52px] space-y-1">
-                      {item.subtopics.map((sub, j) => (
-                        <p key={j} className="text-xs text-muted-foreground">• {sub}</p>
-                      ))}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
-
-            {/* 미리보기 버튼 */}
-            <Button
-              variant="outline"
-              className="w-full mt-4 h-11 rounded-xl gap-2 text-sm font-medium"
-              onClick={() => navigate(`/reader/${book.id}?preview=true`)}
-            >
-              <Eye className="h-4 w-4" />
-              미리보기
-            </Button>
           </div>
         </div>
       </main>
