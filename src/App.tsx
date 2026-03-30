@@ -22,6 +22,7 @@ import SellerProfile from "./pages/SellerProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PurchaseHistory from "./pages/PurchaseHistory.tsx";
 import FAQ from "./pages/FAQ.tsx";
+import EbookForm from "./pages/EbookForm.tsx";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,8 @@ const App = () => (
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/purchases" element={<PurchaseHistory />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/instructor/ebook/new" element={<EbookForm />} />
+          <Route path="/instructor/ebook/edit" element={<EbookForm />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

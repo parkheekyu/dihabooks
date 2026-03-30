@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   BookOpen, TrendingUp, DollarSign, Plus, MoreVertical,
   Eye, Edit, Trash2, BarChart3, ArrowUpRight, ArrowDownRight
@@ -83,8 +83,8 @@ const InstructorDashboard = () => {
                   </button>
                 ))}
               </div>
-              <Button size="sm" className="rounded-full gap-1.5 text-xs">
-                <Plus className="h-3.5 w-3.5" /> 새 전자책
+              <Button size="sm" className="rounded-full gap-1.5 text-xs" asChild>
+                <Link to="/instructor/ebook/new"><Plus className="h-3.5 w-3.5" /> 새 전자책</Link>
               </Button>
             </div>
           </div>
@@ -186,8 +186,8 @@ const BooksTab = () => (
   <div className="space-y-4">
     <div className="flex items-center justify-between">
       <p className="text-sm text-muted-foreground">총 {mockBooks.length}권의 전자책</p>
-      <Button size="sm" className="rounded-full gap-1.5 text-xs">
-        <Plus className="h-3.5 w-3.5" /> 새 전자책
+      <Button size="sm" className="rounded-full gap-1.5 text-xs" asChild>
+        <Link to="/instructor/ebook/new"><Plus className="h-3.5 w-3.5" /> 새 전자책</Link>
       </Button>
     </div>
 
@@ -312,19 +312,22 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const BookActions = () => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <button className="p-1 rounded-lg hover:bg-secondary transition-colors">
-        <MoreVertical className="h-4 w-4 text-muted-foreground" />
-      </button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      <DropdownMenuItem className="gap-2 text-sm"><Eye className="h-3.5 w-3.5" /> 미리보기</DropdownMenuItem>
-      <DropdownMenuItem className="gap-2 text-sm"><Edit className="h-3.5 w-3.5" /> 수정</DropdownMenuItem>
-      <DropdownMenuItem className="gap-2 text-sm text-destructive"><Trash2 className="h-3.5 w-3.5" /> 삭제</DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
+const BookActions = () => {
+  const navigate = useNavigate();
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="p-1 rounded-lg hover:bg-secondary transition-colors">
+          <MoreVertical className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem className="gap-2 text-sm"><Eye className="h-3.5 w-3.5" /> 미리보기</DropdownMenuItem>
+        <DropdownMenuItem className="gap-2 text-sm" onClick={() => navigate("/instructor/ebook/edit?id=1")}><Edit className="h-3.5 w-3.5" /> 수정</DropdownMenuItem>
+        <DropdownMenuItem className="gap-2 text-sm text-destructive"><Trash2 className="h-3.5 w-3.5" /> 삭제</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 export default InstructorDashboard;
