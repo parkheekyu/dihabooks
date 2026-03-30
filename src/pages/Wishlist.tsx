@@ -52,7 +52,7 @@ const Wishlist = () => {
               {wishedBooks.map(book => (
                 <div key={book.id} className="flex gap-3 tablet:gap-4 rounded-xl border border-border bg-background p-3 tablet:p-4">
                   <Link to={`/book/${book.id}`}>
-                    <img src={book.image} alt="" className="w-16 h-22 tablet:w-20 tablet:h-28 rounded-lg object-cover shrink-0" />
+                    <img src={book.image} alt="" className="w-16 h-20 tablet:w-20 tablet:h-24 rounded-md object-cover shrink-0" />
                   </Link>
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>

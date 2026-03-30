@@ -13,7 +13,7 @@ const Library = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 container py-4 tablet:py-8">
+      <main className="flex-1 container px-4 py-4 tablet:py-8">
         {/* Breadcrumb */}
         <div className="flex items-center justify-between mb-6 tablet:mb-8">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">

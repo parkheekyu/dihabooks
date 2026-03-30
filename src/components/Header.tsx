@@ -258,6 +258,9 @@ const Header = () => {
                 </>
               ) : (
                 <>
+                  <Link to="/library" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" className="w-full gap-2" size="sm"><BookOpen className="h-3.5 w-3.5" /> 내 서재</Button>
+                  </Link>
                   <Link to="/instructor" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full gap-2" size="sm"><LayoutDashboard className="h-3.5 w-3.5" /> 판매자 대시보드</Button>
                   </Link>
