@@ -4,8 +4,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { sampleBooks } from "@/data/mockData";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Library = () => {
+  const { user } = useAuth();
   const purchasedBooks = sampleBooks.slice(0, 3);
 
   return (
@@ -26,11 +28,13 @@ const Library = () => {
           <div className="shrink-0">
             <div className="rounded-xl tablet:rounded-2xl border border-border p-4 tablet:p-6 desktop:w-72">
               <div className="flex desktop:block items-center gap-4">
-                <div className="h-12 w-12 tablet:h-14 tablet:w-14 rounded-xl bg-secondary flex items-center justify-center text-xl tablet:text-2xl desktop:mb-4 shrink-0">
-                  👑
-                </div>
+                <img
+                  src={user?.profileImage}
+                  alt=""
+                  className="h-12 w-12 tablet:h-14 tablet:w-14 rounded-full object-cover border-2 border-border desktop:mb-4 shrink-0"
+                />
                 <div>
-                  <h2 className="text-base tablet:text-lg font-bold">닉네임님</h2>
+                  <h2 className="text-base tablet:text-lg font-bold">{user?.name ?? "닉네임"}님</h2>
                   <p className="text-xs text-muted-foreground uppercase tracking-wide">NOMAD EXPLORER</p>
                 </div>
               </div>

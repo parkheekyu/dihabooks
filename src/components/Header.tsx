@@ -63,12 +63,12 @@ const Header = () => {
         </nav>
 
         {/* Search */}
-        <div className="hidden tablet:flex items-center flex-1 max-w-sm">
+        <div className="hidden tablet:flex items-center max-w-[200px] ml-auto">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="무엇을 배우고 싶으신가요?"
-              className="pl-9 h-10 rounded-full bg-secondary border-0"
+              placeholder="검색"
+              className="pl-9 h-9 rounded-full bg-secondary border-0 text-sm"
             />
           </div>
         </div>
