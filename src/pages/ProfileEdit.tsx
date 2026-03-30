@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,8 +21,7 @@ const ProfileEdit = () => {
   const [profilePreview, setProfilePreview] = useState<string | null>(user?.profileImage || null);
 
   if (!isLoggedIn) {
-    navigate("/login");
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
