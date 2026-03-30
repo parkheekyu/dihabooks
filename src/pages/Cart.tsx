@@ -57,7 +57,7 @@ const Cart = () => {
             <div className="flex-1 space-y-3">
               {items.map(item => (
                 <div key={item.id} className="flex gap-3 tablet:gap-4 rounded-xl border border-border bg-background p-3 tablet:p-4">
-                  <img src={item.image} alt="" className="w-16 h-22 tablet:w-20 tablet:h-28 rounded-lg object-cover shrink-0" />
+                  <img src={item.image} alt="" className="w-16 h-20 tablet:w-20 tablet:h-24 rounded-md object-cover shrink-0" />
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
                       <p className="text-sm font-medium line-clamp-2">{item.title}</p>
@@ -96,7 +96,7 @@ const Cart = () => {
                     <span className="text-primary text-lg">₩{total.toLocaleString()}</span>
                   </div>
                 </div>
-                <Button className="w-full rounded-full" size="lg">
+                <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg">
                   결제하기
                 </Button>
                 <p className="text-[10px] text-muted-foreground text-center mt-2">
@@ -114,7 +114,7 @@ const Cart = () => {
               <span className="text-sm text-muted-foreground">총 {items.length}건</span>
               <span className="font-bold text-primary">₩{total.toLocaleString()}</span>
             </div>
-            <Button className="w-full rounded-full" size="lg">
+            <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg">
               결제하기
             </Button>
           </div>

@@ -203,7 +203,7 @@ const BookDetail = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 container py-4 tablet:py-6 pb-28 desktop:pb-6">
+      <main className="flex-1 container px-4 py-4 tablet:py-6 pb-28 desktop:pb-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-4 tablet:mb-6">
           <Link to="/store" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
