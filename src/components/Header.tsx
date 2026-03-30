@@ -197,15 +197,26 @@ const Header = () => {
                 </div>
               </div>
               <Link to="/profile" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full" size="sm">내 정보</Button>
+                <Button variant="outline" className="w-full gap-2" size="sm"><User className="h-3.5 w-3.5" /> 내 정보</Button>
               </Link>
-              <Link to="/library" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full" size="sm">내 서재</Button>
-              </Link>
-              {role === "expert" && (
-                <Link to="/instructor" onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" className="w-full" size="sm">판매자 대시보드</Button>
-                </Link>
+              {role === "member" ? (
+                <>
+                  <Link to="/library" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" className="w-full gap-2" size="sm"><BookOpen className="h-3.5 w-3.5" /> 내 서재</Button>
+                  </Link>
+                  <Button variant="outline" className="w-full gap-2" size="sm" onClick={() => { toggleRole(); }}>
+                    <ArrowRightLeft className="h-3.5 w-3.5" /> 판매자로 전환
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/instructor" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" className="w-full gap-2" size="sm"><LayoutDashboard className="h-3.5 w-3.5" /> 판매자 대시보드</Button>
+                  </Link>
+                  <Button variant="outline" className="w-full gap-2" size="sm" onClick={() => { toggleRole(); }}>
+                    <ArrowRightLeft className="h-3.5 w-3.5" /> 멤버로 전환
+                  </Button>
+                </>
               )}
               <Button variant="ghost" className="w-full text-destructive" size="sm" onClick={() => { handleLogout(); setMobileOpen(false); }}>
                 로그아웃
