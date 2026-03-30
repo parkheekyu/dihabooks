@@ -401,38 +401,38 @@ const BookDetail = () => {
 
           {/* TOC */}
           <div>
-            <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
+            <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-5 tablet:mb-6">
               <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
-              목차
+              전체목차
             </h2>
-            <div className="space-y-2">
-              {tableOfContents.map((item) => (
-                <div key={item.chapter} className="rounded-xl bg-secondary overflow-hidden">
-                  <div className="flex items-center gap-3 p-3">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold shrink-0">
-                      {item.chapter}
-                    </span>
-                    <span className="text-sm font-bold">{item.title}</span>
+            <div className="space-y-8">
+              {tableOfContents.map((section, si) => (
+                <div key={si}>
+                  {/* Chapter heading */}
+                  <h3 className="text-lg tablet:text-xl font-black mb-4">{section.chapter}. {section.title}</h3>
+                  {/* Subtopics */}
+                  <div className="space-y-0 divide-y divide-border">
+                    {section.subtopics.map((sub, j) => (
+                      <div key={j} className="flex items-center gap-3 py-3.5">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-sm font-bold shrink-0">
+                          {j + 1}
+                        </span>
+                        <span className="text-sm flex-1">{sub.title}</span>
+                        {sub.preview && (
+                          <button
+                            onClick={() => navigate(`/reader/${book.id}?preview=true`)}
+                            className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
+                          >
+                            미리보기
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                  {item.subtopics && (
-                    <div className="px-3 pb-3 pl-[52px] space-y-1">
-                      {item.subtopics.map((sub, j) => (
-                        <p key={j} className="text-xs text-muted-foreground">• {sub}</p>
-                      ))}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
-
-            {/* 미리보기 버튼 */}
-            <Button
-              variant="outline"
-              className="w-full mt-4 h-11 rounded-xl gap-2 text-sm font-medium"
-              onClick={() => navigate(`/reader/${book.id}?preview=true`)}
-            >
-              <Eye className="h-4 w-4" />
-              미리보기
+          </div>
             </Button>
           </div>
         </div>
