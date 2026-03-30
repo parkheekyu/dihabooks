@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, User, LogOut, BookOpen, Settings } from "lucide-react";
+import { ChevronRight, User, LogOut, BookOpen, Settings, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
@@ -22,12 +22,14 @@ const Profile = () => {
   const memberMenu = [
     { icon: User, label: "프로필 수정", desc: "이름, 소개 등 기본 정보 변경", path: "#" },
     { icon: BookOpen, label: "내 서재", desc: "구매한 전자책 목록", path: "/library" },
+    { icon: ShoppingBag, label: "구매 내역", desc: "주문 내역 및 리뷰 관리", path: "/purchases" },
   ];
 
   const sellerMenu = [
     { icon: User, label: "프로필 수정", desc: "이름, 소개 등 기본 정보 변경", path: "#" },
     { icon: Settings, label: "판매자 프로필 설정", desc: "소개, 경력, 보유 기술 등 설정", path: "/seller-profile" },
     { icon: BookOpen, label: "내 서재", desc: "구매한 전자책 목록", path: "/library" },
+    { icon: ShoppingBag, label: "구매 내역", desc: "주문 내역 및 리뷰 관리", path: "/purchases" },
   ];
 
   const menuItems = role === "expert" ? sellerMenu : memberMenu;

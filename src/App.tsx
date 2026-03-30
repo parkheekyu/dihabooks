@@ -20,6 +20,7 @@ import Wishlist from "./pages/Wishlist.tsx";
 import BecomeSeller from "./pages/BecomeSeller.tsx";
 import SellerProfile from "./pages/SellerProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import PurchaseHistory from "./pages/PurchaseHistory.tsx";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/become-seller" element={<BecomeSeller />} />
           <Route path="/seller-profile" element={<SellerProfile />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/purchases" element={<PurchaseHistory />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
