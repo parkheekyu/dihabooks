@@ -30,9 +30,9 @@ const BookDetail = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 container py-6">
+      <main className="flex-1 container py-4 tablet:py-6 pb-28 tablet:pb-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-4 tablet:mb-6">
           <Link to="/store" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
             <ArrowLeft className="h-4 w-4" /> 뒤로가기
           </Link>
@@ -41,18 +41,18 @@ const BookDetail = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 desktop:grid-cols-[1fr_380px] gap-10">
+        <div className="grid grid-cols-1 desktop:grid-cols-[1fr_380px] gap-6 desktop:gap-10">
           {/* Left Content */}
-          <div className="space-y-10">
+          <div className="space-y-8 tablet:space-y-10">
             {/* Title & Image */}
             <div>
-              <h1 className="text-2xl tablet:text-3xl font-black leading-tight mb-2">
+              <h1 className="text-xl tablet:text-2xl desktop:text-3xl font-black leading-tight mb-2">
                 {book.title}
               </h1>
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-2 mb-4 tablet:mb-6">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`h-4 w-4 ${i < Math.floor(book.rating) ? "fill-star text-star" : "text-border"}`} />
+                    <Star key={i} className={`h-3.5 tablet:h-4 w-3.5 tablet:w-4 ${i < Math.floor(book.rating) ? "fill-star text-star" : "text-border"}`} />
                   ))}
                 </div>
                 <span className="text-sm font-medium">{book.rating}</span>
@@ -60,15 +60,33 @@ const BookDetail = () => {
                   {book.reviewCount}개 후기
                 </span>
               </div>
-              <div className="rounded-2xl overflow-hidden aspect-video bg-secondary">
+              <div className="rounded-xl tablet:rounded-2xl overflow-hidden aspect-video bg-secondary">
                 <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+              </div>
+            </div>
+
+            {/* Mobile price summary */}
+            <div className="desktop:hidden rounded-xl border border-border p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  {discount && (
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-base font-bold text-primary">{discount}%</span>
+                      <span className="text-xs text-muted-foreground line-through">
+                        {book.originalPrice?.toLocaleString()}원
+                      </span>
+                    </div>
+                  )}
+                  <div className="text-2xl font-black">{book.price.toLocaleString()}원</div>
+                </div>
+                <span className="text-xs text-muted-foreground">웹 뷰어로 바로 읽기</span>
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
-                <span className="w-1 h-6 bg-primary rounded-full" />
+              <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
+                <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
                 상세 설명
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -78,8 +96,8 @@ const BookDetail = () => {
 
             {/* Author */}
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
-                <span className="w-1 h-6 bg-primary rounded-full" />
+              <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
+                <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
                 작가 소개
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -89,8 +107,8 @@ const BookDetail = () => {
 
             {/* TOC */}
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
-                <span className="w-1 h-6 bg-primary rounded-full" />
+              <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
+                <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
                 목차
               </h2>
               <div className="space-y-2">
@@ -99,7 +117,7 @@ const BookDetail = () => {
                     key={item.chapter}
                     className="flex items-center gap-3 p-3 rounded-xl bg-secondary"
                   >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold shrink-0">
                       {item.chapter}
                     </span>
                     <span className="text-sm font-medium">{item.title}</span>
@@ -110,21 +128,21 @@ const BookDetail = () => {
 
             {/* Reviews */}
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold flex items-center gap-2">
-                  <span className="w-1 h-6 bg-primary rounded-full" />
+              <div className="flex items-center justify-between mb-3 tablet:mb-4">
+                <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2">
+                  <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
                   수강생 리뷰
                 </h2>
                 <button className="text-sm text-primary hover:underline">리뷰 작성하기</button>
               </div>
 
               {/* Rating Summary */}
-              <div className="flex items-center gap-6 p-6 rounded-2xl bg-secondary mb-6">
-                <div className="text-center">
-                  <div className="text-4xl font-black">{book.rating}</div>
+              <div className="flex items-center gap-4 tablet:gap-6 p-4 tablet:p-6 rounded-xl tablet:rounded-2xl bg-secondary mb-4 tablet:mb-6">
+                <div className="text-center shrink-0">
+                  <div className="text-3xl tablet:text-4xl font-black">{book.rating}</div>
                   <div className="flex items-center gap-0.5 mt-1">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-3.5 w-3.5 fill-star text-star" />
+                      <Star key={i} className="h-3 tablet:h-3.5 w-3 tablet:w-3.5 fill-star text-star" />
                     ))}
                   </div>
                 </div>
@@ -146,20 +164,20 @@ const BookDetail = () => {
               {/* Review List */}
               <div className="space-y-4">
                 {bookReviews.map((review, i) => (
-                  <div key={i} className="py-4 border-b border-border last:border-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">
+                  <div key={i} className="py-3 tablet:py-4 border-b border-border last:border-0">
+                    <div className="flex items-center gap-2 tablet:gap-3 mb-2">
+                      <div className="h-7 w-7 tablet:h-8 tablet:w-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold shrink-0">
                         {review.name[0]}
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">{review.name}</p>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{review.name}</p>
                         <div className="flex items-center gap-0.5">
                           {[...Array(review.rating)].map((_, i) => (
                             <Star key={i} className="h-3 w-3 fill-star text-star" />
                           ))}
                         </div>
                       </div>
-                      <span className="text-xs text-muted-foreground ml-auto">{review.date}</span>
+                      <span className="text-xs text-muted-foreground ml-auto shrink-0">{review.date}</span>
                     </div>
                     <p className="text-sm text-muted-foreground">{review.content}</p>
                   </div>
@@ -168,10 +186,9 @@ const BookDetail = () => {
             </div>
           </div>
 
-          {/* Right Sidebar - Purchase Card */}
-          <div className="desktop:block">
+          {/* Right Sidebar - Desktop only */}
+          <div className="hidden desktop:block">
             <div className="sticky top-24 rounded-2xl border border-border p-6 space-y-4">
-              {/* Price */}
               <div>
                 {discount && (
                   <div className="flex items-center gap-2 mb-1">
@@ -183,8 +200,6 @@ const BookDetail = () => {
                 )}
                 <div className="text-3xl font-black">{book.price.toLocaleString()}원</div>
               </div>
-
-              {/* Options */}
               <div className="space-y-2">
                 <div className="p-4 rounded-xl border-2 border-primary bg-primary/5 cursor-pointer">
                   <div className="flex justify-between items-start">
@@ -196,14 +211,10 @@ const BookDetail = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Total */}
               <div className="flex justify-between items-center pt-4 border-t border-border">
                 <span className="text-sm font-medium">상품 금액</span>
                 <span className="text-xl font-black">{book.price.toLocaleString()}원</span>
               </div>
-
-              {/* Actions */}
               <div className="flex gap-2">
                 <button className="p-3 rounded-xl border border-border hover:bg-secondary transition-colors">
                   <Heart className="h-5 w-5 text-muted-foreground" />
@@ -216,6 +227,19 @@ const BookDetail = () => {
           </div>
         </div>
       </main>
+
+      {/* Mobile fixed bottom CTA */}
+      <div className="desktop:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border px-4 py-3 z-40 safe-bottom">
+        <div className="flex items-center gap-3">
+          <button className="p-3 rounded-xl border border-border hover:bg-secondary transition-colors shrink-0">
+            <Heart className="h-5 w-5 text-muted-foreground" />
+          </button>
+          <Button className="flex-1 h-12 rounded-xl bg-primary text-primary-foreground text-base font-bold hover:bg-primary/90">
+            {book.price.toLocaleString()}원 구매하기
+          </Button>
+        </div>
+      </div>
+
       <Footer />
     </div>
   );
