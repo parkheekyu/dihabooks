@@ -21,6 +21,7 @@ const EbookForm = () => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
+  const [discountPrice, setDiscountPrice] = useState("");
   const [tags, setTags] = useState("");
 
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -291,22 +292,46 @@ const EbookForm = () => {
 
           {/* ── 판매 가격 ── */}
           <FormSection title="판매 가격" required open={sections.price} onToggle={() => toggleSection("price")}>
-            <div>
-              <Label className="text-sm font-semibold">판매가 <span className="text-destructive">*</span></Label>
-              <div className="flex items-center gap-2 mt-1.5">
-                <Input
-                  type="number"
-                  className="max-w-[200px]"
-                  placeholder="0"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  min={0}
-                />
-                <span className="text-sm text-muted-foreground">원</span>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-semibold">판매가 <span className="text-destructive">*</span></Label>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <Input
+                    type="number"
+                    className="max-w-[200px]"
+                    placeholder="0"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    min={0}
+                  />
+                  <span className="text-sm text-muted-foreground">원</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  결제 수수료를 제외한 금액이 정산됩니다. (최소 1,000원)
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                결제 수수료를 제외한 금액이 정산됩니다. (최소 1,000원)
-              </p>
+              <div>
+                <Label className="text-sm font-semibold">할인가</Label>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <Input
+                    type="number"
+                    className="max-w-[200px]"
+                    placeholder="0"
+                    value={discountPrice}
+                    onChange={(e) => setDiscountPrice(e.target.value)}
+                    min={0}
+                  />
+                  <span className="text-sm text-muted-foreground">원</span>
+                </div>
+                {price && discountPrice && Number(discountPrice) > 0 && Number(discountPrice) < Number(price) && (
+                  <p className="text-xs text-primary mt-1 font-medium">
+                    {Math.round((1 - Number(discountPrice) / Number(price)) * 100)}% 할인 적용
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground mt-1">
+                  할인가를 입력하면 판매가에 취소선이 표시되고 할인가로 판매됩니다.
+                </p>
+              </div>
             </div>
           </FormSection>
 
