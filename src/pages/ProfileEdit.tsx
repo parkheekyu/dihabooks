@@ -21,8 +21,7 @@ const ProfileEdit = () => {
   const [profilePreview, setProfilePreview] = useState<string | null>(user?.profileImage || null);
 
   if (!isLoggedIn) {
-    navigate("/login");
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
