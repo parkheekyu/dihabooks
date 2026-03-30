@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound.tsx";
 import PurchaseHistory from "./pages/PurchaseHistory.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import EbookForm from "./pages/EbookForm.tsx";
+import ProfileEdit from "./pages/ProfileEdit.tsx";
 
 const queryClient = new QueryClient();
 
