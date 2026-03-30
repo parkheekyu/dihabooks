@@ -97,7 +97,7 @@ const Store = () => {
                             : "hover:bg-secondary text-foreground"
                         }`}
                       >
-                        <span>{cat.emoji}</span>
+                        {cat.icon && <cat.icon className="h-4 w-4" />}
                         {cat.label}
                         {activeCategory === cat.id && (
                           <span className="ml-auto w-2 h-2 rounded-full bg-primary-foreground" />
@@ -145,7 +145,7 @@ const Store = () => {
                       : "bg-secondary text-muted-foreground"
                   }`}
                 >
-                  <span>{cat.emoji}</span>
+                  {cat.icon && <cat.icon className="h-3.5 w-3.5" />}
                   {cat.label}
                 </button>
               ))}
