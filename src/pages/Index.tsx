@@ -38,7 +38,7 @@ const Index = () => {
       <main className="flex-1">
         {/* Hero Carousel */}
         <section className="relative overflow-hidden bg-background">
-          <div className="relative aspect-[3/2] tablet:aspect-[2/1] desktop:aspect-[3/1] overflow-hidden">
+          <div className="relative aspect-[2/1] tablet:aspect-[5/2] desktop:aspect-[4/1] overflow-hidden">
             {heroSlides.map((slide, i) => (
               <img
                 key={slide.id}
