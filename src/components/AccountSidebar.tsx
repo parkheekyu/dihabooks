@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, BookOpen, ShoppingBag, Settings, LogOut } from "lucide-react";
+import { User, ShoppingBag, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -8,20 +8,13 @@ const AccountSidebar = () => {
   const { role, logout } = useAuth();
   const navigate = useNavigate();
 
-  const memberMenu = [
+  const menuItems = [
     { label: "프로필 수정", path: "/profile/edit", icon: User },
-    { label: "내 서재", path: "/library", icon: BookOpen },
+    ...(role === "expert"
+      ? [{ label: "판매자 프로필 설정", path: "/seller-profile", icon: Settings }]
+      : []),
     { label: "구매 내역", path: "/purchases", icon: ShoppingBag },
   ];
-
-  const sellerMenu = [
-    { label: "프로필 수정", path: "/profile/edit", icon: User },
-    { label: "판매자 프로필 설정", path: "/seller-profile", icon: Settings },
-    { label: "내 서재", path: "/library", icon: BookOpen },
-    { label: "구매 내역", path: "/purchases", icon: ShoppingBag },
-  ];
-
-  const menuItems = role === "expert" ? sellerMenu : memberMenu;
 
   const handleLogout = () => {
     logout();
