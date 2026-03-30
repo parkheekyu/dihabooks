@@ -57,7 +57,7 @@ const Cart = () => {
             <div className="flex-1 space-y-3">
               {items.map(item => (
                 <div key={item.id} className="flex gap-3 tablet:gap-4 rounded-xl border border-border bg-background p-3 tablet:p-4">
-                  <img src={item.image} alt="" className="w-16 h-22 tablet:w-20 tablet:h-28 rounded-lg object-cover shrink-0" />
+                  <img src={item.image} alt="" className="w-16 h-20 tablet:w-20 tablet:h-24 rounded-md object-cover shrink-0" />
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
                       <p className="text-sm font-medium line-clamp-2">{item.title}</p>
