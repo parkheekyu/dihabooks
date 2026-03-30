@@ -73,6 +73,7 @@ const BookDetail = () => {
   const book = sampleBooks.find((b) => b.id === id) || sampleBooks[0];
   const [isPurchased, setIsPurchased] = useState(false);
   const [selectedOption, setSelectedOption] = useState(0);
+  const [visibleReviews, setVisibleReviews] = useState(3);
 
   // Build purchase options from book data
   const purchaseOptions = [
