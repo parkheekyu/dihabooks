@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Heart, Trash2, ArrowRight, ShoppingBag } from "lucide-react";
+import { Heart, Trash2, ArrowRight, Star } from "lucide-react";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { sampleBooks } from "@/data/mockData";
