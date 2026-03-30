@@ -21,6 +21,7 @@ const EbookForm = () => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
+  const [discountPrice, setDiscountPrice] = useState("");
   const [tags, setTags] = useState("");
 
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
