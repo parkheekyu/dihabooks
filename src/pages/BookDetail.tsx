@@ -9,29 +9,49 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const tableOfContents = [
   {
-    chapter: 1,
-    title: "프롤로그: 왜 지금 이 기술이 필요한가",
-    subtopics: ["변화하는 디지털 경제 환경", "이 책을 읽어야 하는 이유", "성공 사례 미리보기"],
+    chapter: "프롤로그",
+    title: "왜 지금 이 기술이 필요한가",
+    subtopics: [
+      { title: "변화하는 디지털 경제 환경", preview: true },
+      { title: "이 책을 읽어야 하는 이유", preview: false },
+      { title: "성공 사례 미리보기", preview: true },
+    ],
   },
   {
-    chapter: 2,
-    title: "제1장: 마인드셋과 도구 준비하기",
-    subtopics: ["성장형 사고방식 만들기", "필수 도구 세팅 가이드", "효율적인 워크플로우 구축"],
+    chapter: "Chapter 1",
+    title: "마인드셋과 도구 준비하기",
+    subtopics: [
+      { title: "성장형 사고방식 만들기", preview: true },
+      { title: "필수 도구 세팅 가이드", preview: false },
+      { title: "효율적인 워크플로우 구축", preview: false },
+    ],
   },
   {
-    chapter: 3,
-    title: "제2장: 0원에서 100만원을 만드는 핵심 알고리즘",
-    subtopics: ["수익화 구조 이해하기", "트래픽을 수익으로 전환하는 법", "실전 A/B 테스트 전략", "자동 수익 파이프라인 설계"],
+    chapter: "Chapter 2",
+    title: "0원에서 100만원을 만드는 핵심 알고리즘",
+    subtopics: [
+      { title: "수익화 구조 이해하기", preview: false },
+      { title: "트래픽을 수익으로 전환하는 법", preview: false },
+      { title: "실전 A/B 테스트 전략", preview: false },
+      { title: "자동 수익 파이프라인 설계", preview: false },
+    ],
   },
   {
-    chapter: 4,
-    title: "제3장: 지속 가능한 수익을 위한 자동화 시스템",
-    subtopics: ["자동화 툴 비교 분석", "노코드로 시스템 구축하기", "유지보수 최소화 전략"],
+    chapter: "Chapter 3",
+    title: "지속 가능한 수익을 위한 자동화 시스템",
+    subtopics: [
+      { title: "자동화 툴 비교 분석", preview: false },
+      { title: "노코드로 시스템 구축하기", preview: false },
+      { title: "유지보수 최소화 전략", preview: false },
+    ],
   },
   {
-    chapter: 5,
-    title: "에필로그: 당신의 항해를 응원하며",
-    subtopics: ["앞으로의 로드맵", "커뮤니티 활용법"],
+    chapter: "에필로그",
+    title: "당신의 항해를 응원하며",
+    subtopics: [
+      { title: "앞으로의 로드맵", preview: false },
+      { title: "커뮤니티 활용법", preview: false },
+    ],
   },
 ];
 
