@@ -200,7 +200,7 @@ const OverviewContent = () => (
         {mockBooks.filter(b => b.sales > 0).sort((a, b) => b.sales - a.sales).slice(0, 3).map((book, i) => (
           <div key={book.id} className="flex items-center gap-3">
             <span className="text-lg font-bold text-muted-foreground w-6 text-center">{i + 1}</span>
-            <img src={book.image} alt="" className="w-10 h-14 rounded-lg object-cover" />
+            <img src={book.image} alt="" className="w-10 h-10 rounded-md object-cover" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium truncate">{book.title}</p>
               <p className="text-xs text-muted-foreground">{book.sales}권 판매 · ₩{book.revenue.toLocaleString()}</p>
