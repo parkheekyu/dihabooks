@@ -124,35 +124,49 @@ const Index = () => {
         </section>
 
         {/* Reviews */}
-        <section className="container px-4 mt-14 tablet:mt-20 mb-14 tablet:mb-20">
-          <div className="mb-6 tablet:mb-8">
-            <h2 className="text-xl tablet:text-2xl font-bold">디하북스 수강생 후기</h2>
-            <p className="text-xs tablet:text-sm text-muted-foreground mt-1">
-              나도 할 수 있을까 고민이 되신다면 수강생들의 생생 경험을 들어보세요.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 tablet:grid-cols-3 gap-4 tablet:gap-6">
-            {reviews.map((review) => (
-              <div
-                key={review.id}
-                className="rounded-xl tablet:rounded-2xl border border-border p-4 tablet:p-6 hover:shadow-lg transition-shadow"
-              >
-                <h3 className="font-bold text-sm leading-snug mb-2">{review.title}</h3>
-                <p className="text-xs text-muted-foreground line-clamp-3 mb-3 tablet:mb-4">{review.content}</p>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 tablet:h-9 tablet:w-9 items-center justify-center rounded-full bg-secondary text-sm font-bold">
-                    {review.avatar}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{review.author}</p>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-star text-star" />
-                      <span className="text-xs font-medium">{review.rating}</span>
+        <section className="bg-secondary/60 py-10 tablet:py-16 mt-14 tablet:mt-20">
+          <div className="container px-4">
+            <div className="flex flex-col desktop:flex-row desktop:items-start gap-6 desktop:gap-10">
+              {/* Left: title */}
+              <div className="desktop:w-64 shrink-0">
+                <h2 className="text-xl tablet:text-2xl font-bold">디하북스 수강생 후기</h2>
+                <p className="text-xs tablet:text-sm text-muted-foreground mt-2 leading-relaxed">
+                  나도 할 수 있을까 고민이 된다면{"\n"}수강생들의 성공 경험을 들어보세요.
+                </p>
+              </div>
+
+              {/* Right: review cards */}
+              <div className="flex-1 min-w-0">
+                <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 desktop:mx-0 desktop:px-0">
+                  {reviews.map((review) => (
+                    <div
+                      key={review.id}
+                      className="min-w-[280px] tablet:min-w-[300px] max-w-[320px] flex-shrink-0 rounded-lg border border-border bg-background p-5 flex flex-col justify-between"
+                    >
+                      <div>
+                        <h3 className="font-bold text-sm leading-snug mb-2">{review.title}</h3>
+                        <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">{review.content}</p>
+                      </div>
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
+                        <div className="flex items-center gap-2.5">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-bold">
+                            {review.avatar}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">{review.author}</p>
+                            <div className="flex items-center gap-1">
+                              <Star className="h-3 w-3 fill-star text-star" />
+                              <span className="text-xs font-medium">{review.rating}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         </section>
 
