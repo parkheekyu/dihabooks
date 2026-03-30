@@ -13,6 +13,7 @@ import Library from "./pages/Library.tsx";
 import Reader from "./pages/Reader.tsx";
 import Cart from "./pages/Cart.tsx";
 import InstructorDashboard from "./pages/InstructorDashboard.tsx";
+import Profile from "./pages/Profile.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/reader/:id" element={<Reader />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/instructor" element={<InstructorDashboard />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
