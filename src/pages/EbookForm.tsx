@@ -1,21 +1,16 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
-  ArrowLeft, Upload, X, ImagePlus, FileText, ChevronDown, ChevronUp, Info
+  ArrowLeft, Upload, X, ImagePlus, FileText, ChevronDown, ChevronUp, Info,
+  Bold, Italic, Underline, List, ListOrdered, AlignLeft, AlignCenter, Image as ImageIcon, Link2, Heading2, Minus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { categories } from "@/data/mockData";
 import { toast } from "sonner";
-
-const saleStatuses = [
-  { value: "draft", label: "작성중" },
-  { value: "review", label: "심사 요청" },
-];
 
 const EbookForm = () => {
   const navigate = useNavigate();
@@ -23,20 +18,17 @@ const EbookForm = () => {
   const editId = searchParams.get("id");
   const isEdit = !!editId;
 
-  // Form state
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [tags, setTags] = useState("");
-  const [saleStatus, setSaleStatus] = useState("draft");
 
-  // File states (mock)
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
 
-  // Section collapse
+  // Rich editor ref
+  const editorRef = useRef<HTMLDivElement>(null);
+
   const [sections, setSections] = useState({
     basic: true,
     thumbnail: true,
@@ -58,15 +50,6 @@ const EbookForm = () => {
     }
   };
 
-  const handleAdditionalUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && additionalImages.length < 5) {
-      const reader = new FileReader();
-      reader.onloadend = () => setAdditionalImages(prev => [...prev, reader.result as string]);
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type === "application/pdf") {
@@ -74,6 +57,29 @@ const EbookForm = () => {
     } else {
       toast.error("PDF 파일만 업로드 가능합니다.");
     }
+  };
+
+  // Editor commands
+  const execCommand = useCallback((command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    editorRef.current?.focus();
+  }, []);
+
+  const handleEditorImageUpload = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          execCommand("insertImage", reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
   };
 
   const handleSubmit = (submitForReview: boolean) => {
@@ -90,12 +96,14 @@ const EbookForm = () => {
       return;
     }
 
+    const editorContent = editorRef.current?.innerHTML || "";
+
     if (submitForReview) {
       if (!coverPreview) {
         toast.error("대표 이미지를 등록해주세요.");
         return;
       }
-      if (!description.trim()) {
+      if (!editorContent.trim() || editorContent === "<br>") {
         toast.error("전자책 소개를 작성해주세요.");
         return;
       }
@@ -112,6 +120,21 @@ const EbookForm = () => {
   };
 
   const filteredCategories = categories.filter(c => c.id !== "all");
+
+  const toolbarButtons = [
+    { icon: Bold, command: "bold", label: "굵게" },
+    { icon: Italic, command: "italic", label: "기울임" },
+    { icon: Underline, command: "underline", label: "밑줄" },
+    { icon: Heading2, command: "formatBlock", value: "h2", label: "제목" },
+    { divider: true },
+    { icon: List, command: "insertUnorderedList", label: "목록" },
+    { icon: ListOrdered, command: "insertOrderedList", label: "번호 목록" },
+    { divider: true },
+    { icon: AlignLeft, command: "justifyLeft", label: "왼쪽 정렬" },
+    { icon: AlignCenter, command: "justifyCenter", label: "가운데 정렬" },
+    { divider: true },
+    { icon: Minus, command: "insertHorizontalRule", label: "구분선" },
+  ] as const;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -130,12 +153,7 @@ const EbookForm = () => {
         <div className="container px-4 py-4 tablet:py-6 max-w-3xl mx-auto space-y-4">
 
           {/* ── 기본 정보 ── */}
-          <FormSection
-            title="기본 정보"
-            required
-            open={sections.basic}
-            onToggle={() => toggleSection("basic")}
-          >
+          <FormSection title="기본 정보" required open={sections.basic} onToggle={() => toggleSection("basic")}>
             <div className="space-y-4">
               <div>
                 <Label className="text-sm font-semibold">전자책 제목 <span className="text-destructive">*</span></Label>
@@ -163,103 +181,99 @@ const EbookForm = () => {
                   ))}
                 </select>
               </div>
+            </div>
+          </FormSection>
 
-              <div>
-                <Label className="text-sm font-semibold">판매 상태</Label>
-                <select
-                  className="mt-1.5 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  value={saleStatus}
-                  onChange={(e) => setSaleStatus(e.target.value)}
-                >
-                  {saleStatuses.map(s => (
-                    <option key={s.value} value={s.value}>{s.label}</option>
-                  ))}
-                </select>
+          {/* ── 대표 이미지 ── */}
+          <FormSection title="대표 이미지" open={sections.thumbnail} onToggle={() => toggleSection("thumbnail")}>
+            <div>
+              <Label className="text-sm font-semibold">대표 이미지 <span className="text-destructive">*</span></Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                상세 페이지 상단에 노출되는 이미지입니다. (권장: 가로 1280px · 세로 720px, 16:9 비율)
+              </p>
+              <div className="mt-2">
+                {coverPreview ? (
+                  <div className="relative w-full max-w-md aspect-video rounded-xl overflow-hidden border border-border">
+                    <img src={coverPreview} alt="커버" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => setCoverPreview(null)}
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-background/80 hover:bg-background transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full max-w-md aspect-video rounded-xl border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors">
+                    <ImagePlus className="h-8 w-8 text-muted-foreground mb-2" />
+                    <span className="text-sm text-muted-foreground">이미지를 업로드해주세요</span>
+                    <span className="text-xs text-muted-foreground mt-0.5">16:9 비율 권장</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+                  </label>
+                )}
               </div>
             </div>
           </FormSection>
 
-          {/* ── 썸네일 이미지 ── */}
-          <FormSection
-            title="썸네일 이미지"
-            open={sections.thumbnail}
-            onToggle={() => toggleSection("thumbnail")}
-          >
-            <div className="space-y-5">
-              <div>
-                <Label className="text-sm font-semibold">대표 이미지 <span className="text-destructive">*</span></Label>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  대표 이미지는 상품 노출 및 상세 페이지에서 가장 먼저 노출되는 이미지입니다. (권장: 가로 1000px · 세로 1400px 이상)
-                </p>
-                <div className="mt-2">
-                  {coverPreview ? (
-                    <div className="relative w-32 h-44 rounded-xl overflow-hidden border border-border">
-                      <img src={coverPreview} alt="커버" className="w-full h-full object-cover" />
-                      <button
-                        onClick={() => setCoverPreview(null)}
-                        className="absolute top-1 right-1 p-1 rounded-full bg-background/80 hover:bg-background transition-colors"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="flex flex-col items-center justify-center w-32 h-44 rounded-xl border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors">
-                      <ImagePlus className="h-6 w-6 text-muted-foreground mb-1" />
-                      <span className="text-xs text-muted-foreground">업로드</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
-                    </label>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-sm font-semibold">추가 이미지</Label>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  추가 이미지는 최대 5장까지 등록 가능합니다. (권장: 가로 1000px · 세로 1000px 이상)
-                </p>
-                <div className="flex gap-2 mt-2 flex-wrap">
-                  {additionalImages.map((img, i) => (
-                    <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden border border-border">
-                      <img src={img} alt="" className="w-full h-full object-cover" />
-                      <button
-                        onClick={() => setAdditionalImages(prev => prev.filter((_, idx) => idx !== i))}
-                        className="absolute top-1 right-1 p-0.5 rounded-full bg-background/80 hover:bg-background transition-colors"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                  {additionalImages.length < 5 && (
-                    <label className="flex flex-col items-center justify-center w-24 h-24 rounded-xl border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors">
-                      <ImagePlus className="h-5 w-5 text-muted-foreground mb-0.5" />
-                      <span className="text-[10px] text-muted-foreground">{additionalImages.length + 1}/5 업로드</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={handleAdditionalUpload} />
-                    </label>
-                  )}
-                </div>
-              </div>
-            </div>
-          </FormSection>
-
-          {/* ── 콘텐츠 소개 ── */}
-          <FormSection
-            title="콘텐츠 소개"
-            required
-            open={sections.content}
-            onToggle={() => toggleSection("content")}
-          >
+          {/* ── 콘텐츠 소개 (Rich Editor) ── */}
+          <FormSection title="콘텐츠 소개" required open={sections.content} onToggle={() => toggleSection("content")}>
             <div className="space-y-4">
               <div>
                 <Label className="text-sm font-semibold">전자책 소개 <span className="text-destructive">*</span></Label>
                 <p className="text-xs text-muted-foreground mt-0.5">구매자에게 보여질 전자책 소개글을 작성해주세요.</p>
-                <Textarea
-                  className="mt-1.5 min-h-[200px]"
-                  placeholder="전자책의 내용, 대상 독자, 기대 효과 등을 자세히 소개해주세요."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  maxLength={5000}
+
+                {/* Toolbar */}
+                <div className="mt-1.5 rounded-t-xl border border-border bg-secondary/30 px-2 py-1.5 flex items-center gap-0.5 flex-wrap">
+                  {toolbarButtons.map((btn, i) => {
+                    if ('divider' in btn) {
+                      return <div key={i} className="w-px h-5 bg-border mx-1" />;
+                    }
+                    const Icon = btn.icon;
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        title={btn.label}
+                        onClick={() => execCommand(btn.command, 'value' in btn ? btn.value : undefined)}
+                        className="p-1.5 rounded-md hover:bg-secondary transition-colors"
+                      >
+                        <Icon className="h-4 w-4 text-foreground" />
+                      </button>
+                    );
+                  })}
+                  <div className="w-px h-5 bg-border mx-1" />
+                  <button
+                    type="button"
+                    title="이미지 삽입"
+                    onClick={handleEditorImageUpload}
+                    className="p-1.5 rounded-md hover:bg-secondary transition-colors"
+                  >
+                    <ImageIcon className="h-4 w-4 text-foreground" />
+                  </button>
+                  <button
+                    type="button"
+                    title="링크 삽입"
+                    onClick={() => {
+                      const url = prompt("URL을 입력해주세요:");
+                      if (url) execCommand("createLink", url);
+                    }}
+                    className="p-1.5 rounded-md hover:bg-secondary transition-colors"
+                  >
+                    <Link2 className="h-4 w-4 text-foreground" />
+                  </button>
+                </div>
+
+                {/* Editable area */}
+                <div
+                  ref={editorRef}
+                  contentEditable
+                  className="min-h-[280px] rounded-b-xl border border-t-0 border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring prose prose-sm max-w-none [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2"
+                  style={{ wordBreak: "break-word" }}
+                  data-placeholder="전자책의 내용, 대상 독자, 기대 효과 등을 자세히 소개해주세요."
+                  suppressContentEditableWarning
                 />
-                <p className="text-xs text-muted-foreground mt-1 text-right">{description.length} / 5,000</p>
+                <p className="text-xs text-muted-foreground mt-1 text-right flex items-center justify-end gap-1">
+                  <ImageIcon className="h-3 w-3" /> 이미지 삽입 가능
+                </p>
               </div>
 
               <div>
@@ -276,12 +290,7 @@ const EbookForm = () => {
           </FormSection>
 
           {/* ── 판매 가격 ── */}
-          <FormSection
-            title="판매 가격"
-            required
-            open={sections.price}
-            onToggle={() => toggleSection("price")}
-          >
+          <FormSection title="판매 가격" required open={sections.price} onToggle={() => toggleSection("price")}>
             <div>
               <Label className="text-sm font-semibold">판매가 <span className="text-destructive">*</span></Label>
               <div className="flex items-center gap-2 mt-1.5">
@@ -302,12 +311,7 @@ const EbookForm = () => {
           </FormSection>
 
           {/* ── PDF 파일 ── */}
-          <FormSection
-            title="콘텐츠 파일 (PDF)"
-            required
-            open={sections.file}
-            onToggle={() => toggleSection("file")}
-          >
+          <FormSection title="콘텐츠 파일 (PDF)" required open={sections.file} onToggle={() => toggleSection("file")}>
             <div>
               <Label className="text-sm font-semibold">PDF 파일 업로드 <span className="text-destructive">*</span></Label>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -347,24 +351,13 @@ const EbookForm = () => {
 
           {/* ── Submit buttons ── */}
           <div className="flex gap-3 pb-6">
-            <Button
-              variant="outline"
-              className="flex-1 h-12 rounded-xl"
-              onClick={() => navigate("/instructor")}
-            >
+            <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={() => navigate("/instructor")}>
               취소
             </Button>
-            <Button
-              variant="secondary"
-              className="flex-1 h-12 rounded-xl"
-              onClick={() => handleSubmit(false)}
-            >
+            <Button variant="secondary" className="flex-1 h-12 rounded-xl" onClick={() => handleSubmit(false)}>
               임시 저장
             </Button>
-            <Button
-              className="flex-1 h-12 rounded-xl"
-              onClick={() => handleSubmit(true)}
-            >
+            <Button className="flex-1 h-12 rounded-xl" onClick={() => handleSubmit(true)}>
               심사 요청
             </Button>
           </div>
@@ -377,17 +370,9 @@ const EbookForm = () => {
 
 /* ── Collapsible Section ── */
 const FormSection = ({
-  title,
-  required,
-  open,
-  onToggle,
-  children,
+  title, required, open, onToggle, children,
 }: {
-  title: string;
-  required?: boolean;
-  open: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
+  title: string; required?: boolean; open: boolean; onToggle: () => void; children: React.ReactNode;
 }) => (
   <div className="rounded-xl border border-border bg-background overflow-hidden">
     <button
