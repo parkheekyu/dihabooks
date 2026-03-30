@@ -47,19 +47,31 @@ const Header = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden tablet:flex items-center gap-6">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`text-sm font-medium transition-colors hover:text-foreground ${
-                location.pathname === item.path
-                  ? "text-foreground"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) =>
+            (item as any).external ? (
+              <a
+                key={item.path}
+                href={item.path}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium transition-colors hover:text-foreground text-muted-foreground"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`text-sm font-medium transition-colors hover:text-foreground ${
+                  location.pathname === item.path
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
 
         {/* Search */}
