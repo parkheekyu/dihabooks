@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Heart, Trash2, ArrowRight, ShoppingBag } from "lucide-react";
+import { Heart, Trash2, ArrowRight, Star } from "lucide-react";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { sampleBooks } from "@/data/mockData";
@@ -60,6 +60,11 @@ const Wishlist = () => {
                         <p className="text-sm font-medium line-clamp-2">{book.title}</p>
                       </Link>
                       <p className="text-xs text-muted-foreground mt-0.5">{book.author}</p>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-xs font-medium">{book.rating}</span>
+                        <span className="text-xs text-muted-foreground">({book.reviewCount})</span>
+                      </div>
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center gap-2">
