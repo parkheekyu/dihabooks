@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ChevronLeft, Heart, Trash2 } from "lucide-react";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { allBooks } from "@/data/mockData";
+import { sampleBooks } from "@/data/mockData";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BookCard from "@/components/BookCard";
@@ -11,7 +11,7 @@ const Wishlist = () => {
   const { wishlist, toggleWish } = useWishlist();
   const { isLoggedIn } = useAuth();
 
-  const wishedBooks = allBooks.filter((b) => wishlist.includes(b.id));
+  const wishedBooks = sampleBooks.filter((b) => wishlist.includes(b.id));
 
   return (
     <div className="min-h-screen flex flex-col">
