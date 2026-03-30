@@ -78,7 +78,7 @@ export const sampleBooks: Book[] = [
     reviewCount: 523,
     category: "재테크",
     image: hero2,
-    badge: "TOP",
+    badge: "NEW",
     pageCount: 180,
   },
   {
