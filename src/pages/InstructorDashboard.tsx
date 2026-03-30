@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   BookOpen, TrendingUp, DollarSign, Plus, MoreVertical,
-  Eye, Edit, Trash2, BarChart3, ArrowUpRight, ArrowDownRight
+  Eye, Edit, Trash2, BarChart3, ArrowUpRight, ArrowDownRight,
+  LayoutDashboard, FileText, ShoppingBag
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { cn } from "@/lib/utils";
 
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
@@ -19,7 +21,6 @@ const stats = [
   { label: "총 판매 수익", value: "₩3,240,000", change: "+12.5%", up: true, icon: DollarSign },
   { label: "총 판매량", value: "162권", change: "+8.3%", up: true, icon: TrendingUp },
   { label: "등록 전자책", value: "5권", change: "0", up: true, icon: BookOpen },
-  
 ];
 
 const mockBooks = [
@@ -51,68 +52,100 @@ const maxSales = Math.max(...monthlySales.map(m => m.amount));
 
 type Tab = "overview" | "books" | "sales";
 
+const sidebarItems: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
+  { id: "overview", label: "대시보드", icon: LayoutDashboard },
+  { id: "books", label: "전자책 관리", icon: FileText },
+  { id: "sales", label: "판매 내역", icon: ShoppingBag },
+];
+
 const InstructorDashboard = () => {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
-
-  const tabs: { id: Tab; label: string }[] = [
-    { id: "overview", label: "대시보드" },
-    { id: "books", label: "전자책 관리" },
-    { id: "sales", label: "판매 내역" },
-  ];
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="flex-1 bg-secondary/30">
-        {/* Tabs */}
-        <div className="border-b border-border bg-background">
-          <div className="container px-4">
-            <div className="flex items-center justify-between">
+      <main className="flex-1">
+        <div className="container px-4 py-6 tablet:py-10">
+          <div className="flex gap-10 max-w-5xl mx-auto">
+            {/* Desktop sidebar */}
+            <aside className="hidden desktop:block w-52 shrink-0">
+              <div className="sticky top-24">
+                <h2 className="text-lg font-bold mb-4">판매자 대시보드</h2>
+                <nav className="space-y-0.5">
+                  {sidebarItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(item.id)}
+                      className={cn(
+                        "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors w-full",
+                        activeTab === item.id
+                          ? "text-foreground font-medium bg-secondary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {item.label}
+                    </button>
+                  ))}
+                </nav>
+                <div className="mt-4 pt-4 border-t border-border">
+                  <Button size="sm" className="w-full rounded-lg gap-1.5 text-xs" asChild>
+                    <Link to="/instructor/ebook/new"><Plus className="h-3.5 w-3.5" /> 새 전자책</Link>
+                  </Button>
+                </div>
+              </div>
+            </aside>
+
+            {/* Mobile horizontal nav */}
+            <div className="desktop:hidden fixed left-0 right-0 top-16 z-40 border-b border-border bg-background px-4">
               <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-                {tabs.map(tab => (
+                {sidebarItems.map((item) => (
                   <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                      activeTab === tab.id
-                        ? "border-primary text-primary"
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={cn(
+                      "px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors",
+                      activeTab === item.id
+                        ? "border-primary text-primary font-medium"
                         : "border-transparent text-muted-foreground hover:text-foreground"
-                    }`}
+                    )}
                   >
-                    {tab.label}
+                    {item.label}
                   </button>
                 ))}
               </div>
-              <Button size="sm" className="rounded-full gap-1.5 text-xs" asChild>
-                <Link to="/instructor/ebook/new"><Plus className="h-3.5 w-3.5" /> 새 전자책</Link>
-              </Button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg font-bold mb-6 desktop:hidden">판매자 대시보드</h1>
+
+              {activeTab === "overview" && <OverviewContent />}
+              {activeTab === "books" && <BooksContent />}
+              {activeTab === "sales" && <SalesContent />}
             </div>
           </div>
         </div>
-
-        <main className="container px-4 py-4 tablet:py-6">
-          {activeTab === "overview" && <OverviewTab />}
-          {activeTab === "books" && <BooksTab />}
-          {activeTab === "sales" && <SalesTab />}
-        </main>
-      </div>
+      </main>
       <Footer />
     </div>
   );
 };
 
 /* ─── Overview ─── */
-const OverviewTab = () => (
-  <div className="space-y-4 tablet:space-y-6">
+const OverviewContent = () => (
+  <div className="space-y-6">
+    <h2 className="hidden desktop:block text-lg font-bold">대시보드</h2>
+
     {/* Stats */}
-    <div className="grid grid-cols-2 desktop:grid-cols-4 gap-3 tablet:gap-4">
+    <div className="grid grid-cols-1 tablet:grid-cols-3 gap-3">
       {stats.map(s => (
-        <div key={s.label} className="rounded-xl border border-border bg-background p-4 tablet:p-5">
+        <div key={s.label} className="rounded-xl border border-border p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground">{s.label}</span>
             <s.icon className="h-4 w-4 text-muted-foreground" />
           </div>
-          <p className="text-lg tablet:text-xl font-bold">{s.value}</p>
+          <p className="text-xl font-bold">{s.value}</p>
           <div className="flex items-center gap-1 mt-1">
             {s.up ? (
               <ArrowUpRight className="h-3 w-3 text-green-500" />
@@ -125,51 +158,48 @@ const OverviewTab = () => (
       ))}
     </div>
 
-    <div className="grid grid-cols-1 desktop:grid-cols-5 gap-4 tablet:gap-6">
-      {/* Chart */}
-      <div className="desktop:col-span-3 rounded-xl border border-border bg-background p-4 tablet:p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-sm">월별 매출 추이</h3>
-          <BarChart3 className="h-4 w-4 text-muted-foreground" />
-        </div>
-        <div className="flex items-end gap-2 tablet:gap-3 h-40 tablet:h-48">
-          {monthlySales.map(m => (
-            <div key={m.month} className="flex-1 flex flex-col items-center gap-1.5">
-              <div
-                className="w-full rounded-t-md bg-primary/80 hover:bg-primary transition-colors min-h-[4px]"
-                style={{ height: `${(m.amount / maxSales) * 100}%` }}
-              />
-              <span className="text-[10px] tablet:text-xs text-muted-foreground">{m.month}</span>
-            </div>
-          ))}
-        </div>
+    {/* Chart */}
+    <div className="border-b border-border pb-6">
+      <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+        <BarChart3 className="h-4 w-4 text-muted-foreground" /> 월별 매출 추이
+      </h3>
+      <div className="flex items-end gap-3 h-40 tablet:h-48">
+        {monthlySales.map(m => (
+          <div key={m.month} className="flex-1 flex flex-col items-center gap-1.5">
+            <div
+              className="w-full rounded-t-md bg-primary/80 hover:bg-primary transition-colors min-h-[4px]"
+              style={{ height: `${(m.amount / maxSales) * 100}%` }}
+            />
+            <span className="text-[10px] tablet:text-xs text-muted-foreground">{m.month}</span>
+          </div>
+        ))}
       </div>
+    </div>
 
-      {/* Recent Sales */}
-      <div className="desktop:col-span-2 rounded-xl border border-border bg-background p-4 tablet:p-5">
-        <h3 className="font-bold text-sm mb-3">최근 판매</h3>
-        <div className="space-y-3">
-          {recentSales.slice(0, 5).map((sale, i) => (
-            <div key={i} className="flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <p className="text-sm font-medium truncate">{sale.book}</p>
-                <p className="text-xs text-muted-foreground">{sale.buyer} · {sale.date}</p>
-              </div>
-              <span className="text-sm font-semibold shrink-0">₩{sale.amount.toLocaleString()}</span>
+    {/* Recent Sales */}
+    <div className="border-b border-border pb-6">
+      <h3 className="text-sm font-semibold mb-3">최근 판매</h3>
+      <div className="space-y-3">
+        {recentSales.slice(0, 5).map((sale, i) => (
+          <div key={i} className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm font-medium truncate">{sale.book}</p>
+              <p className="text-xs text-muted-foreground">{sale.buyer} · {sale.date}</p>
             </div>
-          ))}
-        </div>
+            <span className="text-sm font-semibold shrink-0">₩{sale.amount.toLocaleString()}</span>
+          </div>
+        ))}
       </div>
     </div>
 
     {/* Top books */}
-    <div className="rounded-xl border border-border bg-background p-4 tablet:p-5">
-      <h3 className="font-bold text-sm mb-3">인기 전자책</h3>
+    <div>
+      <h3 className="text-sm font-semibold mb-3">인기 전자책</h3>
       <div className="space-y-3">
-        {mockBooks.filter(b => b.sales > 0).sort((a,b) => b.sales - a.sales).slice(0,3).map((book, i) => (
+        {mockBooks.filter(b => b.sales > 0).sort((a, b) => b.sales - a.sales).slice(0, 3).map((book, i) => (
           <div key={book.id} className="flex items-center gap-3">
-            <span className="text-lg font-bold text-muted-foreground w-6 text-center">{i+1}</span>
-            <img src={book.image} alt="" className="w-10 h-14 tablet:w-12 tablet:h-16 rounded-lg object-cover" />
+            <span className="text-lg font-bold text-muted-foreground w-6 text-center">{i + 1}</span>
+            <img src={book.image} alt="" className="w-10 h-14 rounded-lg object-cover" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium truncate">{book.title}</p>
               <p className="text-xs text-muted-foreground">{book.sales}권 판매 · ₩{book.revenue.toLocaleString()}</p>
@@ -182,17 +212,19 @@ const OverviewTab = () => (
 );
 
 /* ─── Books Management ─── */
-const BooksTab = () => (
-  <div className="space-y-4">
+const BooksContent = () => (
+  <div className="space-y-6">
     <div className="flex items-center justify-between">
-      <p className="text-sm text-muted-foreground">총 {mockBooks.length}권의 전자책</p>
-      <Button size="sm" className="rounded-full gap-1.5 text-xs" asChild>
+      <h2 className="hidden desktop:block text-lg font-bold">전자책 관리</h2>
+      <p className="text-sm text-muted-foreground desktop:hidden">총 {mockBooks.length}권</p>
+      <Button size="sm" className="rounded-full gap-1.5 text-xs desktop:hidden" asChild>
         <Link to="/instructor/ebook/new"><Plus className="h-3.5 w-3.5" /> 새 전자책</Link>
       </Button>
     </div>
+    <p className="hidden desktop:block text-sm text-muted-foreground -mt-4">총 {mockBooks.length}권의 전자책</p>
 
-    {/* Mobile: Card layout / Desktop: Table */}
-    <div className="hidden tablet:block rounded-xl border border-border bg-background overflow-hidden">
+    {/* Desktop table */}
+    <div className="hidden tablet:block rounded-xl border border-border overflow-hidden">
       <table className="w-full">
         <thead>
           <tr className="border-b border-border bg-secondary/50">
@@ -216,12 +248,8 @@ const BooksTab = () => (
               <td className="px-4 py-3 text-sm">₩{book.price.toLocaleString()}</td>
               <td className="px-4 py-3 text-sm">{book.sales}권</td>
               <td className="px-4 py-3 text-sm font-medium">₩{book.revenue.toLocaleString()}</td>
-              <td className="px-4 py-3">
-                <StatusBadge status={book.status} />
-              </td>
-              <td className="px-4 py-3 text-right">
-                <BookActions />
-              </td>
+              <td className="px-4 py-3"><StatusBadge status={book.status} /></td>
+              <td className="px-4 py-3 text-right"><BookActions /></td>
             </tr>
           ))}
         </tbody>
@@ -231,7 +259,7 @@ const BooksTab = () => (
     {/* Mobile cards */}
     <div className="tablet:hidden space-y-3">
       {mockBooks.map(book => (
-        <div key={book.id} className="rounded-xl border border-border bg-background p-4">
+        <div key={book.id} className="py-4 border-b border-border last:border-0">
           <div className="flex gap-3">
             <img src={book.image} alt="" className="w-14 h-20 rounded-lg object-cover shrink-0" />
             <div className="flex-1 min-w-0">
@@ -244,9 +272,7 @@ const BooksTab = () => (
                 <span className="text-xs text-muted-foreground">{book.sales}권 판매</span>
                 <span className="text-xs text-muted-foreground">₩{book.revenue.toLocaleString()}</span>
               </div>
-              <div className="mt-2">
-                <StatusBadge status={book.status} />
-              </div>
+              <div className="mt-2"><StatusBadge status={book.status} /></div>
             </div>
           </div>
         </div>
@@ -256,11 +282,13 @@ const BooksTab = () => (
 );
 
 /* ─── Sales History ─── */
-const SalesTab = () => (
-  <div className="space-y-4">
+const SalesContent = () => (
+  <div className="space-y-6">
+    <h2 className="hidden desktop:block text-lg font-bold">판매 내역</h2>
     <p className="text-sm text-muted-foreground">최근 판매 내역</p>
 
-    <div className="hidden tablet:block rounded-xl border border-border bg-background overflow-hidden">
+    {/* Desktop table */}
+    <div className="hidden tablet:block rounded-xl border border-border overflow-hidden">
       <table className="w-full">
         <thead>
           <tr className="border-b border-border bg-secondary/50">
@@ -284,9 +312,9 @@ const SalesTab = () => (
     </div>
 
     {/* Mobile cards */}
-    <div className="tablet:hidden space-y-3">
+    <div className="tablet:hidden space-y-0">
       {recentSales.map((sale, i) => (
-        <div key={i} className="rounded-xl border border-border bg-background p-4">
+        <div key={i} className="py-4 border-b border-border last:border-0">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium">{sale.book}</p>
             <span className="text-sm font-semibold">₩{sale.amount.toLocaleString()}</span>
