@@ -26,7 +26,7 @@ const Profile = () => {
   ];
 
   const sellerMenu = [
-    { icon: User, label: "프로필 수정", desc: "이름, 소개 등 기본 정보 변경", path: "#" },
+    { icon: User, label: "프로필 수정", desc: "이름, 소개 등 기본 정보 변경", path: "/profile/edit" },
     { icon: Settings, label: "판매자 프로필 설정", desc: "소개, 경력, 보유 기술 등 설정", path: "/seller-profile" },
     { icon: BookOpen, label: "내 서재", desc: "구매한 전자책 목록", path: "/library" },
     { icon: ShoppingBag, label: "구매 내역", desc: "주문 내역 및 리뷰 관리", path: "/purchases" },
