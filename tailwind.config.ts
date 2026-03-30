@@ -9,11 +9,26 @@ export default {
       center: true,
       padding: "2rem",
       screens: {
-        "2xl": "1400px",
+        "2xl": "1200px",
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['"Noto Sans KR"', 'system-ui', 'sans-serif'],
+      },
+      screens: {
+        'mobile': '375px',
+        'tablet': '768px',
+        'desktop': '1024px',
+      },
       colors: {
+        kakao: {
+          DEFAULT: "hsl(var(--kakao))",
+          foreground: "hsl(var(--kakao-foreground))",
+        },
+        star: "hsl(var(--star))",
+        "footer-bg": "hsl(var(--footer-bg))",
+        "footer-foreground": "hsl(var(--footer-foreground))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
