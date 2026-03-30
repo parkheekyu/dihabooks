@@ -156,7 +156,7 @@ const Header = () => {
                 <Button variant="outline" className="w-full" size="sm">내 서재</Button>
               </Link>
               <Link to="/instructor" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full" size="sm">강사 대시보드</Button>
+                <Button variant="outline" className="w-full" size="sm">판매자 대시보드</Button>
               </Link>
               <Button variant="ghost" className="w-full text-destructive" size="sm" onClick={() => { handleLogout(); setMobileOpen(false); }}>
                 로그아웃
