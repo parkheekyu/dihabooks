@@ -213,7 +213,7 @@ const OverviewContent = () => (
 );
 
 /* ─── Books Management ─── */
-const bookStatuses = ["전체", "판매중", "심사중", "작성중", "판매중지"] as const;
+const bookStatuses = ["전체", "판매중", "심사 대기", "반려"] as const;
 
 const BooksContent = () => {
   const [statusFilter, setStatusFilter] = useState<string>("전체");
