@@ -106,7 +106,7 @@ const Wishlist = () => {
                     <span className="text-primary text-lg">₩{total.toLocaleString()}</span>
                   </div>
                 </div>
-                <Button className="w-full rounded-full" size="lg">
+                <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg">
                   전체 구매하기
                 </Button>
                 <p className="text-[10px] text-muted-foreground text-center mt-2">
