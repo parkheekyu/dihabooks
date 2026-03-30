@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Menu, X, LogOut, User, Bell } from "lucide-react";
+import { Search, Menu, X, LogOut, User, Bell, BookOpen, LayoutDashboard, ArrowRightLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -102,13 +102,26 @@ const Header = () => {
                   <DropdownMenuItem className="gap-2" onClick={() => navigate("/profile")}>
                     <User className="h-4 w-4" /> 내 정보
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2" onClick={() => navigate("/library")}>
-                    <User className="h-4 w-4" /> 내 서재
-                  </DropdownMenuItem>
-                  {role === "expert" && (
-                    <DropdownMenuItem className="gap-2" onClick={() => navigate("/instructor")}>
-                      <User className="h-4 w-4" /> 판매자 대시보드
-                    </DropdownMenuItem>
+                  {role === "member" ? (
+                    <>
+                      <DropdownMenuItem className="gap-2" onClick={() => navigate("/library")}>
+                        <BookOpen className="h-4 w-4" /> 내 서재
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="gap-2" onClick={() => { toggleRole(); }}>
+                        <ArrowRightLeft className="h-4 w-4" /> 판매자로 전환
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <DropdownMenuItem className="gap-2" onClick={() => navigate("/instructor")}>
+                        <LayoutDashboard className="h-4 w-4" /> 판매자 대시보드
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="gap-2" onClick={() => { toggleRole(); }}>
+                        <ArrowRightLeft className="h-4 w-4" /> 멤버로 전환
+                      </DropdownMenuItem>
+                    </>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="gap-2 text-destructive" onClick={handleLogout}>
