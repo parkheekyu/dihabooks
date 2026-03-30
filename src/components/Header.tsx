@@ -94,7 +94,7 @@ const Header = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="p-2 rounded-lg hover:bg-secondary transition-colors">
-                    <User className="h-4.5 w-4.5 text-foreground" />
+                    <User className="h-5 w-5 text-foreground" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
