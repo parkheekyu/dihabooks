@@ -24,6 +24,7 @@ import PurchaseHistory from "./pages/PurchaseHistory.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import EbookForm from "./pages/EbookForm.tsx";
 import ProfileEdit from "./pages/ProfileEdit.tsx";
+import SettlementHistory from "./pages/SettlementHistory.tsx";
 
 const queryClient = new QueryClient();
 
