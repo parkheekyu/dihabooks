@@ -1,5 +1,6 @@
-import { useParams, Link } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2 } from "lucide-react";
+import { useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { Star, Heart, ArrowLeft, Share2, BookOpen } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -20,14 +21,138 @@ const bookReviews = [
   { name: "성장하는개발자", rating: 5, date: "2026.03.08", content: "비전공자인데도 이해하기 쉽게 설명되어 있어서 좋았습니다. 강추입니다." },
 ];
 
+/* ── Purchase sidebar (desktop) ── */
+const PurchaseSidebar = ({ book, discount, isPurchased, onPurchase, navigate }: {
+  book: any; discount: number | null; isPurchased: boolean; onPurchase: () => void; navigate: any;
+}) => {
+  if (isPurchased) {
+    return (
+      <div className="sticky top-24 rounded-2xl border border-border p-6 space-y-5">
+        <div className="text-center space-y-2">
+          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+            <BookOpen className="h-6 w-6 text-primary" />
+          </div>
+          <p className="text-sm font-bold">구매 완료된 전자책입니다</p>
+          <p className="text-xs text-muted-foreground">웹 뷰어에서 바로 읽을 수 있어요</p>
+        </div>
+        <Button
+          className="w-full h-12 rounded-xl text-base font-bold"
+          onClick={() => navigate(`/reader/${book.id}`)}
+        >
+          지금 바로 읽기
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="sticky top-24 rounded-2xl border border-border p-6 space-y-5">
+      {/* Price */}
+      <div>
+        {discount && (
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-lg font-bold text-destructive">{discount}%</span>
+            <span className="text-sm text-muted-foreground line-through">
+              {book.originalPrice?.toLocaleString()}원
+            </span>
+          </div>
+        )}
+        <div className="text-3xl font-black">{book.price.toLocaleString()}원</div>
+      </div>
+
+      {/* Option card */}
+      <div>
+        <p className="text-sm font-bold mb-3">구매 옵션</p>
+        <div className="p-4 rounded-xl border-2 border-primary bg-primary/5 cursor-pointer">
+          <div className="flex justify-between items-start">
+            <div className="flex-1 min-w-0 mr-3">
+              <p className="text-sm font-bold leading-snug">{book.title}</p>
+              <p className="text-xs text-muted-foreground mt-1.5">웹 뷰어로 바로 읽기</p>
+            </div>
+            <span className="text-sm font-bold shrink-0">{book.price.toLocaleString()}원</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Total */}
+      <div className="flex justify-between items-center pt-4 border-t border-border">
+        <span className="text-sm font-bold">상품 금액</span>
+        <span className="text-xl font-black">{book.price.toLocaleString()}원</span>
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        <button className="flex flex-col items-center justify-center p-3 rounded-xl border border-border hover:bg-secondary transition-colors shrink-0">
+          <Heart className="h-5 w-5 text-muted-foreground" />
+          <span className="text-[10px] text-muted-foreground mt-0.5">{book.reviewCount}</span>
+        </button>
+        <Button
+          className="flex-1 h-12 rounded-xl text-base font-bold"
+          onClick={onPurchase}
+        >
+          지금 바로 구매하기
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+/* ── Mobile price section (inline) ── */
+const MobilePriceSection = ({ book, discount, isPurchased }: {
+  book: any; discount: number | null; isPurchased: boolean;
+}) => {
+  if (isPurchased) return null;
+
+  return (
+    <div className="desktop:hidden space-y-4">
+      {/* Price display */}
+      <div>
+        {discount && (
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-base font-bold text-destructive">{discount}%</span>
+            <span className="text-xs text-muted-foreground line-through">
+              {book.originalPrice?.toLocaleString()}원
+            </span>
+          </div>
+        )}
+        <div className="text-2xl font-black">{book.price.toLocaleString()}원</div>
+      </div>
+
+      {/* Option card */}
+      <div>
+        <p className="text-sm font-bold mb-3">구매 옵션</p>
+        <div className="p-4 rounded-xl border-2 border-primary bg-primary/5">
+          <div className="flex justify-between items-start">
+            <div className="flex-1 min-w-0 mr-3">
+              <p className="text-sm font-bold leading-snug">{book.title}</p>
+              <p className="text-xs text-muted-foreground mt-1.5">웹 뷰어로 바로 읽기</p>
+            </div>
+            <span className="text-sm font-bold shrink-0">{book.price.toLocaleString()}원</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Total */}
+      <div className="flex justify-between items-center pt-3 border-t border-border">
+        <span className="text-sm font-bold">상품 금액</span>
+        <span className="text-xl font-black">{book.price.toLocaleString()}원</span>
+      </div>
+    </div>
+  );
+};
+
 const BookDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { sellerProfile } = useAuth();
   const book = sampleBooks.find((b) => b.id === id) || sampleBooks[0];
+  const [isPurchased, setIsPurchased] = useState(false);
 
   const discount = book.originalPrice
     ? Math.round((1 - book.price / book.originalPrice) * 100)
     : null;
+
+  const handlePurchase = () => setIsPurchased(true);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -67,23 +192,8 @@ const BookDetail = () => {
               </div>
             </div>
 
-            {/* Mobile price summary */}
-            <div className="desktop:hidden rounded-xl border border-border p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  {discount && (
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-base font-bold text-primary">{discount}%</span>
-                      <span className="text-xs text-muted-foreground line-through">
-                        {book.originalPrice?.toLocaleString()}원
-                      </span>
-                    </div>
-                  )}
-                  <div className="text-2xl font-black">{book.price.toLocaleString()}원</div>
-                </div>
-                <span className="text-xs text-muted-foreground">웹 뷰어로 바로 읽기</span>
-              </div>
-            </div>
+            {/* Mobile price section */}
+            <MobilePriceSection book={book} discount={discount} isPurchased={isPurchased} />
 
             {/* Description */}
             <div>
@@ -202,56 +312,40 @@ const BookDetail = () => {
 
           {/* Right Sidebar - Desktop only */}
           <div className="hidden desktop:block">
-            <div className="sticky top-24 rounded-2xl border border-border p-6 space-y-4">
-              <div>
-                {discount && (
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-lg font-bold text-primary">{discount}%</span>
-                    <span className="text-sm text-muted-foreground line-through">
-                      {book.originalPrice?.toLocaleString()}원
-                    </span>
-                  </div>
-                )}
-                <div className="text-3xl font-black">{book.price.toLocaleString()}원</div>
-              </div>
-              <div className="space-y-2">
-                <div className="p-4 rounded-xl border-2 border-primary bg-primary/5 cursor-pointer">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm font-bold">{book.title}</p>
-                      <p className="text-xs text-muted-foreground mt-1">웹 뷰어로 바로 읽기</p>
-                    </div>
-                    <span className="text-sm font-bold">{book.price.toLocaleString()}원</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-between items-center pt-4 border-t border-border">
-                <span className="text-sm font-medium">상품 금액</span>
-                <span className="text-xl font-black">{book.price.toLocaleString()}원</span>
-              </div>
-              <div className="flex gap-2">
-                <button className="p-3 rounded-xl border border-border hover:bg-secondary transition-colors">
-                  <Heart className="h-5 w-5 text-muted-foreground" />
-                </button>
-                <Button className="flex-1 h-12 rounded-xl bg-primary text-primary-foreground text-base font-bold hover:bg-primary/90">
-                  지금 바로 구매하기
-                </Button>
-              </div>
-            </div>
+            <PurchaseSidebar
+              book={book}
+              discount={discount}
+              isPurchased={isPurchased}
+              onPurchase={handlePurchase}
+              navigate={navigate}
+            />
           </div>
         </div>
       </main>
 
       {/* Mobile fixed bottom CTA */}
       <div className="desktop:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border px-4 py-3 z-40 safe-bottom">
-        <div className="flex items-center gap-3">
-          <button className="p-3 rounded-xl border border-border hover:bg-secondary transition-colors shrink-0">
-            <Heart className="h-5 w-5 text-muted-foreground" />
-          </button>
-          <Button className="flex-1 h-12 rounded-xl bg-primary text-primary-foreground text-base font-bold hover:bg-primary/90">
-            {book.price.toLocaleString()}원 구매하기
+        {isPurchased ? (
+          <Button
+            className="w-full h-12 rounded-xl text-base font-bold"
+            onClick={() => navigate(`/reader/${book.id}`)}
+          >
+            지금 바로 읽기
           </Button>
-        </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <button className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-border hover:bg-secondary transition-colors shrink-0">
+              <Heart className="h-5 w-5 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground mt-0.5">{book.reviewCount}</span>
+            </button>
+            <Button
+              className="flex-1 h-12 rounded-xl text-base font-bold"
+              onClick={handlePurchase}
+            >
+              {book.price.toLocaleString()}원 구매하기
+            </Button>
+          </div>
+        )}
       </div>
 
       <Footer />
