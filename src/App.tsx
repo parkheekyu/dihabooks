@@ -10,6 +10,9 @@ import Store from "./pages/Store.tsx";
 import BookDetail from "./pages/BookDetail.tsx";
 import Library from "./pages/Library.tsx";
 import Reader from "./pages/Reader.tsx";
+import Cart from "./pages/Cart.tsx";
+import InstructorDashboard from "./pages/InstructorDashboard.tsx";
+import AdminDashboard from "./pages/AdminDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,9 @@ const App = () => (
           <Route path="/book/:id" element={<BookDetail />} />
           <Route path="/library" element={<Library />} />
           <Route path="/reader/:id" element={<Reader />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/instructor" element={<InstructorDashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
