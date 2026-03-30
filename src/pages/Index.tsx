@@ -171,7 +171,7 @@ const Index = () => {
         </section>
 
         {/* CTA */}
-        <section className="container px-4 mb-14 tablet:mb-20">
+        <section className="container px-4 my-14 tablet:my-20">
           <div
             className="relative rounded-xl tablet:rounded-2xl overflow-hidden p-6 tablet:p-10 desktop:p-16"
             style={{ backgroundImage: `url(${ctaBg})`, backgroundSize: "cover", backgroundPosition: "center" }}
