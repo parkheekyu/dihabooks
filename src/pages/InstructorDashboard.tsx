@@ -200,7 +200,7 @@ const OverviewContent = () => (
         {mockBooks.filter(b => b.sales > 0).sort((a, b) => b.sales - a.sales).slice(0, 3).map((book, i) => (
           <div key={book.id} className="flex items-center gap-3">
             <span className="text-lg font-bold text-muted-foreground w-6 text-center">{i + 1}</span>
-            <img src={book.image} alt="" className="w-10 h-14 rounded-lg object-cover" />
+            <img src={book.image} alt="" className="w-10 h-10 rounded-md object-cover" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium truncate">{book.title}</p>
               <p className="text-xs text-muted-foreground">{book.sales}권 판매 · ₩{book.revenue.toLocaleString()}</p>
@@ -265,7 +265,7 @@ const BooksContent = () => {
           {filteredBooks.map(book => (
             <div key={book.id} className="py-4 border-b border-border last:border-0">
               <div className="flex gap-4">
-                <img src={book.image} alt="" className="w-16 h-22 tablet:w-20 tablet:h-28 rounded-md object-cover shrink-0" />
+                <img src={book.image} alt="" className="w-16 h-16 tablet:w-20 tablet:h-20 rounded-md object-cover shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
