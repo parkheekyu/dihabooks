@@ -433,8 +433,6 @@ const BookDetail = () => {
               ))}
             </div>
           </div>
-            </Button>
-          </div>
         </div>
       </main>
 
