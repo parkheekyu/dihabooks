@@ -1,20 +1,21 @@
 import { Book } from "@/components/BookCard";
+import { BookOpen, Youtube, Camera, Handshake, Bot, Wallet, Sparkles, Palette, Megaphone, Code, type LucideIcon } from "lucide-react";
 
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
 import hero3 from "@/assets/hero-3.jpg";
 
-export const categories = [
-  { id: "all", label: "전체", emoji: "📚" },
-  { id: "youtube", label: "유튜브", emoji: "🎬" },
-  { id: "instagram", label: "인스타그램", emoji: "📸" },
-  { id: "affiliate", label: "제휴마케팅", emoji: "🤝" },
-  { id: "ai", label: "AI/자동화", emoji: "🤖" },
-  { id: "finance", label: "재테크", emoji: "💰" },
-  { id: "selfdev", label: "자기계발", emoji: "✨" },
-  { id: "design", label: "디자인", emoji: "🎨" },
-  { id: "marketing", label: "마케팅", emoji: "📢" },
-  { id: "it", label: "IT/프로그래밍", emoji: "💻" },
+export const categories: { id: string; label: string; icon?: LucideIcon }[] = [
+  { id: "all", label: "전체", icon: BookOpen },
+  { id: "youtube", label: "유튜브", icon: Youtube },
+  { id: "instagram", label: "인스타그램", icon: Camera },
+  { id: "affiliate", label: "제휴마케팅", icon: Handshake },
+  { id: "ai", label: "AI/자동화", icon: Bot },
+  { id: "finance", label: "재테크", icon: Wallet },
+  { id: "selfdev", label: "자기계발", icon: Sparkles },
+  { id: "design", label: "디자인", icon: Palette },
+  { id: "marketing", label: "마케팅", icon: Megaphone },
+  { id: "it", label: "IT/프로그래밍", icon: Code },
 ];
 
 export const heroSlides = [

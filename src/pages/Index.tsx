@@ -37,7 +37,7 @@ const Index = () => {
 
       <main className="flex-1">
         {/* Hero Carousel */}
-        <section className="relative overflow-hidden bg-secondary">
+        <section className="relative overflow-hidden bg-background">
           <div className="container px-4">
             <div className="relative aspect-[3/2] tablet:aspect-[2/1] desktop:aspect-[3/1] overflow-hidden rounded-xl tablet:rounded-2xl my-4 tablet:my-6">
               {heroSlides.map((slide, i) => (
@@ -93,7 +93,7 @@ const Index = () => {
                     : "bg-secondary text-muted-foreground hover:bg-secondary/80"
                 }`}
               >
-                <span>{cat.emoji}</span>
+                {cat.icon && <cat.icon className="h-3.5 w-3.5" />}
                 {cat.label}
               </button>
             ))}
