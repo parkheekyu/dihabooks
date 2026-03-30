@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   BookOpen, TrendingUp, DollarSign, Plus, MoreVertical,
   Eye, Edit, Trash2, BarChart3, ArrowUpRight, ArrowDownRight
