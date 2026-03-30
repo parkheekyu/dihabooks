@@ -98,7 +98,7 @@ const BookDetail = () => {
         </div>
 
         {/* ═══ Hero: Image left + Info sidebar right (desktop) ═══ */}
-        <div className="grid grid-cols-1 desktop:grid-cols-[1fr_380px] gap-6 desktop:gap-10">
+        <div className="grid grid-cols-1 desktop:grid-cols-[1fr_380px] gap-6 desktop:gap-10 items-start">
           {/* Left: Hero image */}
           <div>
             <div className="rounded-xl tablet:rounded-2xl overflow-hidden aspect-video bg-secondary">
