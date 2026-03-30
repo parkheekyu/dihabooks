@@ -33,7 +33,7 @@ const Reader = () => {
   const { id } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(100);
-  const [tocOpen, setTocOpen] = useState(true);
+  const [tocOpen, setTocOpen] = useState(false);
   const [completedSections, setCompletedSections] = useState<string[]>(["1-0", "1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "1-7", "1-8", "1-9"]);
   const totalPages = 85;
 
@@ -41,6 +41,10 @@ const Reader = () => {
 
   const handleTocClick = (page: number) => {
     setCurrentPage(page);
+    // Close TOC on mobile after selecting
+    if (window.innerWidth < 768) {
+      setTocOpen(false);
+    }
   };
 
   const toggleComplete = (sectionId: string) => {
@@ -49,7 +53,6 @@ const Reader = () => {
     );
   };
 
-  // Mock content for demo
   const currentContent = {
     chapterTitle: "스토어-2. 네이버 쇼핑 순위 올리는 원리",
     heading: "네이버쇼핑 순위 올리는 원리",
@@ -59,129 +62,149 @@ const Reader = () => {
     body2: "그렇다면 쇼핑검색 순위의 원리는 어떻게될까요?",
   };
 
+  const TocContent = () => (
+    <div className="p-4">
+      {mockToc.map((chapter, ci) => (
+        <div key={ci} className="mb-6">
+          <h3 className="text-sm font-bold text-foreground mb-3 leading-snug">
+            {chapter.title}
+          </h3>
+          <div className="space-y-1">
+            {chapter.items.map((item) => {
+              const isCompleted = completedSections.includes(item.id);
+              const isActive = currentPage === item.page;
+              return (
+                <div
+                  key={item.id}
+                  className={`flex items-start gap-2 py-2.5 px-2 rounded-lg cursor-pointer transition-colors ${
+                    isActive ? "bg-primary/10" : "hover:bg-muted"
+                  }`}
+                  onClick={() => handleTocClick(item.page)}
+                >
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleComplete(item.id);
+                    }}
+                    className="mt-0.5 shrink-0"
+                  >
+                    <CheckCircle2
+                      className={`h-4 w-4 ${
+                        isCompleted ? "text-green-500 fill-green-500" : "text-border"
+                      }`}
+                    />
+                  </button>
+                  <span
+                    className={`text-sm leading-snug flex-1 ${
+                      isActive ? "text-primary font-medium" : "text-foreground/80"
+                    }`}
+                  >
+                    {item.title}
+                  </span>
+                  {item.isNew && (
+                    <span className="text-[10px] font-bold text-destructive bg-destructive/10 px-1.5 py-0.5 rounded shrink-0">
+                      N
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div
       className="h-screen bg-background flex flex-col select-none overflow-hidden"
       onContextMenu={(e) => e.preventDefault()}
     >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-card border-b border-border shrink-0">
-        <div className="flex items-center gap-3">
-          <Link to="/library" className="text-muted-foreground text-sm hover:text-foreground transition-colors">
-            ← 내 서재로
+      <div className="flex items-center justify-between px-3 tablet:px-4 py-2.5 tablet:py-3 bg-card border-b border-border shrink-0">
+        <div className="flex items-center gap-2 tablet:gap-3">
+          <Link to="/library" className="text-muted-foreground text-xs tablet:text-sm hover:text-foreground transition-colors">
+            ← 서재
           </Link>
           <button
             onClick={() => setTocOpen(!tocOpen)}
             className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            {tocOpen ? <X className="h-4 w-4" /> : <List className="h-4 w-4" />}
+            <List className="h-4 w-4" />
           </button>
         </div>
-        <span className="text-muted-foreground text-sm">
-          {currentPage} / {totalPages} 페이지
+        <span className="text-muted-foreground text-xs tablet:text-sm">
+          {currentPage} / {totalPages}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 tablet:gap-2">
           <button
             onClick={() => setZoom((z) => Math.max(50, z - 10))}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="p-1 tablet:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            <ZoomOut className="h-4 w-4" />
+            <ZoomOut className="h-3.5 w-3.5 tablet:h-4 tablet:w-4" />
           </button>
-          <span className="text-muted-foreground text-xs w-10 text-center">{zoom}%</span>
+          <span className="text-muted-foreground text-[10px] tablet:text-xs w-8 tablet:w-10 text-center">{zoom}%</span>
           <button
             onClick={() => setZoom((z) => Math.min(200, z + 10))}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="p-1 tablet:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            <ZoomIn className="h-4 w-4" />
+            <ZoomIn className="h-3.5 w-3.5 tablet:h-4 tablet:w-4" />
           </button>
         </div>
       </div>
 
       {/* Main area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* TOC Sidebar */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Mobile TOC overlay */}
         {tocOpen && (
-          <div className="w-[340px] shrink-0 bg-card border-r border-border overflow-y-auto">
-            <div className="p-4">
-              {mockToc.map((chapter, ci) => (
-                <div key={ci} className="mb-6">
-                  <h3 className="text-sm font-bold text-foreground mb-3 leading-snug">
-                    {chapter.title}
-                  </h3>
-                  <div className="space-y-1">
-                    {chapter.items.map((item) => {
-                      const isCompleted = completedSections.includes(item.id);
-                      const isActive = currentPage === item.page;
-                      return (
-                        <div
-                          key={item.id}
-                          className={`flex items-start gap-2 py-2 px-2 rounded-lg cursor-pointer transition-colors group ${
-                            isActive ? "bg-primary/10" : "hover:bg-muted"
-                          }`}
-                          onClick={() => handleTocClick(item.page)}
-                        >
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleComplete(item.id);
-                            }}
-                            className="mt-0.5 shrink-0"
-                          >
-                            <CheckCircle2
-                              className={`h-4 w-4 ${
-                                isCompleted ? "text-green-500 fill-green-500" : "text-border"
-                              }`}
-                            />
-                          </button>
-                          <span
-                            className={`text-sm leading-snug flex-1 ${
-                              isActive ? "text-primary font-medium" : "text-foreground/80"
-                            }`}
-                          >
-                            {item.title}
-                          </span>
-                          <div className="flex items-center gap-1 shrink-0">
-                            {item.isNew && (
-                              <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded">
-                                N
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+          <>
+            <div
+              className="tablet:hidden fixed inset-0 bg-foreground/40 z-40"
+              onClick={() => setTocOpen(false)}
+            />
+            <div className="tablet:hidden fixed inset-y-0 left-0 w-[85vw] max-w-[340px] bg-card z-50 overflow-y-auto shadow-2xl animate-in slide-in-from-left duration-200">
+              <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-card z-10">
+                <h2 className="text-sm font-bold">목차</h2>
+                <button onClick={() => setTocOpen(false)} className="p-1 rounded-lg hover:bg-muted">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <TocContent />
             </div>
+          </>
+        )}
+
+        {/* Desktop TOC Sidebar */}
+        {tocOpen && (
+          <div className="hidden tablet:block w-[340px] shrink-0 bg-card border-r border-border overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-card z-10">
+              <h2 className="text-sm font-bold">목차</h2>
+              <button onClick={() => setTocOpen(false)} className="p-1 rounded-lg hover:bg-muted">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <TocContent />
           </div>
         )}
 
         {/* Content Area */}
         <div className="flex-1 relative overflow-auto">
-          <div className="max-w-3xl mx-auto px-8 py-10" style={{ fontSize: `${zoom}%` }}>
-            {/* Chapter title */}
-            <h2 className="text-xl font-bold text-foreground mb-8">
+          <div className="max-w-3xl mx-auto px-4 tablet:px-8 py-6 tablet:py-10" style={{ fontSize: `${zoom}%` }}>
+            <h2 className="text-lg tablet:text-xl font-bold text-foreground mb-6 tablet:mb-8">
               {currentContent.chapterTitle}
             </h2>
-
-            {/* Main heading */}
-            <h1 className="text-2xl font-bold text-primary mb-6">
+            <h1 className="text-xl tablet:text-2xl font-bold text-primary mb-4 tablet:mb-6">
               {currentContent.heading}
             </h1>
-
-            {/* Update notice */}
-            <div className="mb-6">
-              <p className="text-primary font-medium text-sm mb-2">
+            <div className="mb-4 tablet:mb-6">
+              <p className="text-primary font-medium text-xs tablet:text-sm mb-2">
                 {currentContent.updateNote}
               </p>
-              <p className="text-primary text-sm leading-relaxed">
+              <p className="text-primary text-xs tablet:text-sm leading-relaxed">
                 {currentContent.updateText}
               </p>
             </div>
-
-            {/* Body text */}
-            <div className="space-y-4 text-foreground/90 leading-relaxed">
+            <div className="space-y-3 tablet:space-y-4 text-foreground/90 text-sm tablet:text-base leading-relaxed">
               <p>{currentContent.body}</p>
               <p>{currentContent.body2}</p>
             </div>
@@ -189,35 +212,52 @@ const Reader = () => {
 
           {/* Watermark overlay */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-32 -rotate-[30deg] opacity-[0.07]">
+            <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-16 tablet:gap-32 -rotate-[30deg] opacity-[0.07]">
               {[...Array(30)].map((_, i) => (
-                <span key={i} className="text-muted-foreground text-lg whitespace-nowrap font-medium">
+                <span key={i} className="text-muted-foreground text-sm tablet:text-lg whitespace-nowrap font-medium">
                   {userEmail}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Navigation arrows */}
+          {/* Navigation arrows - hidden on mobile (use swipe/progress bar) */}
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground transition-all disabled:opacity-20"
+            className="hidden tablet:block absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground transition-all disabled:opacity-20"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground transition-all disabled:opacity-20"
+            className="hidden tablet:block absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground transition-all disabled:opacity-20"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      {/* Bottom progress */}
-      <div className="px-4 py-3 bg-card border-t border-border shrink-0">
+      {/* Bottom progress + mobile nav */}
+      <div className="px-3 tablet:px-4 py-2.5 tablet:py-3 bg-card border-t border-border shrink-0">
+        {/* Mobile prev/next buttons */}
+        <div className="flex tablet:hidden items-center gap-2 mb-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="flex-1 py-2 rounded-lg bg-muted text-sm font-medium text-foreground disabled:opacity-30 active:bg-muted/70 transition-colors"
+          >
+            ← 이전
+          </button>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="flex-1 py-2 rounded-lg bg-muted text-sm font-medium text-foreground disabled:opacity-30 active:bg-muted/70 transition-colors"
+          >
+            다음 →
+          </button>
+        </div>
         <div className="flex items-center gap-3">
           <span className="text-muted-foreground text-xs">{currentPage}</span>
           <input
