@@ -350,18 +350,18 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const BookActions = () => {
+const BookActions = ({ bookId }: { bookId: string }) => {
   const navigate = useNavigate();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="p-1 rounded-lg hover:bg-secondary transition-colors">
+        <button className="p-1.5 rounded-md hover:bg-secondary transition-colors shrink-0">
           <MoreVertical className="h-4 w-4 text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem className="gap-2 text-sm"><Eye className="h-3.5 w-3.5" /> 미리보기</DropdownMenuItem>
-        <DropdownMenuItem className="gap-2 text-sm" onClick={() => navigate("/instructor/ebook/edit?id=1")}><Edit className="h-3.5 w-3.5" /> 수정</DropdownMenuItem>
+        <DropdownMenuItem className="gap-2 text-sm" onClick={() => navigate(`/instructor/ebook/edit?id=${bookId}`)}><Edit className="h-3.5 w-3.5" /> 편집</DropdownMenuItem>
         <DropdownMenuItem className="gap-2 text-sm text-destructive"><Trash2 className="h-3.5 w-3.5" /> 삭제</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
