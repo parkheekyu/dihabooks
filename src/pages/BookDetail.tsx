@@ -16,9 +16,17 @@ const tableOfContents = [
 ];
 
 const bookReviews = [
-  { name: "노마드팀", rating: 5, date: "2026.03.15", content: "진짜 실전에서 바로 쓸 수 있는 꿀팁만 모아놓셨네요. 문의 전혀 아깝지 않습니다!" },
-  { name: "디지털리버", rating: 5, date: "2026.03.10", content: "내용이 아주 알찹니다. 특히 자동화 시스템 구축 부분이 인상 깊었어요." },
-  { name: "성장하는개발자", rating: 5, date: "2026.03.08", content: "비전공자인데도 이해하기 쉽게 설명되어 있어서 좋았습니다. 강추입니다." },
+  { name: "노마드팀", rating: 5, date: "2026.03.15", content: "진짜 실전에서 바로 쓸 수 있는 꿀팁만 모아놓셨네요. 문의 전혀 아깝지 않습니다! 이 가격에 이 정도 퀄리티면 정말 대만족이에요." },
+  { name: "디지털리버", rating: 5, date: "2026.03.10", content: "내용이 아주 알찹니다. 특히 자동화 시스템 구축 부분이 인상 깊었어요. 실제로 적용해보니 효과가 바로 나타나더라구요." },
+  { name: "성장하는개발자", rating: 5, date: "2026.03.08", content: "비전공자인데도 이해하기 쉽게 설명되어 있어서 좋았습니다. 강추입니다. 주변에도 많이 추천하고 있어요." },
+  { name: "마케터박", rating: 5, date: "2026.03.05", content: "마케팅 실무에서 바로 써먹을 수 있는 내용이 가득합니다. 특히 채널별 전략 부분이 정말 유용했어요." },
+  { name: "프리랜서후기", rating: 4, date: "2026.03.02", content: "전체적으로 만족스러운 내용이었습니다. 다만 좀 더 심화 내용이 있었으면 하는 아쉬움이 있네요." },
+  { name: "초보창업자", rating: 5, date: "2026.02.28", content: "창업 준비하면서 읽었는데 정말 도움이 많이 됐어요. 실전 경험에서 나온 팁들이라 신뢰가 갑니다." },
+  { name: "직장인탈출", rating: 5, date: "2026.02.25", content: "퇴사 준비하면서 이 책 덕분에 자신감이 생겼습니다. 단계별로 따라하기 쉽게 설명되어 있어요." },
+  { name: "수익화마스터", rating: 5, date: "2026.02.20", content: "수익화에 대한 체계적인 로드맵을 제시해줘서 좋았습니다. 이미 첫 수익을 만들었어요!" },
+  { name: "콘텐츠크리에이터", rating: 4, date: "2026.02.15", content: "콘텐츠 제작 관련 팁이 특히 유용했습니다. 실제 사례가 많아서 이해하기 쉬웠어요." },
+  { name: "디지털노마드", rating: 5, date: "2026.02.10", content: "해외에서 원격으로 일하면서 이 책의 방법론을 적용하고 있습니다. 정말 감사합니다." },
+  { name: "투잡러", rating: 5, date: "2026.02.05", content: "본업 외에 부수입을 만들고 싶어서 읽었는데, 실행 가능한 방법들이 많아서 좋았습니다." },
 ];
 
 /* ── Option card with discount support ── */
@@ -65,6 +73,7 @@ const BookDetail = () => {
   const book = sampleBooks.find((b) => b.id === id) || sampleBooks[0];
   const [isPurchased, setIsPurchased] = useState(false);
   const [selectedOption, setSelectedOption] = useState(0);
+  const [visibleReviews, setVisibleReviews] = useState(3);
 
   // Build purchase options from book data
   const purchaseOptions = [
@@ -273,6 +282,53 @@ const BookDetail = () => {
 
         {/* ═══ Content sections ═══ */}
         <div className="mt-8 tablet:mt-10 max-w-3xl space-y-8 tablet:space-y-10">
+          {/* Reviews — TOP */}
+          <div>
+            <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-4 tablet:mb-5">
+              <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
+              실시간 베스트 후기
+            </h2>
+
+            <div className="relative">
+              <div className="space-y-3">
+                {bookReviews.slice(0, visibleReviews).map((review, i) => {
+                  const isLast = i === visibleReviews - 1 && visibleReviews < bookReviews.length;
+                  return (
+                    <div
+                      key={i}
+                      className={`rounded-xl bg-secondary/60 p-4 tablet:p-5 ${isLast ? "relative" : ""}`}
+                    >
+                      {isLast && (
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-transparent via-transparent to-background pointer-events-none z-10" />
+                      )}
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-bold">{review.name}</span>
+                        <span className="text-xs text-muted-foreground">{review.date}</span>
+                      </div>
+                      <div className="flex items-center gap-0.5 mb-2">
+                        {[...Array(review.rating)].map((_, j) => (
+                          <Star key={j} className="h-3.5 w-3.5 fill-star text-star" />
+                        ))}
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{review.content}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {visibleReviews < bookReviews.length && (
+                <div className="text-center mt-4">
+                  <button
+                    onClick={() => setVisibleReviews((v) => Math.min(v + 4, bookReviews.length))}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
+                  >
+                    후기 더보기
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Description */}
           <div>
             <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
@@ -316,65 +372,6 @@ const BookDetail = () => {
                     {item.chapter}
                   </span>
                   <span className="text-sm font-medium">{item.title}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Reviews */}
-          <div>
-            <div className="flex items-center justify-between mb-3 tablet:mb-4">
-              <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2">
-                <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
-                수강생 리뷰
-              </h2>
-              <button className="text-sm text-primary hover:underline">리뷰 작성하기</button>
-            </div>
-
-            {/* Rating Summary */}
-            <div className="flex items-center gap-4 tablet:gap-6 p-4 tablet:p-6 rounded-xl tablet:rounded-2xl bg-secondary mb-4 tablet:mb-6">
-              <div className="text-center shrink-0">
-                <div className="text-3xl tablet:text-4xl font-black">{book.rating}</div>
-                <div className="flex items-center gap-0.5 mt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-3 tablet:h-3.5 w-3 tablet:w-3.5 fill-star text-star" />
-                  ))}
-                </div>
-              </div>
-              <div className="flex-1 space-y-1.5">
-                {[5, 4, 3, 2, 1].map((stars) => (
-                  <div key={stars} className="flex items-center gap-2">
-                    <span className="text-xs w-3">{stars}</span>
-                    <div className="flex-1 h-2 bg-border rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary rounded-full"
-                        style={{ width: stars === 5 ? "80%" : stars === 4 ? "15%" : "5%" }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Review List */}
-            <div className="space-y-4">
-              {bookReviews.map((review, i) => (
-                <div key={i} className="py-3 tablet:py-4 border-b border-border last:border-0">
-                  <div className="flex items-center gap-2 tablet:gap-3 mb-2">
-                    <div className="h-7 w-7 tablet:h-8 tablet:w-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold shrink-0">
-                      {review.name[0]}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{review.name}</p>
-                      <div className="flex items-center gap-0.5">
-                        {[...Array(review.rating)].map((_, j) => (
-                          <Star key={j} className="h-3 w-3 fill-star text-star" />
-                        ))}
-                      </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground ml-auto shrink-0">{review.date}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{review.content}</p>
                 </div>
               ))}
             </div>
