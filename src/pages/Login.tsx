@@ -1,10 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 
 const Login = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleKakaoLogin = () => {
+    login();
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Split layout */}
@@ -60,7 +69,7 @@ const Login = () => {
             {/* Kakao Login Button */}
             <Button
               className="w-full h-14 rounded-xl bg-kakao text-kakao-foreground hover:bg-kakao/90 text-base font-semibold"
-              onClick={() => {/* Kakao OAuth */}}
+              onClick={handleKakaoLogin}
             >
               <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 3C6.477 3 2 6.463 2 10.691c0 2.726 1.8 5.117 4.512 6.482-.154.567-.991 3.647-1.024 3.876 0 0-.02.168.089.233.109.065.237.03.237.03.313-.044 3.622-2.37 4.194-2.77.637.09 1.296.138 1.992.138 5.523 0 10-3.463 10-7.691S17.523 3 12 3z"/>

@@ -1,8 +1,12 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Search, Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Search, Menu, X, LogOut, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
   { label: "전자책 스토어", path: "/store" },
@@ -13,6 +17,13 @@ const navItems = [
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isLoggedIn, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -57,16 +68,43 @@ const Header = () => {
 
         {/* Actions */}
         <div className="hidden tablet:flex items-center gap-3">
-          <Link to="/login">
-            <Button variant="ghost" size="sm" className="text-muted-foreground">
-              로그인
-            </Button>
-          </Link>
-          <Link to="/signup">
-            <Button size="sm" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-              작가 신청
-            </Button>
-          </Link>
+          {isLoggedIn ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-secondary transition-colors">
+                  <div className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
+                    {user?.avatar}
+                  </div>
+                  <span className="text-sm font-medium">{user?.name}</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem className="gap-2" onClick={() => navigate("/library")}>
+                  <User className="h-4 w-4" /> 내 서재
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2" onClick={() => navigate("/instructor")}>
+                  <LayoutDashboard className="h-4 w-4" /> 강사 대시보드
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2 text-destructive" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4" /> 로그아웃
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  로그인
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button size="sm" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
+                  작가 신청
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -100,14 +138,37 @@ const Header = () => {
               </Link>
             ))}
           </nav>
-          <div className="flex gap-2 pt-2">
-            <Link to="/login" className="flex-1">
-              <Button variant="outline" className="w-full" size="sm">로그인</Button>
-            </Link>
-            <Link to="/signup" className="flex-1">
-              <Button className="w-full bg-primary text-primary-foreground" size="sm">작가 신청</Button>
-            </Link>
-          </div>
+          {isLoggedIn ? (
+            <div className="flex flex-col gap-2 pt-2">
+              <div className="flex items-center gap-3 px-3 py-2">
+                <div className="h-9 w-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                  {user?.avatar}
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{user?.name}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                </div>
+              </div>
+              <Link to="/library" onClick={() => setMobileOpen(false)}>
+                <Button variant="outline" className="w-full" size="sm">내 서재</Button>
+              </Link>
+              <Link to="/instructor" onClick={() => setMobileOpen(false)}>
+                <Button variant="outline" className="w-full" size="sm">강사 대시보드</Button>
+              </Link>
+              <Button variant="ghost" className="w-full text-destructive" size="sm" onClick={() => { handleLogout(); setMobileOpen(false); }}>
+                로그아웃
+              </Button>
+            </div>
+          ) : (
+            <div className="flex gap-2 pt-2">
+              <Link to="/login" className="flex-1">
+                <Button variant="outline" className="w-full" size="sm">로그인</Button>
+              </Link>
+              <Link to="/signup" className="flex-1">
+                <Button className="w-full bg-primary text-primary-foreground" size="sm">작가 신청</Button>
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>
