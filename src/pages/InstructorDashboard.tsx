@@ -27,8 +27,8 @@ const mockBooks = [
   { id: "1", title: "유튜브 알고리즘 마스터", price: 19000, sales: 67, revenue: 1273000, status: "판매중", category: "유튜브", image: hero1 },
   { id: "2", title: "인스타 릴스로 월 500만원", price: 15000, sales: 52, revenue: 780000, status: "판매중", category: "인스타그램", image: hero2 },
   { id: "3", title: "ChatGPT 자동화 파이프라인", price: 39000, sales: 31, revenue: 1209000, status: "판매중", category: "AI/자동화", image: hero3 },
-  { id: "4", title: "제휴마케팅 완전 가이드", price: 12000, sales: 12, revenue: 144000, status: "심사중", category: "제휴마케팅", image: hero1 },
-  { id: "5", title: "퇴사 후 월 300만원 비결", price: 25000, sales: 0, revenue: 0, status: "작성중", category: "재테크", image: hero2 },
+  { id: "4", title: "제휴마케팅 완전 가이드", price: 12000, sales: 12, revenue: 144000, status: "심사 대기", category: "제휴마케팅", image: hero1 },
+  { id: "5", title: "퇴사 후 월 300만원 비결", price: 25000, sales: 0, revenue: 0, status: "반려", category: "재테크", image: hero2 },
 ];
 
 const recentSales = [
@@ -213,7 +213,7 @@ const OverviewContent = () => (
 );
 
 /* ─── Books Management ─── */
-const bookStatuses = ["전체", "판매중", "심사중", "작성중", "판매중지"] as const;
+const bookStatuses = ["전체", "판매중", "심사 대기", "반려"] as const;
 
 const BooksContent = () => {
   const [statusFilter, setStatusFilter] = useState<string>("전체");
@@ -273,14 +273,7 @@ const BooksContent = () => {
                       <p className="text-sm font-semibold mt-1.5 truncate">{book.title}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{book.category}</p>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-md text-xs shrink-0 h-8"
-                      onClick={() => navigate(`/instructor/ebook/edit?id=${book.id}`)}
-                    >
-                      편집하기
-                    </Button>
+                    <BookActions bookId={book.id} />
                   </div>
                   <div className="flex items-center gap-4 mt-3">
                     <span className="text-sm font-semibold">₩{book.price.toLocaleString()}</span>
@@ -347,28 +340,28 @@ const SalesContent = () => (
 const StatusBadge = ({ status }: { status: string }) => {
   const styles: Record<string, string> = {
     "판매중": "bg-green-100 text-green-700",
-    "심사중": "bg-yellow-100 text-yellow-700",
-    "작성중": "bg-secondary text-muted-foreground",
+    "심사 대기": "bg-yellow-100 text-yellow-700",
+    "반려": "bg-red-100 text-red-700",
   };
   return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] || styles["작성중"]}`}>
+    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] || "bg-secondary text-muted-foreground"}`}>
       {status}
     </span>
   );
 };
 
-const BookActions = () => {
+const BookActions = ({ bookId }: { bookId: string }) => {
   const navigate = useNavigate();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="p-1 rounded-lg hover:bg-secondary transition-colors">
+        <button className="p-1.5 rounded-md hover:bg-secondary transition-colors shrink-0">
           <MoreVertical className="h-4 w-4 text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem className="gap-2 text-sm"><Eye className="h-3.5 w-3.5" /> 미리보기</DropdownMenuItem>
-        <DropdownMenuItem className="gap-2 text-sm" onClick={() => navigate("/instructor/ebook/edit?id=1")}><Edit className="h-3.5 w-3.5" /> 수정</DropdownMenuItem>
+        <DropdownMenuItem className="gap-2 text-sm" onClick={() => navigate(`/instructor/ebook/edit?id=${bookId}`)}><Edit className="h-3.5 w-3.5" /> 편집</DropdownMenuItem>
         <DropdownMenuItem className="gap-2 text-sm text-destructive"><Trash2 className="h-3.5 w-3.5" /> 삭제</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
