@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Users, BookOpen, DollarSign, ShieldCheck, ChevronLeft,
+  Users, BookOpen, DollarSign, ShieldCheck,
   TrendingUp, ArrowUpRight, Search, MoreVertical, Ban, CheckCircle2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
@@ -47,44 +49,36 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-secondary/30">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container flex h-14 tablet:h-16 items-center gap-3 px-4">
-          <Link to="/" className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
-            <ChevronLeft className="h-5 w-5" />
-          </Link>
-          <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-destructive text-destructive-foreground flex items-center justify-center text-xs font-bold">A</div>
-            <span className="font-bold text-sm tablet:text-base">관리자 대시보드</span>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <div className="flex-1 bg-secondary/30">
+        <div className="border-b border-border bg-background">
+          <div className="container px-4">
+            <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                    activeTab === tab.id
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </header>
 
-      <div className="border-b border-border bg-background">
-        <div className="container px-4">
-          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <main className="container px-4 py-4 tablet:py-6">
+          {activeTab === "overview" && <AdminOverview />}
+          {activeTab === "users" && <UsersTab />}
+          {activeTab === "ebooks" && <EbooksTab />}
+        </main>
       </div>
-
-      <main className="container px-4 py-4 tablet:py-6">
-        {activeTab === "overview" && <AdminOverview />}
-        {activeTab === "users" && <UsersTab />}
-        {activeTab === "ebooks" && <EbooksTab />}
-      </main>
+      <Footer />
     </div>
   );
 };
