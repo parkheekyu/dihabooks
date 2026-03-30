@@ -17,6 +17,7 @@ import InstructorDashboard from "./pages/InstructorDashboard.tsx";
 import Profile from "./pages/Profile.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import Wishlist from "./pages/Wishlist.tsx";
+import BecomeSeller from "./pages/BecomeSeller.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/instructor" element={<InstructorDashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/become-seller" element={<BecomeSeller />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
