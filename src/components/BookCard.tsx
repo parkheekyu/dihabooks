@@ -79,8 +79,8 @@ const BookCard = ({ book }: BookCardProps) => {
         )}
       </div>
       <div className="mt-2 tablet:mt-3 space-y-0.5 tablet:space-y-1">
-        <span className="text-[10px] tablet:text-xs font-medium text-primary">{book.category}</span>
-        <h3 className="text-xs tablet:text-sm font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+        <span className="text-[10px] tablet:text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full inline-block">{book.category}</span>
+        <h3 className="text-xs tablet:text-sm font-semibold leading-snug line-clamp-2">
           {book.title}
         </h3>
         <p className="text-[10px] tablet:text-xs text-muted-foreground">{book.author}</p>
