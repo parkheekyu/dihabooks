@@ -147,18 +147,23 @@ const Header = () => {
               </DropdownMenu>
             </>
           ) : (
-            <>
+            <div className="flex items-center gap-1">
+              <Link to="/become-seller">
+                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground">
+                  판매자 등록
+                </Button>
+              </Link>
               <Link to="/login">
-                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground">
                   로그인
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button size="sm" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-                  작가 신청
+                <Button size="sm" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-5">
+                  회원가입
                 </Button>
               </Link>
-            </>
+            </div>
           )}
         </div>
 
