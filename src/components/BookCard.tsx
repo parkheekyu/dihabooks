@@ -1,5 +1,7 @@
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface Book {
   id: string;
@@ -26,9 +28,21 @@ const badgeStyles: Record<string, string> = {
 };
 
 const BookCard = ({ book }: BookCardProps) => {
+  const { isWished, toggleWish } = useWishlist();
+  const { isLoggedIn } = useAuth();
+  const wished = isWished(book.id);
+
   const discount = book.originalPrice
     ? Math.round((1 - book.price / book.originalPrice) * 100)
     : null;
+
+  const handleWish = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isLoggedIn) {
+      toggleWish(book.id);
+    }
+  };
 
   return (
     <Link to={`/book/${book.id}`} className="group block">
@@ -44,6 +58,19 @@ const BookCard = ({ book }: BookCardProps) => {
           >
             {book.badge}
           </span>
+        )}
+        {/* Wishlist heart */}
+        {isLoggedIn && (
+          <button
+            onClick={handleWish}
+            className="absolute top-2 right-2 tablet:top-3 tablet:right-3 p-1.5 rounded-full bg-background/70 backdrop-blur-sm hover:bg-background/90 transition-colors"
+          >
+            <Heart
+              className={`h-4 w-4 transition-colors ${
+                wished ? "fill-destructive text-destructive" : "text-foreground/60"
+              }`}
+            />
+          </button>
         )}
         {book.pageCount && (
           <span className="absolute bottom-2 right-2 tablet:bottom-3 tablet:right-3 px-1.5 py-0.5 text-[10px] tablet:text-xs font-medium bg-foreground/70 text-background rounded">

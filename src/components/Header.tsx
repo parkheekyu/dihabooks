@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Menu, X, LogOut, User, Bell, BookOpen, LayoutDashboard, ArrowRightLeft } from "lucide-react";
+import { Search, Menu, X, LogOut, User, Heart, BookOpen, LayoutDashboard, ArrowRightLeft, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationDropdown from "@/components/NotificationDropdown";
+import { useWishlist } from "@/contexts/WishlistContext";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
@@ -20,6 +21,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isLoggedIn, role, logout, toggleRole } = useAuth();
+  const { wishCount } = useWishlist();
 
   const handleLogout = () => {
     logout();
@@ -90,11 +92,26 @@ const Header = () => {
               {/* Notifications */}
               <NotificationDropdown />
 
-              {/* Profile icon dropdown */}
+              {/* Wishlist */}
+              <Link to="/wishlist" className="relative p-2 rounded-lg hover:bg-secondary transition-colors">
+                <Heart className="h-5 w-5 text-foreground" />
+                {wishCount > 0 && (
+                  <span className="absolute top-1 right-1 h-4 min-w-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                    {wishCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Profile photo dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="p-2 rounded-lg hover:bg-secondary transition-colors">
-                    <User className="h-5 w-5 text-foreground" />
+                  <button className="flex items-center gap-1 rounded-full hover:opacity-80 transition-opacity">
+                    <img
+                      src={user?.profileImage}
+                      alt=""
+                      className="h-8 w-8 rounded-full object-cover border-2 border-border"
+                    />
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
