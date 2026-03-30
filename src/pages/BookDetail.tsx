@@ -392,8 +392,8 @@ const BookDetail = () => {
           )}
         </div>
 
-        {/* ═══ Content sections ═══ */}
-        <div className="mt-8 tablet:mt-10 max-w-3xl space-y-8 tablet:space-y-10">
+        {/* ═══ Content sections (mobile/tablet only) ═══ */}
+        <div className="desktop:hidden mt-8 tablet:mt-10 max-w-3xl space-y-8 tablet:space-y-10">
           {/* Reviews — TOP */}
           <div>
             <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-4 tablet:mb-5">
