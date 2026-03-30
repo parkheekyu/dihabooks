@@ -149,12 +149,12 @@ const Header = () => {
           ) : (
             <div className="flex items-center gap-1">
               <Link to="/become-seller">
-                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground hover:bg-transparent">
                   판매자 등록
                 </Button>
               </Link>
               <Link to="/login">
-                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground hover:bg-transparent">
                   로그인
                 </Button>
               </Link>
