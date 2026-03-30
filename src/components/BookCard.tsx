@@ -22,7 +22,7 @@ interface BookCardProps {
 }
 
 const badgeStyles: Record<string, string> = {
-  BEST: "bg-primary text-primary-foreground",
+  BEST: "bg-destructive text-destructive-foreground",
   NEW: "bg-foreground text-background",
   TOP: "bg-primary text-primary-foreground",
 };
