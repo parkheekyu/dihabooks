@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { WishlistProvider } from "@/contexts/WishlistContext";
 import Index from "./pages/Index.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
@@ -15,6 +16,7 @@ import Cart from "./pages/Cart.tsx";
 import InstructorDashboard from "./pages/InstructorDashboard.tsx";
 import Profile from "./pages/Profile.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
+import Wishlist from "./pages/Wishlist.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -22,6 +24,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
+    <WishlistProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -37,11 +40,13 @@ const App = () => (
           <Route path="/cart" element={<Cart />} />
           <Route path="/instructor" element={<InstructorDashboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </WishlistProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
