@@ -24,11 +24,11 @@ const stats = [
 ];
 
 const mockBooks = [
-  { id: "1", title: "유튜브 알고리즘 마스터", price: 19000, sales: 67, revenue: 1273000, status: "판매중", image: hero1 },
-  { id: "2", title: "인스타 릴스로 월 500만원", price: 15000, sales: 52, revenue: 780000, status: "판매중", image: hero2 },
-  { id: "3", title: "ChatGPT 자동화 파이프라인", price: 39000, sales: 31, revenue: 1209000, status: "판매중", image: hero3 },
-  { id: "4", title: "제휴마케팅 완전 가이드", price: 12000, sales: 12, revenue: 144000, status: "심사중", image: hero1 },
-  { id: "5", title: "퇴사 후 월 300만원 비결", price: 25000, sales: 0, revenue: 0, status: "작성중", image: hero2 },
+  { id: "1", title: "유튜브 알고리즘 마스터", price: 19000, sales: 67, revenue: 1273000, status: "판매중", category: "유튜브", image: hero1 },
+  { id: "2", title: "인스타 릴스로 월 500만원", price: 15000, sales: 52, revenue: 780000, status: "판매중", category: "인스타그램", image: hero2 },
+  { id: "3", title: "ChatGPT 자동화 파이프라인", price: 39000, sales: 31, revenue: 1209000, status: "판매중", category: "AI/자동화", image: hero3 },
+  { id: "4", title: "제휴마케팅 완전 가이드", price: 12000, sales: 12, revenue: 144000, status: "심사중", category: "제휴마케팅", image: hero1 },
+  { id: "5", title: "퇴사 후 월 300만원 비결", price: 25000, sales: 0, revenue: 0, status: "작성중", category: "재테크", image: hero2 },
 ];
 
 const recentSales = [
