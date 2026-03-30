@@ -17,7 +17,7 @@ const WishlistContext = createContext<WishlistContextType>({
 export const useWishlist = () => useContext(WishlistContext);
 
 export const WishlistProvider = ({ children }: { children: ReactNode }) => {
-  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [wishlist, setWishlist] = useState<string[]>(["1", "3", "5"]);
 
   const isWished = useCallback((bookId: string) => wishlist.includes(bookId), [wishlist]);
 
