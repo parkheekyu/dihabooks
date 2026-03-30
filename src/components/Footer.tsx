@@ -10,11 +10,13 @@ const Footer = () => {
             <h3 className="text-base tablet:text-lg font-black tracking-wide text-white">
               DIHABOOKS
             </h3>
-            <p className="text-xs tablet:text-sm leading-relaxed">
-              디지털 노마드의 성장을 돕는 프리미엄 지식 마켓플레이스.
-              <br />
-              당신의 소중한 경험이 누군가에게는 가장 큰 힘이 됩니다.
-            </p>
+            <div className="text-[11px] tablet:text-xs leading-relaxed space-y-0.5">
+              <p>상호: 디지털노마드 하이클래스 | 대표: 최주원</p>
+              <p>사업자등록번호: 324-34-01744</p>
+              <p>업태: 정보통신업 | 종목: 미디어콘텐츠창작업</p>
+              <p>주소: 경기도 용인시 기흥구 서그내로 52, 제2층 223호</p>
+              <p>연락처: 031-8007-1222</p>
+            </div>
           </div>
 
           {/* Support */}
