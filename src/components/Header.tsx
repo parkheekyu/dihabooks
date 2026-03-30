@@ -12,7 +12,7 @@ import {
 
 const navItems = [
   { label: "전자책 스토어", path: "/store" },
-  { label: "커뮤니티", path: "/community" },
+  { label: "커뮤니티", path: "https://cafe.naver.com/dinohighclass", external: true },
 ];
 
 const Header = () => {
@@ -47,19 +47,31 @@ const Header = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden tablet:flex items-center gap-6">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`text-sm font-medium transition-colors hover:text-foreground ${
-                location.pathname === item.path
-                  ? "text-foreground"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) =>
+            (item as any).external ? (
+              <a
+                key={item.path}
+                href={item.path}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium transition-colors hover:text-foreground text-muted-foreground"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`text-sm font-medium transition-colors hover:text-foreground ${
+                  location.pathname === item.path
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
 
         {/* Search */}
@@ -189,16 +201,29 @@ const Header = () => {
             />
           </div>
           <nav className="flex flex-col gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary"
-                onClick={() => setMobileOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) =>
+              (item as any).external ? (
+                <a
+                  key={item.path}
+                  href={item.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="px-3 py-2 text-sm font-medium rounded-lg hover:bg-secondary"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
           </nav>
           {isLoggedIn ? (
             <div className="flex flex-col gap-2 pt-2">
