@@ -46,7 +46,7 @@ const ProfileEdit = () => {
       <Header />
       <main className="flex-1">
         <div className="container px-4 py-6 tablet:py-10">
-          <div className="flex gap-10 max-w-4xl mx-auto">
+          <div className="flex gap-10 max-w-5xl mx-auto">
             <AccountSidebar />
 
             {/* Content */}
