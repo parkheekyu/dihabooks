@@ -89,7 +89,7 @@ const InstructorDashboard = () => {
                   ))}
                 </nav>
                 <div className="mt-4 pt-4 border-t border-border">
-                  <Button size="sm" className="w-full rounded-lg gap-1.5 text-xs" asChild>
+                  <Button size="sm" variant="outline" className="w-full rounded-md gap-1.5 text-xs bg-foreground text-background hover:bg-foreground/90 hover:text-background border-foreground" asChild>
                     <Link to="/instructor/ebook/new"><Plus className="h-3.5 w-3.5" /> 새 전자책</Link>
                   </Button>
                 </div>
