@@ -12,7 +12,7 @@ import {
 
 const navItems = [
   { label: "전자책 스토어", path: "/store" },
-  { label: "커뮤니티", path: "/community" },
+  { label: "커뮤니티", path: "https://cafe.naver.com/dinohighclass", external: true },
 ];
 
 const Header = () => {

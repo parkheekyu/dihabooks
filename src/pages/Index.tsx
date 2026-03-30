@@ -166,12 +166,14 @@ const Index = () => {
               <h2 className="text-xl tablet:text-2xl desktop:text-3xl font-bold text-background">
                 디하북스가 처음이라면
               </h2>
-              <Link
-                to="/store"
+              <a
+                href="https://cafe.naver.com/dinohighclass"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 mt-3 tablet:mt-4 px-5 tablet:px-6 py-2.5 tablet:py-3 rounded-lg bg-background/20 text-background text-sm font-semibold hover:bg-background/30 transition-colors border border-background/30"
               >
                 더 알아보기 <ArrowRight className="h-4 w-4" />
-              </Link>
+              </a>
             </div>
           </div>
         </section>
