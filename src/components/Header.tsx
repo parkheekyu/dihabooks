@@ -52,9 +52,9 @@ const Header = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
+              className={`text-sm font-medium transition-colors hover:text-foreground ${
                 location.pathname === item.path
-                  ? "text-primary"
+                  ? "text-foreground"
                   : "text-muted-foreground"
               }`}
             >
