@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 10%;
 
-    --primary: 248 68% 58%;
+    --primary: 200 97% 44%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 96%;
@@ -24,7 +24,7 @@
     --muted: 220 14% 96%;
     --muted-foreground: 220 10% 46%;
 
-    --accent: 248 68% 58%;
+    --accent: 200 97% 44%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -32,18 +32,18 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 248 68% 58%;
+    --ring: 200 97% 44%;
 
     --radius: 0.75rem;
 
     /* Custom tokens */
     --kakao: 50 100% 50%;
     --kakao-foreground: 0 0% 10%;
-    --badge-best: 248 68% 58%;
+    --badge-best: 200 97% 44%;
     --badge-new: 220 20% 10%;
-    --badge-top: 248 68% 58%;
+    --badge-top: 200 97% 44%;
     --surface-dark: 240 24% 26%;
-    --surface-hero: 248 68% 58%;
+    --surface-hero: 200 97% 44%;
     --footer-bg: 220 20% 10%;
     --footer-foreground: 220 10% 70%;
     --star: 45 93% 47%;
