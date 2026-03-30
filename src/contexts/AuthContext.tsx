@@ -6,6 +6,7 @@ interface User {
   name: string;
   email: string;
   avatar: string;
+  profileImage: string;
 }
 
 interface AuthContextType {
@@ -32,6 +33,7 @@ const mockUser: User = {
   name: "디하북스 회원",
   email: "user@dihabooks.com",
   avatar: "디",
+  profileImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=100&h=100&fit=crop&crop=center",
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
