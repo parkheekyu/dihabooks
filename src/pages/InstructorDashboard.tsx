@@ -273,14 +273,7 @@ const BooksContent = () => {
                       <p className="text-sm font-semibold mt-1.5 truncate">{book.title}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{book.category}</p>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-md text-xs shrink-0 h-8"
-                      onClick={() => navigate(`/instructor/ebook/edit?id=${book.id}`)}
-                    >
-                      편집하기
-                    </Button>
+                    <BookActions bookId={book.id} />
                   </div>
                   <div className="flex items-center gap-4 mt-3">
                     <span className="text-sm font-semibold">₩{book.price.toLocaleString()}</span>
