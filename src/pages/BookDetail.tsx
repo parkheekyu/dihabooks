@@ -250,8 +250,8 @@ const BookDetail = () => {
           </div>
 
           {/* Right: Info sidebar (desktop) */}
-          <div className="hidden desktop:block">
-            <div className="sticky top-24 space-y-5">
+          <div className="hidden desktop:block self-start sticky top-24">
+            <div className="space-y-5">
               {/* Author & Title */}
               <div>
                 <p className="text-sm text-primary font-medium mb-1">{book.author}</p>
