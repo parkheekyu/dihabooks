@@ -231,6 +231,7 @@ const BookDetail = () => {
                   실시간 베스트 후기
                 </h2>
                 <div className="relative">
+                  <ReviewForm />
                   <div className="space-y-3">
                     {bookReviews.slice(0, visibleReviews).map((review, i) => {
                       const isLast = i === visibleReviews - 1 && visibleReviews < bookReviews.length;
@@ -470,6 +471,7 @@ const BookDetail = () => {
             </h2>
 
             <div className="relative">
+              <ReviewForm />
               <div className="space-y-3">
                 {bookReviews.slice(0, visibleReviews).map((review, i) => {
                   const isLast = i === visibleReviews - 1 && visibleReviews < bookReviews.length;
