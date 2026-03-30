@@ -4,6 +4,7 @@ import { Search, Menu, X, LogOut, User, Bell, BookOpen, LayoutDashboard, ArrowRi
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import NotificationDropdown from "@/components/NotificationDropdown";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
@@ -86,10 +87,8 @@ const Header = () => {
                 {roleLabel}
               </button>
 
-              {/* Bell */}
-              <button className="p-2 rounded-lg hover:bg-secondary transition-colors">
-                <Bell className="h-4.5 w-4.5 text-foreground" />
-              </button>
+              {/* Notifications */}
+              <NotificationDropdown />
 
               {/* Profile icon dropdown */}
               <DropdownMenu>
