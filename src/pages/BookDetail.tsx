@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { sampleBooks } from "@/data/mockData";
+import { useAuth } from "@/contexts/AuthContext";
 
 const tableOfContents = [
   { chapter: 1, title: "프롤로그: 왜 지금 이 기술이 필요한가" },
@@ -21,6 +22,7 @@ const bookReviews = [
 
 const BookDetail = () => {
   const { id } = useParams();
+  const { sellerProfile } = useAuth();
   const book = sampleBooks.find((b) => b.id === id) || sampleBooks[0];
 
   const discount = book.originalPrice
@@ -100,9 +102,21 @@ const BookDetail = () => {
                 <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
                 작가 소개
               </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                안녕하세요, {book.author}입니다. 저는 단순히 이론을 나열하는 것이 아니라, 실제 현장에서 수백 번의 시행착오 끝에 얻은 '진짜 기술을 전달하는 것'을 사명으로 합니다.
-              </p>
+              <div className="flex items-start gap-3">
+                {sellerProfile.profileImage && (
+                  <img
+                    src={sellerProfile.profileImage}
+                    alt={book.author}
+                    className="h-12 w-12 rounded-full object-cover border border-border shrink-0"
+                  />
+                )}
+                <div>
+                  <p className="text-sm font-semibold mb-1">{book.author}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {sellerProfile.intro}
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* TOC */}
