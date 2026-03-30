@@ -148,10 +148,104 @@ const BookDetail = () => {
 
         {/* ═══ Hero: Image left + Info sidebar right (desktop) ═══ */}
         <div className="grid grid-cols-1 desktop:grid-cols-[1fr_380px] gap-6 desktop:gap-10 items-start">
-          {/* Left: Hero image */}
+          {/* Left: Hero image + content sections */}
           <div>
             <div className="rounded-xl tablet:rounded-2xl overflow-hidden aspect-video bg-secondary">
               <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+            </div>
+
+            {/* ═══ Content sections (desktop: inside grid for sticky sidebar) ═══ */}
+            <div className="hidden desktop:block mt-8 tablet:mt-10 max-w-3xl space-y-8 tablet:space-y-10">
+              {/* Reviews */}
+              <div>
+                <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-4 tablet:mb-5">
+                  <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
+                  실시간 베스트 후기
+                </h2>
+                <div className="relative">
+                  <div className="space-y-3">
+                    {bookReviews.slice(0, visibleReviews).map((review, i) => {
+                      const isLast = i === visibleReviews - 1 && visibleReviews < bookReviews.length;
+                      return (
+                        <div key={i} className={`rounded-xl bg-secondary/60 p-4 tablet:p-5 ${isLast ? "relative" : ""}`}>
+                          {isLast && <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-transparent via-transparent to-background pointer-events-none z-10" />}
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm font-bold">{review.name}</span>
+                            <span className="text-xs text-muted-foreground">{review.date}</span>
+                          </div>
+                          <div className="flex items-center gap-0.5 mb-2">
+                            {[...Array(review.rating)].map((_, j) => (
+                              <Star key={j} className="h-3.5 w-3.5 fill-star text-star" />
+                            ))}
+                          </div>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{review.content}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {visibleReviews < bookReviews.length && (
+                    <div className="text-center mt-4">
+                      <button onClick={() => setVisibleReviews((v) => Math.min(v + 4, bookReviews.length))} className="text-sm font-medium text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors">
+                        후기 더보기
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
+                  <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
+                  상세 설명
+                </h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">(상세설명)</p>
+              </div>
+
+              {/* Author */}
+              <div>
+                <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
+                  <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
+                  작가 소개
+                </h2>
+                <div className="flex items-start gap-3">
+                  {sellerProfile.profileImage && (
+                    <img src={sellerProfile.profileImage} alt={book.author} className="h-12 w-12 rounded-full object-cover border border-border shrink-0" />
+                  )}
+                  <div>
+                    <p className="text-sm font-semibold mb-1">{book.author}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{sellerProfile.intro}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* TOC */}
+              <div>
+                <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-5 tablet:mb-6">
+                  <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
+                  전체목차
+                </h2>
+                <div className="space-y-8">
+                  {tableOfContents.map((section, si) => (
+                    <div key={si}>
+                      <h3 className="text-lg tablet:text-xl font-black mb-4">{section.chapter}. {section.title}</h3>
+                      <div className="space-y-0 divide-y divide-border">
+                        {section.subtopics.map((sub, j) => (
+                          <div key={j} className="flex items-center gap-3 py-3.5">
+                            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-sm font-bold shrink-0">{j + 1}</span>
+                            <span className="text-sm flex-1">{sub.title}</span>
+                            {sub.preview && (
+                              <button onClick={() => navigate(`/reader/${book.id}?preview=true`)} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0">
+                                미리보기
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -179,7 +273,6 @@ const BookDetail = () => {
               </div>
 
               {isPurchased ? (
-                /* ── Purchased state ── */
                 <div className="rounded-2xl border border-border p-6 space-y-4">
                   <div className="text-center space-y-2">
                     <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
@@ -188,54 +281,33 @@ const BookDetail = () => {
                     <p className="text-sm font-bold">구매 완료된 전자책입니다</p>
                     <p className="text-xs text-muted-foreground">웹 뷰어에서 바로 읽을 수 있어요</p>
                   </div>
-                  <Button
-                    className="w-full h-12 rounded-xl text-base font-bold"
-                    onClick={() => navigate(`/reader/${book.id}`)}
-                  >
+                  <Button className="w-full h-12 rounded-xl text-base font-bold" onClick={() => navigate(`/reader/${book.id}`)}>
                     지금 바로 읽기
                   </Button>
                 </div>
               ) : (
-                /* ── Purchase card ── */
                 <div className="rounded-2xl border border-border p-6 space-y-5">
-                  {/* Price */}
                   <div>
                     {discount && (
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-lg font-bold text-destructive">{discount}%</span>
-                        <span className="text-sm text-muted-foreground line-through">
-                          {currentOption.originalPrice?.toLocaleString()}원
-                        </span>
+                        <span className="text-sm text-muted-foreground line-through">{currentOption.originalPrice?.toLocaleString()}원</span>
                       </div>
                     )}
                     <div className="text-3xl font-black">{currentOption.price.toLocaleString()}원</div>
                   </div>
-
-                  {/* Options */}
                   <div>
                     <p className="text-sm font-bold mb-3">구매 옵션</p>
                     <div className="space-y-2">
                       {purchaseOptions.map((opt, i) => (
-                        <OptionCard
-                          key={i}
-                          label={opt.label}
-                          description={opt.description}
-                          price={opt.price}
-                          originalPrice={opt.originalPrice}
-                          selected={selectedOption === i}
-                          onClick={() => setSelectedOption(i)}
-                        />
+                        <OptionCard key={i} label={opt.label} description={opt.description} price={opt.price} originalPrice={opt.originalPrice} selected={selectedOption === i} onClick={() => setSelectedOption(i)} />
                       ))}
                     </div>
                   </div>
-
-                  {/* Total */}
                   <div className="flex justify-between items-center pt-4 border-t border-border">
                     <span className="text-sm font-bold">상품 금액</span>
                     <span className="text-xl font-black">{currentOption.price.toLocaleString()}원</span>
                   </div>
-
-                  {/* Actions */}
                   <div className="flex gap-2">
                     <button className="flex flex-col items-center justify-center p-3 rounded-xl border border-border hover:bg-secondary transition-colors shrink-0">
                       <Heart className="h-5 w-5 text-muted-foreground" />
@@ -320,8 +392,8 @@ const BookDetail = () => {
           )}
         </div>
 
-        {/* ═══ Content sections ═══ */}
-        <div className="mt-8 tablet:mt-10 max-w-3xl space-y-8 tablet:space-y-10">
+        {/* ═══ Content sections (mobile/tablet only) ═══ */}
+        <div className="desktop:hidden mt-8 tablet:mt-10 max-w-3xl space-y-8 tablet:space-y-10">
           {/* Reviews — TOP */}
           <div>
             <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-4 tablet:mb-5">
