@@ -63,18 +63,6 @@ const Index = () => {
                 />
               ))}
             </div>
-            <button
-              onClick={prevSlide}
-              className="absolute left-3 tablet:left-6 top-1/2 -translate-y-1/2 p-1.5 tablet:p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4 tablet:h-5 tablet:w-5" />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="absolute right-3 tablet:right-6 top-1/2 -translate-y-1/2 p-1.5 tablet:p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
-            >
-              <ChevronRight className="h-4 w-4 tablet:h-5 tablet:w-5" />
-            </button>
           </div>
         </section>
 
