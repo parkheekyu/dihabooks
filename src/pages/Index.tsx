@@ -38,45 +38,43 @@ const Index = () => {
       <main className="flex-1">
         {/* Hero Carousel */}
         <section className="relative overflow-hidden bg-background">
-          <div className="container px-4">
-            <div className="relative aspect-[3/2] tablet:aspect-[2/1] desktop:aspect-[3/1] overflow-hidden rounded-xl tablet:rounded-2xl my-4 tablet:my-6">
-              {heroSlides.map((slide, i) => (
-                <img
-                  key={slide.id}
-                  src={slide.image}
-                  alt=""
-                  width={1200}
-                  height={600}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-                    i === currentSlide ? "opacity-100" : "opacity-0"
+          <div className="relative aspect-[3/2] tablet:aspect-[2/1] desktop:aspect-[3/1] overflow-hidden">
+            {heroSlides.map((slide, i) => (
+              <img
+                key={slide.id}
+                src={slide.image}
+                alt=""
+                width={1920}
+                height={600}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+                  i === currentSlide ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            ))}
+            {/* Controls */}
+            <div className="absolute bottom-3 tablet:bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 tablet:gap-3">
+              {heroSlides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentSlide(i)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    i === currentSlide ? "bg-background w-5 tablet:w-6" : "bg-background/50"
                   }`}
                 />
               ))}
-              {/* Controls */}
-              <div className="absolute bottom-3 tablet:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 tablet:gap-3">
-                {heroSlides.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentSlide(i)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      i === currentSlide ? "bg-background w-5 tablet:w-6" : "bg-background/50"
-                    }`}
-                  />
-                ))}
-              </div>
-              <button
-                onClick={prevSlide}
-                className="absolute left-2 tablet:left-4 top-1/2 -translate-y-1/2 p-1.5 tablet:p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
-              >
-                <ChevronLeft className="h-4 w-4 tablet:h-5 tablet:w-5" />
-              </button>
-              <button
-                onClick={nextSlide}
-                className="absolute right-2 tablet:right-4 top-1/2 -translate-y-1/2 p-1.5 tablet:p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
-              >
-                <ChevronRight className="h-4 w-4 tablet:h-5 tablet:w-5" />
-              </button>
             </div>
+            <button
+              onClick={prevSlide}
+              className="absolute left-3 tablet:left-6 top-1/2 -translate-y-1/2 p-1.5 tablet:p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4 tablet:h-5 tablet:w-5" />
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-3 tablet:right-6 top-1/2 -translate-y-1/2 p-1.5 tablet:p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
+            >
+              <ChevronRight className="h-4 w-4 tablet:h-5 tablet:w-5" />
+            </button>
           </div>
         </section>
 
