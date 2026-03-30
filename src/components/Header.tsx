@@ -79,6 +79,9 @@ const Header = () => {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem className="gap-2" onClick={() => navigate("/profile")}>
+                  <User className="h-4 w-4" /> 내 정보
+                </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2" onClick={() => navigate("/library")}>
                   <User className="h-4 w-4" /> 내 서재
                 </DropdownMenuItem>
