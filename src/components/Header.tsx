@@ -28,7 +28,7 @@ const Header = () => {
     navigate("/");
   };
 
-  const roleLabel = role === "member" ? "멤버" : "전문가";
+  const roleLabel = role === "member" ? "멤버" : "판매자";
   const roleStyles = role === "member"
     ? "bg-secondary text-muted-foreground"
     : "bg-primary/10 text-primary";
