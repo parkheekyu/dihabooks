@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2, BookOpen } from "lucide-react";
+import { Star, Heart, ArrowLeft, Share2, BookOpen, Send } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -114,6 +115,73 @@ const BookDetail = () => {
   const [isPurchased, setIsPurchased] = useState(false);
   const [selectedOption, setSelectedOption] = useState(0);
   const [visibleReviews, setVisibleReviews] = useState(3);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewHover, setReviewHover] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+  const handleReviewSubmit = () => {
+    if (reviewRating > 0 && reviewText.trim()) {
+      setReviewSubmitted(true);
+    }
+  };
+
+  const ReviewForm = () => {
+    if (!isPurchased) return null;
+    if (reviewSubmitted) {
+      return (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 tablet:p-5 text-center space-y-2 mb-4">
+          <Star className="h-6 w-6 fill-star text-star mx-auto" />
+          <p className="text-sm font-bold">리뷰가 등록되었습니다!</p>
+          <p className="text-xs text-muted-foreground">소중한 후기 감사합니다.</p>
+        </div>
+      );
+    }
+    return (
+      <div className="rounded-xl border border-border bg-secondary/40 p-4 tablet:p-5 space-y-3 mb-4">
+        <p className="text-sm font-bold">구매평 남기기</p>
+        <div className="flex items-center gap-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              onClick={() => setReviewRating(star)}
+              onMouseEnter={() => setReviewHover(star)}
+              onMouseLeave={() => setReviewHover(0)}
+              className="p-0.5"
+            >
+              <Star
+                className={`h-5 w-5 transition-colors ${
+                  star <= (reviewHover || reviewRating)
+                    ? "fill-star text-star"
+                    : "text-border"
+                }`}
+              />
+            </button>
+          ))}
+          {reviewRating > 0 && (
+            <span className="text-xs text-muted-foreground ml-1">{reviewRating}점</span>
+          )}
+        </div>
+        <Textarea
+          value={reviewText}
+          onChange={(e) => setReviewText(e.target.value)}
+          placeholder="이 전자책에 대한 솔직한 후기를 남겨주세요."
+          className="min-h-[80px] text-sm resize-none bg-background"
+        />
+        <div className="flex justify-end">
+          <Button
+            size="sm"
+            className="rounded-full h-8 gap-1.5 text-xs"
+            disabled={reviewRating === 0 || !reviewText.trim()}
+            onClick={handleReviewSubmit}
+          >
+            <Send className="h-3 w-3" />
+            후기 등록
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   // Build purchase options from book data
   const purchaseOptions = [
@@ -163,6 +231,7 @@ const BookDetail = () => {
                   실시간 베스트 후기
                 </h2>
                 <div className="relative">
+                  <ReviewForm />
                   <div className="space-y-3">
                     {bookReviews.slice(0, visibleReviews).map((review, i) => {
                       const isLast = i === visibleReviews - 1 && visibleReviews < bookReviews.length;
@@ -402,6 +471,7 @@ const BookDetail = () => {
             </h2>
 
             <div className="relative">
+              <ReviewForm />
               <div className="space-y-3">
                 {bookReviews.slice(0, visibleReviews).map((review, i) => {
                   const isLast = i === visibleReviews - 1 && visibleReviews < bookReviews.length;
