@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Menu, X, LogOut, User, LayoutDashboard } from "lucide-react";
+import { Search, Menu, X, LogOut, User, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,12 +18,17 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isLoggedIn, logout } = useAuth();
+  const { user, isLoggedIn, role, logout, toggleRole } = useAuth();
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
+
+  const roleLabel = role === "member" ? "멤버" : "전문가";
+  const roleStyles = role === "member"
+    ? "bg-secondary text-muted-foreground"
+    : "bg-primary/10 text-primary";
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -33,7 +38,7 @@ const Header = () => {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
             D
           </div>
-          <span className="text-lg font-bold tracking-tight">
+          <span className="text-lg font-bold tracking-tight hidden tablet:inline">
             디하<span className="text-gradient-primary">북스</span>
           </span>
         </Link>
@@ -67,33 +72,51 @@ const Header = () => {
         </div>
 
         {/* Actions */}
-        <div className="hidden tablet:flex items-center gap-3">
+        <div className="hidden tablet:flex items-center gap-2">
           {isLoggedIn ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-secondary transition-colors">
-                  <div className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
-                    {user?.avatar}
-                  </div>
-                  <span className="text-sm font-medium">{user?.name}</span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem className="gap-2" onClick={() => navigate("/profile")}>
-                  <User className="h-4 w-4" /> 내 정보
-                </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2" onClick={() => navigate("/library")}>
-                  <User className="h-4 w-4" /> 내 서재
-                </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2" onClick={() => navigate("/instructor")}>
-                  <LayoutDashboard className="h-4 w-4" /> 판매자 대시보드
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 text-destructive" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4" /> 로그아웃
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <>
+              {/* Username */}
+              <span className="text-sm font-medium">{user?.name}</span>
+
+              {/* Role Tag (clickable toggle) */}
+              <button
+                onClick={toggleRole}
+                className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${roleStyles}`}
+              >
+                {roleLabel}
+              </button>
+
+              {/* Bell */}
+              <button className="p-2 rounded-lg hover:bg-secondary transition-colors">
+                <Bell className="h-4.5 w-4.5 text-foreground" />
+              </button>
+
+              {/* Profile icon dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="p-2 rounded-lg hover:bg-secondary transition-colors">
+                    <User className="h-4.5 w-4.5 text-foreground" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem className="gap-2" onClick={() => navigate("/profile")}>
+                    <User className="h-4 w-4" /> 내 정보
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2" onClick={() => navigate("/library")}>
+                    <User className="h-4 w-4" /> 내 서재
+                  </DropdownMenuItem>
+                  {role === "expert" && (
+                    <DropdownMenuItem className="gap-2" onClick={() => navigate("/instructor")}>
+                      <User className="h-4 w-4" /> 판매자 대시보드
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="gap-2 text-destructive" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4" /> 로그아웃
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           ) : (
             <>
               <Link to="/login">
@@ -147,17 +170,30 @@ const Header = () => {
                 <div className="h-9 w-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
                   {user?.avatar}
                 </div>
-                <div>
-                  <p className="text-sm font-medium">{user?.name}</p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium">{user?.name}</p>
+                    <button
+                      onClick={toggleRole}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${roleStyles}`}
+                    >
+                      {roleLabel}
+                    </button>
+                  </div>
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
+              <Link to="/profile" onClick={() => setMobileOpen(false)}>
+                <Button variant="outline" className="w-full" size="sm">내 정보</Button>
+              </Link>
               <Link to="/library" onClick={() => setMobileOpen(false)}>
                 <Button variant="outline" className="w-full" size="sm">내 서재</Button>
               </Link>
-              <Link to="/instructor" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full" size="sm">판매자 대시보드</Button>
-              </Link>
+              {role === "expert" && (
+                <Link to="/instructor" onClick={() => setMobileOpen(false)}>
+                  <Button variant="outline" className="w-full" size="sm">판매자 대시보드</Button>
+                </Link>
+              )}
               <Button variant="ghost" className="w-full text-destructive" size="sm" onClick={() => { handleLogout(); setMobileOpen(false); }}>
                 로그아웃
               </Button>

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, User, Mail, Shield, LayoutDashboard, LogOut, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, User, LogOut, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Profile = () => {
-  const { user, isLoggedIn, logout } = useAuth();
+  const { user, isLoggedIn, role, logout, toggleRole } = useAuth();
   const navigate = useNavigate();
 
   if (!isLoggedIn) {
@@ -21,7 +21,6 @@ const Profile = () => {
   const menuItems = [
     { icon: User, label: "프로필 수정", desc: "이름, 소개 등 기본 정보 변경", path: "#" },
     { icon: BookOpen, label: "내 서재", desc: "구매한 전자책 목록", path: "/library" },
-    { icon: LayoutDashboard, label: "판매자 대시보드", desc: "전자책 판매 및 수익 관리", path: "/instructor" },
   ];
 
   return (
@@ -46,9 +45,14 @@ const Profile = () => {
             <p className="font-bold text-lg">{user?.name}</p>
             <p className="text-sm text-muted-foreground">{user?.email}</p>
           </div>
-          <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-secondary text-muted-foreground">
-            일반 회원
-          </span>
+          <button
+            onClick={toggleRole}
+            className={`inline-block px-3 py-1 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
+              role === "member" ? "bg-secondary text-muted-foreground" : "bg-primary/10 text-primary"
+            }`}
+          >
+            {role === "member" ? "멤버" : "전문가"}
+          </button>
         </div>
 
         {/* Menu */}
