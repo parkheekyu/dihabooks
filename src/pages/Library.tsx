@@ -63,7 +63,7 @@ const Library = () => {
                     </div>
                     <Link to={`/reader/${book.id}`}>
                       <Button className="w-full h-11 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-semibold mt-2">
-                        📖 웹에서 읽기
+                        📖 지금 바로 읽기
                       </Button>
                     </Link>
                   </div>
