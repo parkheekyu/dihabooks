@@ -244,13 +244,18 @@ const Header = () => {
               </Button>
             </div>
           ) : (
-            <div className="flex gap-2 pt-2">
-              <Link to="/login" className="flex-1">
-                <Button variant="outline" className="w-full" size="sm">로그인</Button>
+            <div className="flex flex-col gap-2 pt-2">
+              <Link to="/become-seller" onClick={() => setMobileOpen(false)}>
+                <Button variant="outline" className="w-full" size="sm">판매자 등록</Button>
               </Link>
-              <Link to="/signup" className="flex-1">
-                <Button className="w-full bg-primary text-primary-foreground" size="sm">작가 신청</Button>
-              </Link>
+              <div className="flex gap-2">
+                <Link to="/login" className="flex-1" onClick={() => setMobileOpen(false)}>
+                  <Button variant="outline" className="w-full" size="sm">로그인</Button>
+                </Link>
+                <Link to="/signup" className="flex-1" onClick={() => setMobileOpen(false)}>
+                  <Button className="w-full bg-foreground text-background" size="sm">회원가입</Button>
+                </Link>
+              </div>
             </div>
           )}
         </div>
