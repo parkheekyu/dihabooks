@@ -11,7 +11,10 @@ const AccountSidebar = () => {
   const menuItems = [
     { label: "프로필 수정", path: "/profile/edit", icon: User },
     ...(role === "expert"
-      ? [{ label: "판매자 프로필 설정", path: "/seller-profile", icon: Settings }]
+      ? [
+          { label: "판매자 프로필 설정", path: "/seller-profile", icon: Settings },
+          { label: "정산 내역", path: "/settlements", icon: Receipt },
+        ]
       : []),
     { label: "구매 내역", path: "/purchases", icon: ShoppingBag },
   ];
