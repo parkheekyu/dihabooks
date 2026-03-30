@@ -17,6 +17,7 @@ import InstructorDashboard from "./pages/InstructorDashboard.tsx";
 import Profile from "./pages/Profile.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import Wishlist from "./pages/Wishlist.tsx";
+import BecomeSeller from "./pages/BecomeSeller.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
