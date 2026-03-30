@@ -96,29 +96,30 @@ const InstructorDashboard = () => {
               </div>
             </aside>
 
-            {/* Mobile horizontal nav */}
-            <div className="desktop:hidden fixed left-0 right-0 top-16 z-40 border-b border-border bg-background px-4">
-              <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-                {sidebarItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveTab(item.id)}
-                    className={cn(
-                      "px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors",
-                      activeTab === item.id
-                        ? "border-primary text-primary font-medium"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Content */}
             <div className="flex-1 min-w-0">
+              {/* Mobile title */}
               <h1 className="text-lg font-bold mb-6 desktop:hidden">판매자 대시보드</h1>
+
+              {/* Mobile horizontal nav */}
+              <div className="desktop:hidden border-b border-border bg-background -mx-4 px-4 mb-6">
+                <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+                  {sidebarItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(item.id)}
+                      className={cn(
+                        "px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors",
+                        activeTab === item.id
+                          ? "border-primary text-primary font-medium"
+                          : "border-transparent text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {activeTab === "overview" && <OverviewContent />}
               {activeTab === "books" && <BooksContent />}
