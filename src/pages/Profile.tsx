@@ -21,7 +21,7 @@ const Profile = () => {
   const menuItems = [
     { icon: User, label: "프로필 수정", desc: "이름, 소개 등 기본 정보 변경", path: "#" },
     { icon: BookOpen, label: "내 서재", desc: "구매한 전자책 목록", path: "/library" },
-    { icon: LayoutDashboard, label: "전문가 모드", desc: "전자책 판매 및 수익 관리", path: "/instructor" },
+    { icon: LayoutDashboard, label: "판매자 대시보드", desc: "전자책 판매 및 수익 관리", path: "/instructor" },
   ];
 
   return (

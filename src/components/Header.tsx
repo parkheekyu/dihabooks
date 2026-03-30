@@ -86,7 +86,7 @@ const Header = () => {
                   <User className="h-4 w-4" /> 내 서재
                 </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2" onClick={() => navigate("/instructor")}>
-                  <LayoutDashboard className="h-4 w-4" /> 강사 대시보드
+                  <LayoutDashboard className="h-4 w-4" /> 판매자 대시보드
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="gap-2 text-destructive" onClick={handleLogout}>

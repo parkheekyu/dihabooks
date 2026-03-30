@@ -68,7 +68,7 @@ const InstructorDashboard = () => {
           </Link>
           <div className="flex items-center gap-2">
             <div className="h-7 w-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">D</div>
-            <span className="font-bold text-sm tablet:text-base">강사 대시보드</span>
+            <span className="font-bold text-sm tablet:text-base">판매자 대시보드</span>
           </div>
           <div className="ml-auto">
             <Button size="sm" className="rounded-full gap-1.5 text-xs">
