@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2, BookOpen, Eye } from "lucide-react";
+import { Star, Heart, ArrowLeft, Share2, BookOpen } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
