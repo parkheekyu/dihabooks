@@ -9,8 +9,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const SellerProfile = () => {
-  const { user } = useAuth();
-  const [intro, setIntro] = useState("마케팅, 디자인하는 디하북스 판매자입니다.");
+  const { user, sellerProfile, updateSellerProfile } = useAuth();
+  const [intro, setIntro] = useState(sellerProfile.intro);
   const [editingIntro, setEditingIntro] = useState(false);
 
   const [careers, setCareers] = useState([
@@ -174,7 +174,7 @@ const SellerProfile = () => {
                       onChange={(e) => setIntro(e.target.value)}
                       className="text-sm min-h-[80px]"
                     />
-                    <Button size="sm" className="text-xs" onClick={() => setEditingIntro(false)}>저장</Button>
+                    <Button size="sm" className="text-xs" onClick={() => { updateSellerProfile({ intro }); setEditingIntro(false); }}>저장</Button>
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">{intro}</p>
