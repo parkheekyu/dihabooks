@@ -72,11 +72,6 @@ const BookCard = ({ book }: BookCardProps) => {
             />
           </button>
         )}
-        {book.pageCount && (
-          <span className="absolute bottom-2 right-2 tablet:bottom-3 tablet:right-3 px-1.5 py-0.5 text-[10px] tablet:text-xs font-medium bg-foreground/70 text-background rounded">
-            {book.pageCount}P
-          </span>
-        )}
       </div>
       <div className="mt-2 tablet:mt-3 space-y-0.5 tablet:space-y-1">
         <span className="text-[10px] tablet:text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full inline-block">{book.category}</span>
