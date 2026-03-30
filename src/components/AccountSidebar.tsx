@@ -1,18 +1,27 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, Shield, Bell, LogOut, ChevronRight } from "lucide-react";
+import { User, BookOpen, ShoppingBag, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
-const accountMenu = [
-  { label: "내 정보", path: "/profile/edit", icon: User },
-  { label: "알림 설정", path: "/profile/notifications", icon: Bell },
-  { label: "보안 설정", path: "/profile/security", icon: Shield },
-];
-
 const AccountSidebar = () => {
   const location = useLocation();
-  const { logout } = useAuth();
+  const { role, logout } = useAuth();
   const navigate = useNavigate();
+
+  const memberMenu = [
+    { label: "프로필 수정", path: "/profile/edit", icon: User },
+    { label: "내 서재", path: "/library", icon: BookOpen },
+    { label: "구매 내역", path: "/purchases", icon: ShoppingBag },
+  ];
+
+  const sellerMenu = [
+    { label: "프로필 수정", path: "/profile/edit", icon: User },
+    { label: "판매자 프로필 설정", path: "/seller-profile", icon: Settings },
+    { label: "내 서재", path: "/library", icon: BookOpen },
+    { label: "구매 내역", path: "/purchases", icon: ShoppingBag },
+  ];
+
+  const menuItems = role === "expert" ? sellerMenu : memberMenu;
 
   const handleLogout = () => {
     logout();
@@ -26,7 +35,7 @@ const AccountSidebar = () => {
         <div className="sticky top-24">
           <h2 className="text-lg font-bold mb-4">계정 설정</h2>
           <nav className="space-y-0.5">
-            {accountMenu.map((item) => {
+            {menuItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
                 <Link
@@ -58,7 +67,7 @@ const AccountSidebar = () => {
       {/* Mobile horizontal nav */}
       <div className="desktop:hidden border-b border-border bg-background -mx-4 px-4 mb-6">
         <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-          {accountMenu.map((item) => {
+          {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link
@@ -82,4 +91,3 @@ const AccountSidebar = () => {
 };
 
 export default AccountSidebar;
-export { accountMenu };
