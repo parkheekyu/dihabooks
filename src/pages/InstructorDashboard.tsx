@@ -17,7 +17,7 @@ const stats = [
   { label: "총 판매 수익", value: "₩3,240,000", change: "+12.5%", up: true, icon: DollarSign },
   { label: "총 판매량", value: "162권", change: "+8.3%", up: true, icon: TrendingUp },
   { label: "등록 전자책", value: "5권", change: "0", up: true, icon: BookOpen },
-  { label: "구독자 수", value: "1,247", change: "+3.1%", up: true, icon: Users },
+  
 ];
 
 const mockBooks = [
