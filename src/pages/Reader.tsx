@@ -1,98 +1,225 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, List, X, CheckCircle2 } from "lucide-react";
+
+const mockToc = [
+  {
+    title: "1. 이걸 모르고 돈을 벌겠다고? 돈벌기 10계명",
+    items: [
+      { id: "1-0", title: "1-0. 비밀문서에서 가장 중요한 부자되기 10계명", page: 1 },
+      { id: "1-1", title: "1-1. <문제해결>을 못하고 부자가 된 사람은 없다.", page: 5, isNew: true },
+      { id: "1-2", title: "1-2. <부자되는 뇌>모드로 세팅하기", page: 10 },
+      { id: "1-3", title: "1-3. 돈을 움직이는 단 2가지의 공식 <수요와 공급>, <노출과...", page: 15 },
+      { id: "1-4", title: "1-4. 사업이 절대 망하지 않는 방법 <확률 높이기>", page: 20 },
+      { id: "1-5", title: "1-5. <돈 버는 운>을 끌어당기는 법", page: 25 },
+      { id: "1-6", title: "1-6. 사람들이 지갑을 여는 이유 <이득>", page: 30 },
+      { id: "1-7", title: "1-7. 사람들이 지갑을 여는 단계 <퍼널>", page: 35 },
+      { id: "1-8", title: "1-8. 나만의 돈버는 틈새를 찾는 법 <경쟁 피하기>", page: 40 },
+      { id: "1-9", title: "1-9. 자동화를 위해 꼭 필요한 것 <보아뱀 만들기>", page: 45 },
+      { id: "1-10", title: "1-10. 월 100만원을 벌기 시작했다. 그 다음은?", page: 50, isNew: true },
+    ],
+  },
+  {
+    title: "2. 세가지만 할 줄 알면 무엇이든 팔 수 있습니다",
+    items: [
+      { id: "2-1", title: "2-1. 목표세우기, 기대치 조정하기 마케팅 자동화", page: 55 },
+      { id: "2-2", title: "2-2. 고객을 이해하는 법", page: 60 },
+      { id: "2-3", title: "2-3. 판매 전략 수립하기", page: 65 },
+    ],
+  },
+];
 
 const Reader = () => {
   const { id } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(100);
+  const [tocOpen, setTocOpen] = useState(true);
+  const [completedSections, setCompletedSections] = useState<string[]>(["1-0", "1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "1-7", "1-8", "1-9"]);
   const totalPages = 85;
 
-  // Mock user email for watermark
-  const userEmail = "user@example.com";
+  const userEmail = "belleba@naver.com";
+
+  const handleTocClick = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const toggleComplete = (sectionId: string) => {
+    setCompletedSections((prev) =>
+      prev.includes(sectionId) ? prev.filter((s) => s !== sectionId) : [...prev, sectionId]
+    );
+  };
+
+  // Mock content for demo
+  const currentContent = {
+    chapterTitle: "스토어-2. 네이버 쇼핑 순위 올리는 원리",
+    heading: "네이버쇼핑 순위 올리는 원리",
+    updateNote: "<2025년 1월 업데이트>",
+    updateText: '현재는 네이버 플러스 스토어 오픈 후, 네이버 쇼핑의 명칭이 "네이버 가격비교"로 변경되었습니다. 이해를 돕기 위해 기존 명칭인 "네이버쇼핑"이라고 명칭하도록 하겠습니다.',
+    body: "우리가 스마트스토어를 하는 궁극적인 목표는 매출을 높이는 것입니다. 매출을 높이기 위해서는 내 상품의 네이버쇼핑 순위를 올려야합니다. 순위가 오르면 그만큼 많은 고객에게 내 상품이 노출되어 클릭이 생기고, 구매가 이루어지고, 리뷰가 쌓여 매출이 올라가니까요.",
+    body2: "그렇다면 쇼핑검색 순위의 원리는 어떻게될까요?",
+  };
 
   return (
     <div
-      className="min-h-screen bg-foreground flex flex-col select-none"
+      className="h-screen bg-background flex flex-col select-none overflow-hidden"
       onContextMenu={(e) => e.preventDefault()}
     >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-foreground/95 border-b border-background/10">
-        <a href="/library" className="text-background/70 text-sm hover:text-background transition-colors">
-          ← 내 서재로
-        </a>
-        <span className="text-background/50 text-sm">
+      <div className="flex items-center justify-between px-4 py-3 bg-card border-b border-border shrink-0">
+        <div className="flex items-center gap-3">
+          <Link to="/library" className="text-muted-foreground text-sm hover:text-foreground transition-colors">
+            ← 내 서재로
+          </Link>
+          <button
+            onClick={() => setTocOpen(!tocOpen)}
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            {tocOpen ? <X className="h-4 w-4" /> : <List className="h-4 w-4" />}
+          </button>
+        </div>
+        <span className="text-muted-foreground text-sm">
           {currentPage} / {totalPages} 페이지
         </span>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setZoom((z) => Math.max(50, z - 10))}
-            className="p-1.5 rounded-lg text-background/50 hover:text-background hover:bg-background/10 transition-colors"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <ZoomOut className="h-4 w-4" />
           </button>
-          <span className="text-background/50 text-xs w-10 text-center">{zoom}%</span>
+          <span className="text-muted-foreground text-xs w-10 text-center">{zoom}%</span>
           <button
             onClick={() => setZoom((z) => Math.min(200, z + 10))}
-            className="p-1.5 rounded-lg text-background/50 hover:text-background hover:bg-background/10 transition-colors"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <ZoomIn className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      {/* Reader Area */}
-      <div className="flex-1 relative flex items-center justify-center overflow-auto p-4">
-        {/* Page content placeholder */}
-        <div
-          className="relative bg-background rounded-lg shadow-2xl"
-          style={{
-            width: `${(595 * zoom) / 100}px`,
-            height: `${(842 * zoom) / 100}px`,
-            maxWidth: "100%",
-          }}
-        >
-          {/* Placeholder content */}
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
-            <div className="text-center">
-              <p className="text-lg font-bold mb-2">페이지 {currentPage}</p>
-              <p className="text-xs">전자책 콘텐츠가 여기에 표시됩니다</p>
+      {/* Main area */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* TOC Sidebar */}
+        {tocOpen && (
+          <div className="w-[340px] shrink-0 bg-card border-r border-border overflow-y-auto">
+            <div className="p-4">
+              {mockToc.map((chapter, ci) => (
+                <div key={ci} className="mb-6">
+                  <h3 className="text-sm font-bold text-foreground mb-3 leading-snug">
+                    {chapter.title}
+                  </h3>
+                  <div className="space-y-1">
+                    {chapter.items.map((item) => {
+                      const isCompleted = completedSections.includes(item.id);
+                      const isActive = currentPage === item.page;
+                      return (
+                        <div
+                          key={item.id}
+                          className={`flex items-start gap-2 py-2 px-2 rounded-lg cursor-pointer transition-colors group ${
+                            isActive ? "bg-primary/10" : "hover:bg-muted"
+                          }`}
+                          onClick={() => handleTocClick(item.page)}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleComplete(item.id);
+                            }}
+                            className="mt-0.5 shrink-0"
+                          >
+                            <CheckCircle2
+                              className={`h-4 w-4 ${
+                                isCompleted ? "text-green-500 fill-green-500" : "text-border"
+                              }`}
+                            />
+                          </button>
+                          <span
+                            className={`text-sm leading-snug flex-1 ${
+                              isActive ? "text-primary font-medium" : "text-foreground/80"
+                            }`}
+                          >
+                            {item.title}
+                          </span>
+                          <div className="flex items-center gap-1 shrink-0">
+                            {item.isNew && (
+                              <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded">
+                                N
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Content Area */}
+        <div className="flex-1 relative overflow-auto">
+          <div className="max-w-3xl mx-auto px-8 py-10" style={{ fontSize: `${zoom}%` }}>
+            {/* Chapter title */}
+            <h2 className="text-xl font-bold text-foreground mb-8">
+              {currentContent.chapterTitle}
+            </h2>
+
+            {/* Main heading */}
+            <h1 className="text-2xl font-bold text-primary mb-6">
+              {currentContent.heading}
+            </h1>
+
+            {/* Update notice */}
+            <div className="mb-6">
+              <p className="text-primary font-medium text-sm mb-2">
+                {currentContent.updateNote}
+              </p>
+              <p className="text-primary text-sm leading-relaxed">
+                {currentContent.updateText}
+              </p>
+            </div>
+
+            {/* Body text */}
+            <div className="space-y-4 text-foreground/90 leading-relaxed">
+              <p>{currentContent.body}</p>
+              <p>{currentContent.body2}</p>
             </div>
           </div>
 
           {/* Watermark overlay */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-20 -rotate-45 opacity-[0.06]">
-              {[...Array(20)].map((_, i) => (
-                <span key={i} className="text-foreground text-sm whitespace-nowrap font-medium">
+            <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-32 -rotate-[30deg] opacity-[0.07]">
+              {[...Array(30)].map((_, i) => (
+                <span key={i} className="text-muted-foreground text-lg whitespace-nowrap font-medium">
                   {userEmail}
                 </span>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Navigation */}
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-          className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-background/10 text-background/50 hover:bg-background/20 hover:text-background transition-all disabled:opacity-20"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
-        <button
-          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-background/10 text-background/50 hover:bg-background/20 hover:text-background transition-all disabled:opacity-20"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
+          {/* Navigation arrows */}
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground transition-all disabled:opacity-20"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground transition-all disabled:opacity-20"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Bottom progress */}
-      <div className="px-4 py-3 bg-foreground/95 border-t border-background/10">
+      <div className="px-4 py-3 bg-card border-t border-border shrink-0">
         <div className="flex items-center gap-3">
-          <span className="text-background/40 text-xs">{currentPage}</span>
+          <span className="text-muted-foreground text-xs">{currentPage}</span>
           <input
             type="range"
             min={1}
@@ -101,7 +228,7 @@ const Reader = () => {
             onChange={(e) => setCurrentPage(Number(e.target.value))}
             className="flex-1 h-1 accent-primary"
           />
-          <span className="text-background/40 text-xs">{totalPages}</span>
+          <span className="text-muted-foreground text-xs">{totalPages}</span>
         </div>
       </div>
     </div>
