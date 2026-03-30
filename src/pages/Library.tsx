@@ -66,11 +66,10 @@ const Library = () => {
                     <h3 className="text-sm font-bold leading-snug line-clamp-2">{book.title}</h3>
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium px-2 py-1 rounded-md bg-primary/10 text-primary">구매완료</span>
-                      <span className="text-xs text-muted-foreground">웹 뷰어</span>
                     </div>
                     <Link to={`/reader/${book.id}`}>
                       <Button className="w-full h-10 tablet:h-11 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-semibold mt-1 tablet:mt-2">
-                        📖 지금 바로 읽기
+                        <BookOpen className="h-4 w-4 mr-1.5" /> 지금 바로 읽기
                       </Button>
                     </Link>
                   </div>
