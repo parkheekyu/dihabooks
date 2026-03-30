@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  BookOpen, TrendingUp, DollarSign, Users, Plus, MoreVertical,
-  Eye, Edit, Trash2, BarChart3, ArrowUpRight, ArrowDownRight, ChevronLeft
+  BookOpen, TrendingUp, DollarSign, Plus, MoreVertical,
+  Eye, Edit, Trash2, BarChart3, ArrowUpRight, ArrowDownRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
@@ -59,51 +61,42 @@ const InstructorDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-secondary/30">
-      {/* Top bar */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container flex h-14 tablet:h-16 items-center gap-3 px-4">
-          <Link to="/" className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
-            <ChevronLeft className="h-5 w-5" />
-          </Link>
-          <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">D</div>
-            <span className="font-bold text-sm tablet:text-base">판매자 대시보드</span>
-          </div>
-          <div className="ml-auto">
-            <Button size="sm" className="rounded-full gap-1.5 text-xs">
-              <Plus className="h-3.5 w-3.5" /> 새 전자책
-            </Button>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <div className="flex-1 bg-secondary/30">
+        {/* Tabs */}
+        <div className="border-b border-border bg-background">
+          <div className="container px-4">
+            <div className="flex items-center justify-between">
+              <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+                {tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                      activeTab === tab.id
+                        ? "border-primary text-primary"
+                        : "border-transparent text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <Button size="sm" className="rounded-full gap-1.5 text-xs">
+                <Plus className="h-3.5 w-3.5" /> 새 전자책
+              </Button>
+            </div>
           </div>
         </div>
-      </header>
 
-      {/* Tabs */}
-      <div className="border-b border-border bg-background">
-        <div className="container px-4">
-          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <main className="container px-4 py-4 tablet:py-6">
+          {activeTab === "overview" && <OverviewTab />}
+          {activeTab === "books" && <BooksTab />}
+          {activeTab === "sales" && <SalesTab />}
+        </main>
       </div>
-
-      <main className="container px-4 py-4 tablet:py-6">
-        {activeTab === "overview" && <OverviewTab />}
-        {activeTab === "books" && <BooksTab />}
-        {activeTab === "sales" && <SalesTab />}
-      </main>
+      <Footer />
     </div>
   );
 };
