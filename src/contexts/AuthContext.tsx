@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
+type UserRole = "member" | "expert";
+
 interface User {
   name: string;
   email: string;
@@ -9,15 +11,19 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isLoggedIn: boolean;
+  role: UserRole;
   login: () => void;
   logout: () => void;
+  toggleRole: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoggedIn: false,
+  role: "member",
   login: () => {},
   logout: () => {},
+  toggleRole: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -30,12 +36,14 @@ const mockUser: User = {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<UserRole>("member");
 
   const login = () => setUser(mockUser);
-  const logout = () => setUser(null);
+  const logout = () => { setUser(null); setRole("member"); };
+  const toggleRole = () => setRole(r => r === "member" ? "expert" : "member");
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, role, login, logout, toggleRole }}>
       {children}
     </AuthContext.Provider>
   );
