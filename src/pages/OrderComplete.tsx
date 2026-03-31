@@ -10,7 +10,7 @@ const OrderComplete = () => {
   const location = useLocation();
   const state = location.state as { orderId?: string; total?: number; itemCount?: number } | null;
 
-  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  
 
   const orderId = state?.orderId || "ORD-XXXXXXXX-000";
   const total = state?.total || 0;

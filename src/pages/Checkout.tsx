@@ -45,7 +45,7 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  
 
   const items = mockOrderItems;
   const subtotal = items.reduce((sum, i) => sum + i.price, 0);
