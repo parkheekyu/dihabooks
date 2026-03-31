@@ -54,12 +54,13 @@ const monthlySales = [
 
 const maxSales = Math.max(...monthlySales.map(m => m.amount));
 
-type Tab = "overview" | "books" | "sales";
+type Tab = "overview" | "books" | "sales" | "settlements";
 
 const sidebarItems: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "overview", label: "대시보드", icon: LayoutDashboard },
   { id: "books", label: "전자책 관리", icon: FileText },
   { id: "sales", label: "판매 내역", icon: ShoppingBag },
+  { id: "settlements", label: "정산 내역", icon: Receipt },
 ];
 
 const InstructorDashboard = () => {
