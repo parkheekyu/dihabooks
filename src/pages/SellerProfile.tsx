@@ -33,23 +33,23 @@ const SellerProfile = () => {
       <Header />
       <main className="flex-1">
         <div className="container px-4 py-6 tablet:py-10">
-          <div className="flex gap-10 max-w-5xl mx-auto">
+          <div className="flex flex-col desktop:flex-row gap-0 desktop:gap-10 max-w-5xl mx-auto">
             <AccountSidebar />
 
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold mb-6 desktop:hidden">계정 설정</h1>
+              <h1 className="text-lg font-bold mb-4 desktop:hidden">계정 설정</h1>
               <h2 className="hidden desktop:block text-lg font-bold mb-6">판매자 프로필 설정</h2>
 
               {/* Profile Header */}
-              <div className="flex items-center gap-4 pb-6 border-b border-border">
+              <div className="flex flex-col items-center text-center gap-3 pb-5 border-b border-border tablet:flex-row tablet:text-left tablet:items-center tablet:gap-4 tablet:pb-6">
                 <img
                   src={user?.profileImage}
                   alt=""
-                  className="h-16 w-16 rounded-full object-cover border border-border"
+                  className="h-14 w-14 tablet:h-16 tablet:w-16 rounded-full object-cover border border-border"
                 />
                 <div>
-                  <p className="font-bold">{user?.name}</p>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                  <p className="font-bold text-sm tablet:text-base">{user?.name}</p>
+                  <p className="text-xs tablet:text-sm text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
 
@@ -83,18 +83,18 @@ const SellerProfile = () => {
               {/* 활동 정보 */}
               <div className="py-5 border-b border-border">
                 <h3 className="text-sm font-semibold mb-3">활동 정보</h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="rounded-lg bg-secondary/50 p-4 text-center">
-                    <p className="text-xs text-muted-foreground">총 집필 수</p>
-                    <p className="text-2xl font-bold mt-1">3권</p>
+                <div className="grid grid-cols-3 gap-2 tablet:gap-3">
+                  <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
+                    <p className="text-[10px] tablet:text-xs text-muted-foreground">총 집필 수</p>
+                    <p className="text-xl tablet:text-2xl font-bold mt-0.5 tablet:mt-1">3권</p>
                   </div>
-                  <div className="rounded-lg bg-secondary/50 p-4 text-center">
-                    <p className="text-xs text-muted-foreground">후기</p>
-                    <p className="text-2xl font-bold mt-1">24개</p>
+                  <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
+                    <p className="text-[10px] tablet:text-xs text-muted-foreground">후기</p>
+                    <p className="text-xl tablet:text-2xl font-bold mt-0.5 tablet:mt-1">24개</p>
                   </div>
-                  <div className="rounded-lg bg-secondary/50 p-4 text-center">
-                    <p className="text-xs text-muted-foreground">평점</p>
-                    <p className="text-2xl font-bold mt-1">4.8 <span className="text-sm font-normal text-muted-foreground">/ 5.0</span></p>
+                  <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
+                    <p className="text-[10px] tablet:text-xs text-muted-foreground">평점</p>
+                    <p className="text-xl tablet:text-2xl font-bold mt-0.5 tablet:mt-1">4.8 <span className="text-xs tablet:text-sm font-normal text-muted-foreground">/ 5.0</span></p>
                   </div>
                 </div>
               </div>
