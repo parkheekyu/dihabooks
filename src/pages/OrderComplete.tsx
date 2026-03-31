@@ -1,16 +1,14 @@
-import { Link, useLocation, Navigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { CheckCircle2, BookOpen, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useAuth } from "@/contexts/AuthContext";
 
 const OrderComplete = () => {
-  const { isLoggedIn } = useAuth();
   const location = useLocation();
   const state = location.state as { orderId?: string; total?: number; itemCount?: number } | null;
 
-  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  
 
   const orderId = state?.orderId || "ORD-XXXXXXXX-000";
   const total = state?.total || 0;

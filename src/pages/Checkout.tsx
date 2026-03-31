@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, CreditCard, Smartphone, Building2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,7 +45,7 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  
 
   const items = mockOrderItems;
   const subtotal = items.reduce((sum, i) => sum + i.price, 0);
