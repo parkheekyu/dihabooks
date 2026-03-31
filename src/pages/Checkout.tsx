@@ -97,6 +97,15 @@ const Checkout = () => {
                   <Input value={user?.email || ""} disabled className="mt-1" />
                   <p className="text-[10px] text-muted-foreground mt-1">구매 완료 후 이 이메일로 영수증이 발송됩니다.</p>
                 </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">연락처</Label>
+                  <Input
+                    placeholder="010-0000-0000"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
               </div>
             </section>
 
