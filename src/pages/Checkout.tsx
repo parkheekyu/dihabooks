@@ -43,6 +43,7 @@ const Checkout = () => {
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeRefund, setAgreeRefund] = useState(false);
   const [phone, setPhone] = useState("");
+  const [couponCode, setCouponCode] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   
