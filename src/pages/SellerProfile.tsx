@@ -41,15 +41,15 @@ const SellerProfile = () => {
               <h2 className="hidden desktop:block text-lg font-bold mb-6">판매자 프로필 설정</h2>
 
               {/* Profile Header */}
-              <div className="flex items-center gap-4 pb-6 border-b border-border">
+              <div className="flex flex-col items-center text-center gap-3 pb-5 border-b border-border tablet:flex-row tablet:text-left tablet:items-center tablet:gap-4 tablet:pb-6">
                 <img
                   src={user?.profileImage}
                   alt=""
-                  className="h-16 w-16 rounded-full object-cover border border-border"
+                  className="h-14 w-14 tablet:h-16 tablet:w-16 rounded-full object-cover border border-border"
                 />
                 <div>
-                  <p className="font-bold">{user?.name}</p>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                  <p className="font-bold text-sm tablet:text-base">{user?.name}</p>
+                  <p className="text-xs tablet:text-sm text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
 
