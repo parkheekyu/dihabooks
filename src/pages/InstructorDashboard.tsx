@@ -129,6 +129,7 @@ const InstructorDashboard = () => {
               {activeTab === "overview" && <OverviewContent />}
               {activeTab === "books" && <BooksContent />}
               {activeTab === "sales" && <SalesContent />}
+              {activeTab === "settlements" && <SettlementsContent />}
             </div>
           </div>
         </div>
