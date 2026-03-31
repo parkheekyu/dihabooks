@@ -61,7 +61,7 @@ const PurchaseHistory = () => {
       <Header />
       <main className="flex-1">
         <div className="container px-4 py-6 tablet:py-10">
-          <div className="flex gap-10 max-w-5xl mx-auto">
+          <div className="flex flex-col desktop:flex-row gap-0 desktop:gap-10 max-w-5xl mx-auto">
             <AccountSidebar />
 
             <div className="flex-1 min-w-0">
