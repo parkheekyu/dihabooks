@@ -364,15 +364,9 @@ const SettlementsContent = () => {
           <p className="text-xs text-muted-foreground mb-1">누적 정산 금액</p>
           <p className="text-2xl font-bold">{totalNet.toLocaleString()}원</p>
         </div>
-        <div className="flex gap-6">
-          <div>
-            <p className="text-xs text-muted-foreground mb-1">총 판매 건수</p>
-            <p className="text-lg font-semibold">{mockSettlements.reduce((s, x) => s + x.sales, 0)}건</p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground mb-1">총 수수료</p>
-            <p className="text-lg font-semibold">{mockSettlements.reduce((s, x) => s + x.fee, 0).toLocaleString()}원</p>
-          </div>
+        <div>
+          <p className="text-xs text-muted-foreground mb-1">총 판매 건수</p>
+          <p className="text-lg font-semibold">{mockSettlements.reduce((s, x) => s + x.sales, 0)}건</p>
         </div>
       </div>
 
