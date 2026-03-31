@@ -380,7 +380,7 @@ const SettlementsContent = () => {
               <TableHead className="text-xs">전자책</TableHead>
               <TableHead className="text-xs text-right">판매 건</TableHead>
               <TableHead className="text-xs text-right">매출액</TableHead>
-              <TableHead className="text-xs text-right">수수료</TableHead>
+              
               <TableHead className="text-xs text-right">정산액</TableHead>
               <TableHead className="text-xs text-center">상태</TableHead>
             </TableRow>
