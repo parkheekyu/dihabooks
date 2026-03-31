@@ -142,6 +142,32 @@ const HeaderSettings = () => (
         </div>
       </div>
     </div>
+
+    <div className="rounded-xl border border-border bg-background p-5 space-y-5">
+      <h3 className="font-bold text-sm">스크립트 코드</h3>
+      <p className="text-xs text-muted-foreground">Google Analytics, Meta Pixel, 채널톡 등 외부 스크립트를 삽입할 수 있습니다.</p>
+      <div className="space-y-4">
+        <div>
+          <Label className="text-sm">헤더 스크립트 ({"<head>"} 내부)</Label>
+          <Textarea
+            placeholder={"<!-- Google Analytics 등 -->\n<script>...</script>"}
+            className="mt-1.5 rounded-lg font-mono text-xs"
+            rows={5}
+          />
+          <p className="text-[11px] text-muted-foreground mt-1">페이지 로드 시 {"<head>"} 태그 안에 삽입됩니다.</p>
+        </div>
+        <div>
+          <Label className="text-sm">푸터 스크립트 ({"</body>"} 직전)</Label>
+          <Textarea
+            placeholder={"<!-- 채널톡, 카카오 플러그인 등 -->\n<script>...</script>"}
+            className="mt-1.5 rounded-lg font-mono text-xs"
+            rows={5}
+          />
+          <p className="text-[11px] text-muted-foreground mt-1">페이지 하단 {"</body>"} 태그 직전에 삽입됩니다.</p>
+        </div>
+      </div>
+    </div>
+
     <Button className="bg-foreground text-background hover:bg-foreground/90 rounded-lg">변경 사항 저장</Button>
   </div>
 );
