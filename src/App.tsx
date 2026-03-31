@@ -24,7 +24,8 @@ import PurchaseHistory from "./pages/PurchaseHistory.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import EbookForm from "./pages/EbookForm.tsx";
 import ProfileEdit from "./pages/ProfileEdit.tsx";
-
+import Checkout from "./pages/Checkout.tsx";
+import OrderComplete from "./pages/OrderComplete.tsx";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,8 @@ const App = () => (
           <Route path="/cart" element={<Cart />} />
           <Route path="/instructor" element={<InstructorDashboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-complete" element={<OrderComplete />} />
           <Route path="/profile/edit" element={<ProfileEdit />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/become-seller" element={<BecomeSeller />} />

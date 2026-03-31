@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Trash2, Minus, Plus, ShoppingBag, ArrowRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -25,6 +25,7 @@ const initialCart: CartItem[] = [
 
 const Cart = () => {
   const [items, setItems] = useState<CartItem[]>(initialCart);
+  const navigate = useNavigate();
 
   const removeItem = (id: string) => setItems(items.filter(i => i.id !== id));
   const total = items.reduce((sum, i) => sum + i.price, 0);
@@ -96,7 +97,7 @@ const Cart = () => {
                     <span className="text-primary text-lg">₩{total.toLocaleString()}</span>
                   </div>
                 </div>
-                <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg">
+                <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg" onClick={() => navigate("/checkout")}>
                   결제하기
                 </Button>
                 <p className="text-[10px] text-muted-foreground text-center mt-2">
@@ -114,7 +115,7 @@ const Cart = () => {
               <span className="text-sm text-muted-foreground">총 {items.length}건</span>
               <span className="font-bold text-primary">₩{total.toLocaleString()}</span>
             </div>
-            <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg">
+            <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg" onClick={() => navigate("/checkout")}>
               결제하기
             </Button>
           </div>
