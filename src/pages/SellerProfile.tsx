@@ -33,11 +33,11 @@ const SellerProfile = () => {
       <Header />
       <main className="flex-1">
         <div className="container px-4 py-6 tablet:py-10">
-          <div className="flex gap-10 max-w-5xl mx-auto">
+          <div className="flex flex-col desktop:flex-row gap-0 desktop:gap-10 max-w-5xl mx-auto">
             <AccountSidebar />
 
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold mb-6 desktop:hidden">계정 설정</h1>
+              <h1 className="text-lg font-bold mb-4 desktop:hidden">계정 설정</h1>
               <h2 className="hidden desktop:block text-lg font-bold mb-6">판매자 프로필 설정</h2>
 
               {/* Profile Header */}
