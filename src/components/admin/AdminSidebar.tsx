@@ -1,7 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, BookOpen, Users, DollarSign,
-  Megaphone, Settings, ChevronDown, ChevronRight
+  LayoutDashboard, Users, ShieldCheck, HeadphonesIcon,
+  Package, ShoppingCart, Tag, FileText, MessageSquare,
+  ClipboardList, Image, BarChart3, Settings, ChevronDown, ChevronRight
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -14,24 +14,45 @@ type MenuItem = {
 };
 
 const menuItems: MenuItem[] = [
-  { label: "대시보드 홈", icon: LayoutDashboard, id: "overview" },
+  { label: "대시보드", icon: LayoutDashboard, id: "overview" },
+  { label: "멤버 목록", icon: Users, id: "members" },
+  { label: "운영진", icon: ShieldCheck, id: "staff" },
+  { label: "고객", icon: HeadphonesIcon, id: "customers" },
   {
-    label: "전자책 관리", icon: BookOpen, id: "ebooks",
+    label: "상품", icon: Package, id: "products",
     children: [
-      { label: "전체 전자책", id: "ebooks-all" },
-      { label: "심사 대기", id: "ebooks-pending" },
+      { label: "전체 상품", id: "products-all" },
+      { label: "심사 대기", id: "products-pending" },
     ],
   },
-  { label: "회원 관리", icon: Users, id: "users" },
   {
-    label: "매출/정산", icon: DollarSign, id: "sales",
+    label: "주문", icon: ShoppingCart, id: "orders",
     children: [
-      { label: "매출 현황", id: "sales-overview" },
-      { label: "정산 관리", id: "sales-settlement" },
+      { label: "주문 목록", id: "orders-all" },
+      { label: "환불/취소", id: "orders-refund" },
     ],
   },
-  { label: "공지사항", icon: Megaphone, id: "notices" },
-  { label: "설정", icon: Settings, id: "settings" },
+  { label: "프로모션", icon: Tag, id: "promotions" },
+  { label: "게시물", icon: FileText, id: "posts" },
+  { label: "댓글", icon: MessageSquare, id: "comments" },
+  { label: "입력폼 관리", icon: ClipboardList, id: "forms" },
+  { label: "팝업/배너", icon: Image, id: "popups" },
+  {
+    label: "통계", icon: BarChart3, id: "statistics",
+    children: [
+      { label: "매출 분석", id: "stats-sales" },
+      { label: "유입 분석", id: "stats-traffic" },
+      { label: "페이지 분석", id: "stats-pages" },
+    ],
+  },
+  {
+    label: "설정", icon: Settings, id: "settings",
+    children: [
+      { label: "일반", id: "settings-general" },
+      { label: "SEO", id: "settings-seo" },
+      { label: "헤더/푸터", id: "settings-header" },
+    ],
+  },
 ];
 
 interface AdminSidebarProps {
@@ -40,7 +61,7 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
-  const [expanded, setExpanded] = useState<string[]>(["ebooks", "sales"]);
+  const [expanded, setExpanded] = useState<string[]>(["products", "orders", "statistics", "settings"]);
 
   const toggleExpand = (id: string) => {
     setExpanded(prev =>
@@ -49,7 +70,7 @@ const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
   };
 
   return (
-    <aside className="w-56 shrink-0 border-r border-border bg-background min-h-[calc(100vh-64px)] hidden desktop:block">
+    <aside className="w-56 shrink-0 border-r border-border bg-background min-h-[calc(100vh-64px)] hidden desktop:block overflow-y-auto">
       <div className="p-4 border-b border-border">
         <p className="text-xs text-muted-foreground">관리자</p>
         <p className="text-sm font-bold mt-0.5">디하북스 어드민</p>
@@ -112,4 +133,5 @@ const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
   );
 };
 
+export { menuItems };
 export default AdminSidebar;
