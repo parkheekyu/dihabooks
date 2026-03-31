@@ -24,7 +24,8 @@ import PurchaseHistory from "./pages/PurchaseHistory.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import EbookForm from "./pages/EbookForm.tsx";
 import ProfileEdit from "./pages/ProfileEdit.tsx";
-
+import Checkout from "./pages/Checkout.tsx";
+import OrderComplete from "./pages/OrderComplete.tsx";
 
 const queryClient = new QueryClient();
 
