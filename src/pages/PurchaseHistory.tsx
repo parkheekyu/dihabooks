@@ -65,7 +65,7 @@ const PurchaseHistory = () => {
             <AccountSidebar />
 
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold mb-6 desktop:hidden">계정 설정</h1>
+              <h1 className="text-lg font-bold mb-4 desktop:hidden">계정 설정</h1>
               <h2 className="hidden desktop:block text-lg font-bold mb-6">구매 내역</h2>
 
               {/* Status Summary */}
