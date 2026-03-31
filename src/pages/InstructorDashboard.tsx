@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   BookOpen, TrendingUp, DollarSign, Plus, MoreVertical,
   Eye, Edit, Trash2, BarChart3, ArrowUpRight, ArrowDownRight,
-  LayoutDashboard, FileText, ShoppingBag
+  LayoutDashboard, FileText, ShoppingBag, Receipt
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
