@@ -380,7 +380,7 @@ const SettlementsContent = () => {
               <TableHead className="text-xs">전자책</TableHead>
               <TableHead className="text-xs text-right">판매 건</TableHead>
               <TableHead className="text-xs text-right">매출액</TableHead>
-              <TableHead className="text-xs text-right">수수료</TableHead>
+              
               <TableHead className="text-xs text-right">정산액</TableHead>
               <TableHead className="text-xs text-center">상태</TableHead>
             </TableRow>
@@ -393,7 +393,7 @@ const SettlementsContent = () => {
                 <TableCell className="text-sm font-medium max-w-[200px] truncate">{s.bookTitle}</TableCell>
                 <TableCell className="text-sm text-right">{s.sales}건</TableCell>
                 <TableCell className="text-sm text-right">{s.amount.toLocaleString()}원</TableCell>
-                <TableCell className="text-sm text-right text-muted-foreground">{s.fee.toLocaleString()}원</TableCell>
+                
                 <TableCell className="text-sm text-right font-semibold">{s.net.toLocaleString()}원</TableCell>
                 <TableCell className="text-center">
                   <Badge variant="secondary" className="text-xs">{s.status}</Badge>
@@ -418,7 +418,7 @@ const SettlementsContent = () => {
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-border">
               <div className="text-xs text-muted-foreground">
-                {s.sales}건 · 수수료 {s.fee.toLocaleString()}원
+                {s.sales}건
               </div>
               <p className="text-sm font-semibold">{s.net.toLocaleString()}원</p>
             </div>
