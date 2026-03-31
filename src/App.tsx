@@ -24,7 +24,7 @@ import PurchaseHistory from "./pages/PurchaseHistory.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import EbookForm from "./pages/EbookForm.tsx";
 import ProfileEdit from "./pages/ProfileEdit.tsx";
-import SettlementHistory from "./pages/SettlementHistory.tsx";
+
 
 const queryClient = new QueryClient();
 
@@ -53,7 +53,7 @@ const App = () => (
           <Route path="/seller-profile" element={<SellerProfile />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/purchases" element={<PurchaseHistory />} />
-          <Route path="/settlements" element={<SettlementHistory />} />
+          
           <Route path="/faq" element={<FAQ />} />
           <Route path="/instructor/ebook/new" element={<EbookForm />} />
           <Route path="/instructor/ebook/edit" element={<EbookForm />} />
