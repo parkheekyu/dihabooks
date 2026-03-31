@@ -393,7 +393,7 @@ const SettlementsContent = () => {
                 <TableCell className="text-sm font-medium max-w-[200px] truncate">{s.bookTitle}</TableCell>
                 <TableCell className="text-sm text-right">{s.sales}건</TableCell>
                 <TableCell className="text-sm text-right">{s.amount.toLocaleString()}원</TableCell>
-                <TableCell className="text-sm text-right text-muted-foreground">{s.fee.toLocaleString()}원</TableCell>
+                
                 <TableCell className="text-sm text-right font-semibold">{s.net.toLocaleString()}원</TableCell>
                 <TableCell className="text-center">
                   <Badge variant="secondary" className="text-xs">{s.status}</Badge>
