@@ -119,7 +119,7 @@ const Checkout = () => {
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-14 h-[72px] tablet:w-16 tablet:h-20 rounded-lg object-cover shrink-0"
+                      className="w-14 h-14 tablet:w-16 tablet:h-16 rounded-lg object-cover shrink-0"
                     />
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <p className="text-sm font-medium line-clamp-2 leading-snug">{item.title}</p>

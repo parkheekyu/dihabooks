@@ -271,7 +271,7 @@ const BooksContent = () => {
           {filteredBooks.map(book => (
             <div key={book.id} className="py-4 border-b border-border last:border-0">
               <div className="flex gap-4">
-                <img src={book.image} alt="" className="w-16 h-16 tablet:w-20 tablet:h-20 rounded-md object-cover shrink-0" />
+                <img src={book.image} alt="" className="w-16 h-16 tablet:w-20 tablet:h-20 rounded-md object-cover aspect-square shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
