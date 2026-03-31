@@ -1,29 +1,35 @@
 import { useState } from "react";
 import {
-  LayoutDashboard, BookOpen, Users, DollarSign,
-  Megaphone, Settings, ChevronDown, ChevronRight, Menu
+  LayoutDashboard, Users, ShieldCheck, HeadphonesIcon,
+  Package, ShoppingCart, Tag, FileText, MessageSquare,
+  ClipboardList, Image, BarChart3, Settings, Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import AdminSidebar from "@/components/admin/AdminSidebar";
+import AdminSidebar, { menuItems } from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
-import AdminUsers from "@/components/admin/AdminUsers";
+import AdminMembers from "@/components/admin/AdminMembers";
+import AdminStaff from "@/components/admin/AdminStaff";
+import AdminCustomers from "@/components/admin/AdminCustomers";
 import AdminEbooks from "@/components/admin/AdminEbooks";
+import AdminOrders from "@/components/admin/AdminOrders";
+import AdminPromotions from "@/components/admin/AdminPromotions";
+import AdminPosts from "@/components/admin/AdminPosts";
+import AdminComments from "@/components/admin/AdminComments";
+import AdminForms from "@/components/admin/AdminForms";
+import AdminPopups from "@/components/admin/AdminPopups";
+import AdminStatistics from "@/components/admin/AdminStatistics";
+import AdminSettings from "@/components/admin/AdminSettings";
 import { Button } from "@/components/ui/button";
 import {
   Sheet, SheetContent, SheetTrigger
 } from "@/components/ui/sheet";
 
-const mobileMenuItems = [
-  { label: "대시보드", id: "overview", icon: LayoutDashboard },
-  { label: "전자책", id: "ebooks-all", icon: BookOpen },
-  { label: "심사대기", id: "ebooks-pending", icon: BookOpen },
-  { label: "회원", id: "users", icon: Users },
-  { label: "매출", id: "sales-overview", icon: DollarSign },
-  { label: "공지", id: "notices", icon: Megaphone },
-  { label: "설정", id: "settings", icon: Settings },
-];
+// Flatten menu items for mobile
+const flatMenuItems = menuItems.flatMap(item =>
+  item.children ? item.children.map(c => ({ ...c, icon: item.icon })) : [{ id: item.id, label: item.label, icon: item.icon }]
+);
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -36,38 +42,51 @@ const AdminDashboard = () => {
 
   const getTitle = () => {
     const map: Record<string, string> = {
-      overview: "대시보드 홈",
-      "ebooks-all": "전체 전자책",
-      "ebooks-pending": "심사 대기 전자책",
-      users: "회원 관리",
-      "sales-overview": "매출 현황",
-      "sales-settlement": "정산 관리",
-      notices: "공지사항",
-      settings: "설정",
+      overview: "대시보드",
+      members: "멤버 목록",
+      staff: "운영진",
+      customers: "고객",
+      "products-all": "전체 상품",
+      "products-pending": "심사 대기",
+      "orders-all": "주문 목록",
+      "orders-refund": "환불/취소",
+      promotions: "프로모션",
+      posts: "게시물",
+      comments: "댓글",
+      forms: "입력폼 관리",
+      popups: "팝업/배너",
+      "stats-sales": "매출 분석",
+      "stats-traffic": "유입 분석",
+      "stats-pages": "페이지 분석",
+      "settings-general": "일반 설정",
+      "settings-seo": "SEO 설정",
+      "settings-header": "헤더/푸터 설정",
     };
     return map[activeTab] || "대시보드";
   };
 
   const renderContent = () => {
     switch (activeTab) {
-      case "overview":
-        return <AdminOverview />;
-      case "users":
-        return <AdminUsers />;
-      case "ebooks-all":
-        return <AdminEbooks filter="all" />;
-      case "ebooks-pending":
-        return <AdminEbooks filter="pending" />;
-      case "sales-overview":
-        return <PlaceholderSection title="매출 현황" desc="매출 차트 및 상세 현황이 표시됩니다." />;
-      case "sales-settlement":
-        return <PlaceholderSection title="정산 관리" desc="강사별 정산 내역이 표시됩니다." />;
-      case "notices":
-        return <PlaceholderSection title="공지사항" desc="공지사항 관리 기능이 표시됩니다." />;
-      case "settings":
-        return <PlaceholderSection title="설정" desc="사이트 설정이 표시됩니다." />;
-      default:
-        return <AdminOverview />;
+      case "overview": return <AdminOverview />;
+      case "members": return <AdminMembers />;
+      case "staff": return <AdminStaff />;
+      case "customers": return <AdminCustomers />;
+      case "products-all": return <AdminEbooks filter="all" />;
+      case "products-pending": return <AdminEbooks filter="pending" />;
+      case "orders-all": return <AdminOrders filter="all" />;
+      case "orders-refund": return <AdminOrders filter="refund" />;
+      case "promotions": return <AdminPromotions />;
+      case "posts": return <AdminPosts />;
+      case "comments": return <AdminComments />;
+      case "forms": return <AdminForms />;
+      case "popups": return <AdminPopups />;
+      case "stats-sales": return <AdminStatistics view="sales" />;
+      case "stats-traffic": return <AdminStatistics view="traffic" />;
+      case "stats-pages": return <AdminStatistics view="pages" />;
+      case "settings-general": return <AdminSettings view="general" />;
+      case "settings-seo": return <AdminSettings view="seo" />;
+      case "settings-header": return <AdminSettings view="header" />;
+      default: return <AdminOverview />;
     }
   };
 
@@ -88,13 +107,13 @@ const AdminDashboard = () => {
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-64 p-0">
+              <SheetContent side="left" className="w-64 p-0 overflow-y-auto">
                 <div className="p-4 border-b border-border">
                   <p className="text-xs text-muted-foreground">관리자</p>
                   <p className="text-sm font-bold mt-0.5">디하북스 어드민</p>
                 </div>
                 <nav className="p-2 space-y-0.5">
-                  {mobileMenuItems.map(item => (
+                  {flatMenuItems.map(item => (
                     <button
                       key={item.id}
                       onClick={() => handleTabChange(item.id)}
@@ -130,12 +149,5 @@ const AdminDashboard = () => {
     </div>
   );
 };
-
-const PlaceholderSection = ({ title, desc }: { title: string; desc: string }) => (
-  <div className="rounded-xl border border-border bg-background p-8 text-center">
-    <p className="text-lg font-bold">{title}</p>
-    <p className="text-sm text-muted-foreground mt-2">{desc}</p>
-  </div>
-);
 
 export default AdminDashboard;
