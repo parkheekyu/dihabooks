@@ -115,7 +115,7 @@ const Cart = () => {
               <span className="text-sm text-muted-foreground">총 {items.length}건</span>
               <span className="font-bold text-primary">₩{total.toLocaleString()}</span>
             </div>
-            <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg">
+            <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg" onClick={() => navigate("/checkout")}>
               결제하기
             </Button>
           </div>
