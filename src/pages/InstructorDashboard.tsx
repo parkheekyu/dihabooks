@@ -418,7 +418,7 @@ const SettlementsContent = () => {
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-border">
               <div className="text-xs text-muted-foreground">
-                {s.sales}건 · 수수료 {s.fee.toLocaleString()}원
+                {s.sales}건
               </div>
               <p className="text-sm font-semibold">{s.net.toLocaleString()}원</p>
             </div>
