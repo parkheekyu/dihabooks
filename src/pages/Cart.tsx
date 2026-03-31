@@ -25,6 +25,7 @@ const initialCart: CartItem[] = [
 
 const Cart = () => {
   const [items, setItems] = useState<CartItem[]>(initialCart);
+  const navigate = useNavigate();
 
   const removeItem = (id: string) => setItems(items.filter(i => i.id !== id));
   const total = items.reduce((sum, i) => sum + i.price, 0);
