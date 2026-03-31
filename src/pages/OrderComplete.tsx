@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const OrderComplete = () => {
-  const { isLoggedIn } = useAuth();
   const location = useLocation();
   const state = location.state as { orderId?: string; total?: number; itemCount?: number } | null;
 
