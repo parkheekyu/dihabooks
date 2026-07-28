@@ -58,8 +58,11 @@ const Store = () => {
             </div>
           </aside>
 
-          {/* Grid */}
-          <div className="flex-1">
+          {/* Grid — min-w-0 overrides the flex item's default min-width:auto.
+              Without it this column stretches to the category row's content
+              width and the whole page scrolls sideways on mobile instead of
+              the chip row scrolling on its own. */}
+          <div className="flex-1 min-w-0">
             {/* Mobile categories */}
             <div className="desktop:hidden flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide -mx-4 px-4">
               {categories.map((cat) => (
