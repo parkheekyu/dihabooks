@@ -96,7 +96,7 @@ const Checkout = () => {
                 <div>
                   <Label className="text-xs text-muted-foreground">이메일</Label>
                   <Input value={user?.email || ""} disabled className="mt-1" />
-                  <p className="text-[10px] text-muted-foreground mt-1">구매 완료 후 이 이메일로 영수증이 발송됩니다.</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">구매 완료 후 이 이메일로 영수증이 발송됩니다.</p>
                 </div>
                 <div>
                   <Label className="text-xs text-muted-foreground">연락처</Label>
@@ -194,7 +194,7 @@ const Checkout = () => {
                     />
                     <label htmlFor="agree-terms" className="text-xs cursor-pointer">[필수] 이용약관 동의</label>
                   </div>
-                  <Link to="/terms" className="text-[10px] text-muted-foreground underline">보기</Link>
+                  <Link to="/terms" className="text-[11px] text-muted-foreground underline">보기</Link>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -205,7 +205,7 @@ const Checkout = () => {
                     />
                     <label htmlFor="agree-privacy" className="text-xs cursor-pointer">[필수] 개인정보 수집·이용 동의</label>
                   </div>
-                  <Link to="/privacy" className="text-[10px] text-muted-foreground underline">보기</Link>
+                  <Link to="/privacy" className="text-[11px] text-muted-foreground underline">보기</Link>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -216,7 +216,7 @@ const Checkout = () => {
                     />
                     <label htmlFor="agree-refund" className="text-xs cursor-pointer">[필수] 디지털 콘텐츠 환불 정책 동의</label>
                   </div>
-                  <Link to="/refund" className="text-[10px] text-muted-foreground underline">보기</Link>
+                  <Link to="/refund" className="text-[11px] text-muted-foreground underline">보기</Link>
                 </div>
               </div>
             </section>
@@ -258,7 +258,7 @@ const Checkout = () => {
                 )}
               </Button>
 
-              <div className="flex items-center justify-center gap-1.5 mt-3 text-[10px] text-muted-foreground">
+              <div className="flex items-center justify-center gap-1.5 mt-3 text-[11px] text-muted-foreground">
                 <ShieldCheck className="h-3 w-3" />
                 안전한 결제가 보장됩니다
               </div>

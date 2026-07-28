@@ -36,17 +36,16 @@ const Header = () => {
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container flex h-16 items-center justify-between gap-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
-            D
-          </div>
-          <span className="text-lg font-bold tracking-tight hidden tablet:inline">
-            디하<span className="text-gradient-primary">북스</span>
-          </span>
+        <Link to="/" className="flex items-center shrink-0">
+          <img
+            src="/brand/dihabooks-logo-kr.png"
+            alt="디하북스"
+            className="h-5 tablet:h-6 w-auto"
+          />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden tablet:flex items-center gap-6">
+        <nav className="hidden tablet:flex items-center gap-6 tablet:ml-4">
           {navItems.map((item) =>
             (item as any).external ? (
               <a
@@ -54,7 +53,7 @@ const Header = () => {
                 href={item.path}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium transition-colors hover:text-foreground text-muted-foreground"
+                className="text-base font-medium transition-colors hover:text-foreground text-muted-foreground"
               >
                 {item.label}
               </a>
@@ -62,7 +61,7 @@ const Header = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-sm font-medium transition-colors hover:text-foreground ${
+                className={`text-base font-medium transition-colors hover:text-foreground ${
                   location.pathname === item.path
                     ? "text-foreground"
                     : "text-muted-foreground"
@@ -107,7 +106,7 @@ const Header = () => {
               <Link to="/wishlist" className="relative p-2 rounded-lg transition-colors">
                 <Heart className="h-5 w-5 text-foreground" />
                 {wishCount > 0 && (
-                  <span className="absolute top-1 right-1 h-4 min-w-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                  <span className="absolute top-1 right-1 h-4 min-w-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[11px] font-bold flex items-center justify-center">
                     {wishCount}
                   </span>
                 )}
@@ -236,7 +235,7 @@ const Header = () => {
                     <p className="text-sm font-medium">{user?.name}</p>
                     <button
                       onClick={toggleRole}
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${roleStyles}`}
+                      className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${roleStyles}`}
                     >
                       {roleLabel}
                     </button>

@@ -200,7 +200,7 @@ const FAQ = () => {
                         >
                           <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full shrink-0">Q</span>
                           <div className="flex-1 min-w-0">
-                            <span className="text-[10px] text-muted-foreground">{catLabel}</span>
+                            <span className="text-[11px] text-muted-foreground">{catLabel}</span>
                             <p className="text-sm font-semibold leading-snug">{faq.question}</p>
                           </div>
                           <ChevronDown className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />

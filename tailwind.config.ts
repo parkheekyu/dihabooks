@@ -16,6 +16,18 @@ export default {
       fontFamily: {
         sans: ['"Noto Sans KR"', 'system-ui', 'sans-serif'],
       },
+      // Type scale matched to weolbu.com (measured computed styles, 2026-07).
+      // Their workhorse is 16px/24px for card titles and body copy; metadata sits
+      // at 13px/16px. Our 2xl/3xl already matched their 24/30 headings.
+      fontSize: {
+        xs: ["13px", { lineHeight: "18px" }],
+        sm: ["16px", { lineHeight: "24px" }],
+        base: ["17px", { lineHeight: "26px" }],
+        lg: ["19px", { lineHeight: "28px" }],
+        xl: ["21px", { lineHeight: "30px" }],
+        "2xl": ["24px", { lineHeight: "32px" }],
+        "3xl": ["30px", { lineHeight: "38px" }],
+      },
       screens: {
         'mobile': '375px',
         'tablet': '768px',

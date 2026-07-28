@@ -72,17 +72,17 @@ const PurchaseHistory = () => {
               <div className="grid grid-cols-3 gap-2 tablet:gap-3 mb-5 tablet:mb-6">
                 <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
                   <CheckCircle2 className="h-4 w-4 tablet:h-5 tablet:w-5 mx-auto mb-1.5 text-emerald-500" />
-                  <p className="text-[10px] tablet:text-xs text-muted-foreground">구매 확정</p>
+                  <p className="text-[11px] tablet:text-xs text-muted-foreground">구매 확정</p>
                   <p className="text-xl tablet:text-2xl font-black mt-0.5">{confirmedCount}</p>
                 </div>
                 <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
                   <Star className="h-4 w-4 tablet:h-5 tablet:w-5 mx-auto mb-1.5 text-star" />
-                  <p className="text-[10px] tablet:text-xs text-muted-foreground">작성 가능 리뷰</p>
+                  <p className="text-[11px] tablet:text-xs text-muted-foreground">작성 가능 리뷰</p>
                   <p className="text-xl tablet:text-2xl font-black mt-0.5">{reviewableCount}</p>
                 </div>
                 <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
                   <AlertCircle className="h-4 w-4 tablet:h-5 tablet:w-5 mx-auto mb-1.5 text-destructive" />
-                  <p className="text-[10px] tablet:text-xs text-muted-foreground">주문 취소</p>
+                  <p className="text-[11px] tablet:text-xs text-muted-foreground">주문 취소</p>
                   <p className="text-xl tablet:text-2xl font-black mt-0.5">0</p>
                 </div>
               </div>

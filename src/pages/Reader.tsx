@@ -102,7 +102,7 @@ const Reader = () => {
                     {item.title}
                   </span>
                   {item.isNew && (
-                    <span className="text-[10px] font-bold text-destructive bg-destructive/10 px-1.5 py-0.5 rounded shrink-0">
+                    <span className="text-[11px] font-bold text-destructive bg-destructive/10 px-1.5 py-0.5 rounded shrink-0">
                       N
                     </span>
                   )}
@@ -138,17 +138,19 @@ const Reader = () => {
         </span>
         <div className="flex items-center gap-1 tablet:gap-2">
           <button
-            onClick={() => setZoom((z) => Math.max(50, z - 10))}
-            className="p-1 tablet:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            onClick={() => setZoom((z) => Math.max(70, z - 10))}
+            aria-label="글자 작게"
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            <ZoomOut className="h-3.5 w-3.5 tablet:h-4 tablet:w-4" />
+            <ZoomOut className="h-4 w-4" />
           </button>
-          <span className="text-muted-foreground text-[10px] tablet:text-xs w-8 tablet:w-10 text-center">{zoom}%</span>
+          <span className="text-muted-foreground text-[11px] tablet:text-xs w-8 tablet:w-10 text-center">{zoom}%</span>
           <button
             onClick={() => setZoom((z) => Math.min(200, z + 10))}
-            className="p-1 tablet:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="글자 크게"
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            <ZoomIn className="h-3.5 w-3.5 tablet:h-4 tablet:w-4" />
+            <ZoomIn className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -189,22 +191,25 @@ const Reader = () => {
 
         {/* Content Area */}
         <div className="flex-1 relative overflow-auto">
+          {/* Sizes below are in `em` so the zoom control on the top bar actually
+              cascades. Fixed `text-sm`-style classes would override the parent's
+              percentage font-size and leave the zoom buttons doing nothing. */}
           <div className="max-w-3xl mx-auto px-4 tablet:px-8 py-6 tablet:py-10" style={{ fontSize: `${zoom}%` }}>
-            <h2 className="text-lg tablet:text-xl font-bold text-foreground mb-6 tablet:mb-8">
+            <h2 className="text-[1.2em] font-bold text-foreground mb-6 tablet:mb-8">
               {currentContent.chapterTitle}
             </h2>
-            <h1 className="text-xl tablet:text-2xl font-bold text-primary mb-4 tablet:mb-6">
+            <h1 className="text-[1.45em] font-bold text-primary mb-4 tablet:mb-6">
               {currentContent.heading}
             </h1>
             <div className="mb-4 tablet:mb-6">
-              <p className="text-primary font-medium text-xs tablet:text-sm mb-2">
+              <p className="text-primary font-medium text-[0.85em] mb-2">
                 {currentContent.updateNote}
               </p>
-              <p className="text-primary text-xs tablet:text-sm leading-relaxed">
+              <p className="text-primary text-[0.85em] leading-relaxed">
                 {currentContent.updateText}
               </p>
             </div>
-            <div className="space-y-3 tablet:space-y-4 text-foreground/90 text-sm tablet:text-base leading-relaxed">
+            <div className="space-y-3 tablet:space-y-4 text-foreground/90 text-[1em] leading-relaxed">
               <p>{currentContent.body}</p>
               <p>{currentContent.body2}</p>
             </div>

@@ -78,7 +78,7 @@ const NotificationDropdown = () => {
         <button className="relative p-2 rounded-lg transition-colors">
           <Bell className="h-5 w-5 text-foreground" />
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 h-4 min-w-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+            <span className="absolute top-1 right-1 h-4 min-w-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[11px] font-bold flex items-center justify-center">
               {unreadCount}
             </span>
           )}
@@ -134,7 +134,7 @@ const NotificationDropdown = () => {
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                       {n.message}
                     </p>
-                    <p className="text-[10px] text-muted-foreground/60 mt-1">{n.date}</p>
+                    <p className="text-[11px] text-muted-foreground/60 mt-1">{n.date}</p>
                   </div>
 
                   {/* Remove */}

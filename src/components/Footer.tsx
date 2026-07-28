@@ -7,9 +7,12 @@ const Footer = () => {
         <div className="grid grid-cols-2 tablet:grid-cols-3 gap-6 tablet:gap-8">
           {/* Brand */}
           <div className="space-y-3 col-span-2 tablet:col-span-1">
-            <h3 className="text-base tablet:text-lg font-black tracking-wide text-white">
-              DIHABOOKS
-            </h3>
+            {/* White variant — the footer sits on --footer-bg (near-black). */}
+            <img
+              src="/brand/dihabooks-logo-en-white.png"
+              alt="DIHABOOKS"
+              className="h-6 tablet:h-7 w-auto"
+            />
             <div className="text-[11px] tablet:text-xs leading-relaxed space-y-0.5">
               <p>상호: 디지털노마드 하이클래스 | 대표: 최주원</p>
               <p>사업자등록번호: 324-34-01744</p>
@@ -21,7 +24,7 @@ const Footer = () => {
 
           {/* Support */}
           <div className="space-y-3">
-            <h4 className="text-[10px] tablet:text-xs font-semibold tracking-widest uppercase text-white/70">
+            <h4 className="text-[11px] tablet:text-xs font-semibold tracking-widest uppercase text-white/70">
               Support
             </h4>
             <ul className="space-y-2 text-xs tablet:text-sm">
@@ -33,7 +36,7 @@ const Footer = () => {
 
           {/* Legal */}
           <div className="space-y-3">
-            <h4 className="text-[10px] tablet:text-xs font-semibold tracking-widest uppercase text-white/70">
+            <h4 className="text-[11px] tablet:text-xs font-semibold tracking-widest uppercase text-white/70">
               Legal
             </h4>
             <ul className="space-y-2 text-xs tablet:text-sm">
@@ -44,7 +47,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 tablet:mt-10 pt-4 tablet:pt-6 border-t border-white/10 text-[10px] tablet:text-xs text-white/40">
+        <div className="mt-8 tablet:mt-10 pt-4 tablet:pt-6 border-t border-white/10 text-[11px] tablet:text-xs text-white/40">
           © 2026 DIHABOOKS. ALL RIGHTS RESERVED.
         </div>
       </div>

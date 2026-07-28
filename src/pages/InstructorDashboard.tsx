@@ -177,7 +177,7 @@ const OverviewContent = () => (
               className="w-full rounded-t-md bg-primary/80 hover:bg-primary transition-colors min-h-[4px]"
               style={{ height: `${(m.amount / maxSales) * 100}%` }}
             />
-            <span className="text-[10px] tablet:text-xs text-muted-foreground">{m.month}</span>
+            <span className="text-[11px] tablet:text-xs text-muted-foreground">{m.month}</span>
           </div>
         ))}
       </div>

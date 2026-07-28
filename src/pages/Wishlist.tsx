@@ -109,7 +109,7 @@ const Wishlist = () => {
                 <Button className="w-full rounded-md bg-foreground text-background hover:bg-foreground/90" size="lg">
                   전체 구매하기
                 </Button>
-                <p className="text-[10px] text-muted-foreground text-center mt-2">
+                <p className="text-[11px] text-muted-foreground text-center mt-2">
                   결제 시 이용약관에 동의하는 것으로 간주됩니다.
                 </p>
               </div>
