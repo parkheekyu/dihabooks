@@ -2,6 +2,7 @@ import { Star, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { CATEGORY_TAG_STYLES, CATEGORY_TAG_FALLBACK } from "@/lib/constants";
 
 export interface Book {
   id: string;
@@ -74,7 +75,13 @@ const BookCard = ({ book }: BookCardProps) => {
         )}
       </div>
       <div className="mt-2 tablet:mt-3 space-y-0.5 tablet:space-y-1">
-        <span className="text-[11px] tablet:text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full inline-block">{book.category}</span>
+        <span
+          className={`text-[11px] tablet:text-xs font-medium px-2 py-0.5 rounded-full inline-block ${
+            CATEGORY_TAG_STYLES[book.category] ?? CATEGORY_TAG_FALLBACK
+          }`}
+        >
+          {book.category}
+        </span>
         <h3 className="text-xs tablet:text-sm font-semibold leading-snug line-clamp-2">
           {book.title}
         </h3>

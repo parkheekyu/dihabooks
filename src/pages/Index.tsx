@@ -97,7 +97,7 @@ const Index = () => {
                 return (
                   <div key={i} className="shrink-0 px-1.5 tablet:px-2.5" style={{ width: `${SLIDE_W}%` }}>
                     <div
-                      className={`relative rounded-xl tablet:rounded-2xl overflow-hidden aspect-[16/9] tablet:aspect-[1530/688] transition-opacity duration-300 ${
+                      className={`relative rounded-lg tablet:rounded-xl overflow-hidden aspect-[16/9] tablet:aspect-[1530/688] transition-opacity duration-300 ${
                         active ? "opacity-100" : "opacity-40 cursor-pointer"
                       }`}
                       onClick={() => !active && (i < pos ? prevSlide() : nextSlide())}
