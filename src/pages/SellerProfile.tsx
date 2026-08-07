@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { Plus, X, Edit, Briefcase, GraduationCap, Award, Wrench, FileText, Rocket, User, Camera, Check } from "lucide-react";
+import { Plus, X, Briefcase, GraduationCap, Award, Wrench, Camera, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
+import { DEFAULT_AVATAR } from "@/lib/constants";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AccountSidebar from "@/components/AccountSidebar";
@@ -89,13 +90,11 @@ const SellerProfile = () => {
 
                 {/* 프로필 사진 */}
                 <div className="flex items-center gap-4 mb-5">
-                  {photo ? (
-                    <img src={photo} alt="" className="h-20 w-20 rounded-full object-cover shrink-0" />
-                  ) : (
-                    <div className="h-20 w-20 rounded-full bg-primary/80 flex items-end justify-center overflow-hidden shrink-0">
-                      <User className="h-16 w-16 text-white translate-y-2" strokeWidth={0} fill="currentColor" />
-                    </div>
-                  )}
+                  <img
+                    src={photo || DEFAULT_AVATAR}
+                    alt=""
+                    className="h-20 w-20 rounded-full object-cover shrink-0"
+                  />
                   <div className="space-y-2">
                     <input
                       ref={fileRef}

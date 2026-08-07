@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 2000" width="2000" height="2000" role="img" aria-label="기본 프로필 이미지">
+  <defs>
+    <clipPath id="avatarClip">
+      <circle cx="1000" cy="1000" r="1000"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#avatarClip)">
+    <circle cx="1000" cy="1000" r="1000" fill="#B3B3B3"/>
+    <circle cx="1000" cy="655" r="375" fill="#F1F2F2"/>
+    <ellipse cx="1000" cy="1920" rx="820" ry="800" fill="#F1F2F2"/>
+  </g>
+</svg>

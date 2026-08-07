@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2, BookOpen, Send, ThumbsUp, ChevronLeft, ChevronRight, User } from "lucide-react";
+import { Star, Heart, ArrowLeft, Share2, BookOpen, Send, ThumbsUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { sampleBooks } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
+import { DEFAULT_AVATAR } from "@/lib/constants";
 import { useWishlist } from "@/contexts/WishlistContext";
 
 const tableOfContents = [
@@ -244,17 +245,11 @@ const BookDetail = () => {
     <div>
       {sectionHeading("작가 소개")}
       <div className="flex items-start gap-4 tablet:gap-5">
-        {sellerProfile.profileImage ? (
-          <img
-            src={sellerProfile.profileImage}
-            alt={authorName}
-            className="h-20 w-20 tablet:h-24 tablet:w-24 rounded-full object-cover shrink-0"
-          />
-        ) : (
-          <div className="h-20 w-20 tablet:h-24 tablet:w-24 rounded-full bg-primary/80 flex items-end justify-center overflow-hidden shrink-0">
-            <User className="h-16 w-16 tablet:h-[4.75rem] tablet:w-[4.75rem] text-white translate-y-2" strokeWidth={0} fill="currentColor" />
-          </div>
-        )}
+        <img
+          src={sellerProfile.profileImage || DEFAULT_AVATAR}
+          alt={authorName}
+          className="h-20 w-20 tablet:h-24 tablet:w-24 rounded-full object-cover shrink-0"
+        />
         <div className="min-w-0 pt-0.5 tablet:pt-1">
           <h3 className="text-xl tablet:text-2xl font-black leading-tight">{authorName}</h3>
           <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
