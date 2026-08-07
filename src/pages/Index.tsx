@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import HeroVideo from "@/components/HeroVideo";
 import { categories, heroSlides, sampleBooks, reviews } from "@/data/mockData";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { DEFAULT_AVATAR } from "@/lib/constants";
 import ctaBg from "@/assets/cta-bg.jpg";
 
 const Index = () => {
@@ -277,9 +278,11 @@ const Index = () => {
                       </div>
                       <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
                         <div className="flex items-center gap-2.5">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-bold">
-                            {review.avatar}
-                          </div>
+                          <img
+                            src={DEFAULT_AVATAR}
+                            alt=""
+                            className="h-8 w-8 rounded-full object-cover shrink-0"
+                          />
                           <div>
                             <p className="text-sm font-medium">{review.author}</p>
                             <div className="flex items-center gap-1">
