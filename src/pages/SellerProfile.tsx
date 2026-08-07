@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
-import { Plus, X, Briefcase, GraduationCap, Award, Wrench, Camera, Check } from "lucide-react";
+import { Navigate } from "react-router-dom";
+import { Camera, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,18 +41,6 @@ const SellerProfile = () => {
     updateSellerProfile({ nickname, intro, contactUrl, profileImage: photo });
     setSaved(true);
   };
-
-  const [careers, setCareers] = useState([
-    { id: "1", title: "프리랜서", duration: "3년 0개월" },
-  ]);
-
-  const [skills, setSkills] = useState([
-    "인스타그램 관리", "키워드·검색 광고", "블로그 관리", "검색최적화·SEO",
-  ]);
-
-  const [specialties, setSpecialties] = useState([
-    "퍼포먼스 마케팅", "마케팅 분석·전략",
-  ]);
 
   if (!isLoggedIn) return <Navigate to="/login" replace />;
 
@@ -169,7 +157,7 @@ const SellerProfile = () => {
               </div>
 
               {/* 활동 정보 */}
-              <div className="py-5 border-b border-border">
+              <div className="py-5">
                 <h3 className="text-sm font-semibold mb-3">활동 정보</h3>
                 <div className="grid grid-cols-3 gap-2 tablet:gap-3">
                   <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
@@ -187,69 +175,6 @@ const SellerProfile = () => {
                 </div>
               </div>
 
-              {/* 경력 사항 */}
-              <div className="py-5 border-b border-border">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold flex items-center gap-2"><Briefcase className="h-4 w-4" /> 경력 사항</h3>
-                  <Button variant="ghost" size="sm" className="text-xs h-7 gap-1"><Plus className="h-3 w-3" /> 추가</Button>
-                </div>
-                <p className="text-sm mb-2">총 4년</p>
-                {careers.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between py-2">
-                    <div>
-                      <p className="text-sm">• {c.title}</p>
-                      <p className="text-xs text-muted-foreground ml-3">{c.duration}</p>
-                    </div>
-                    <button onClick={() => setCareers(careers.filter(x => x.id !== c.id))} className="p-1">
-                      <X className="h-3.5 w-3.5 text-muted-foreground" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* 전문분야 */}
-              <div className="py-5 border-b border-border">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold">전문분야 <span className="text-destructive">*</span></h3>
-                  <Button variant="ghost" size="sm" className="text-xs h-7">편집</Button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {specialties.map((s) => (
-                    <span key={s} className="px-3 py-1.5 rounded-full text-xs font-medium bg-secondary">{s}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* 보유 기술 */}
-              <div className="py-5 border-b border-border">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold flex items-center gap-2"><Wrench className="h-4 w-4" /> 보유 기술 <span className="text-destructive">*</span></h3>
-                  <Button variant="ghost" size="sm" className="text-xs h-7">편집</Button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((s) => (
-                    <span key={s} className="px-3 py-1.5 rounded-full text-xs font-medium bg-secondary">{s}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* 학력 */}
-              <div className="py-5 border-b border-border">
-                <h3 className="text-sm font-semibold flex items-center gap-2 mb-3"><GraduationCap className="h-4 w-4" /> 학력</h3>
-                <div className="border border-dashed border-border rounded-lg p-6 text-center">
-                  <Plus className="h-5 w-5 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">간단한 정보로 전문성을 보여주세요.</p>
-                </div>
-              </div>
-
-              {/* 인증·수상·자격증 */}
-              <div className="py-5">
-                <h3 className="text-sm font-semibold flex items-center gap-2 mb-3"><Award className="h-4 w-4" /> 인증·수상·자격증</h3>
-                <div className="border border-dashed border-border rounded-lg p-6 text-center">
-                  <Plus className="h-5 w-5 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">작은 수상이나 자격증도 좋아요.</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
