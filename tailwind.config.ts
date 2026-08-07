@@ -87,10 +87,16 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      // Calibrated to the main-page review card (rounded-lg = 8px). The default
+      // xl/2xl/3xl steps were noticeably rounder than that, so they are pulled
+      // in to keep one consistent softness across the site.
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        sm: "calc(var(--radius) - 4px)", // 4px
+        md: "calc(var(--radius) - 2px)", // 6px
+        lg: "var(--radius)", // 8px — reference
+        xl: "10px", // was 12
+        "2xl": "12px", // was 16
+        "3xl": "16px", // was 24
       },
       keyframes: {
         "accordion-down": {

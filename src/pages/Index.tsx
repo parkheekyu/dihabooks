@@ -11,6 +11,14 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { DEFAULT_AVATAR } from "@/lib/constants";
 import ctaBg from "@/assets/cta-bg.jpg";
 
+/** 후기 날짜("2026.08.06")가 오늘 기준 7일 이내인지. */
+const isNewReview = (date: string) => {
+  const [y, m, d] = date.split(".").map(Number);
+  if (!y || !m || !d) return false;
+  const posted = new Date(y, m - 1, d).getTime();
+  return Date.now() - posted <= 7 * 24 * 60 * 60 * 1000;
+};
+
 const Index = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [paused, setPaused] = useState(false);
@@ -294,7 +302,14 @@ const Index = () => {
                             </div>
                           </div>
                         </div>
-                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                        {isNewReview(review.date) && (
+                          <span
+                            title="최근 7일 이내 등록된 후기"
+                            className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-destructive text-[11px] font-bold text-destructive-foreground"
+                          >
+                            N
+                          </span>
+                        )}
                       </div>
                     </div>
                   ))}

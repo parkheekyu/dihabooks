@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2, BookOpen, Send, ThumbsUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Heart, ArrowLeft, Share2, Send, ThumbsUp, ChevronLeft, ChevronRight, CircleCheck, Mail } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -74,6 +74,23 @@ const bookReviews = [
 
 const REVIEWS_PER_PAGE = 5;
 
+const SECTION_TABS = [
+  { key: "desc", label: "소개" },
+  { key: "toc", label: "목차" },
+  { key: "author", label: "작가" },
+  { key: "reviews", label: "후기" },
+];
+
+/**
+ * Desktop and mobile each render their own copy of the content sections, so a
+ * section has two ids. The hidden copy is display:none and therefore never
+ * intersects, so observing both and taking whichever reports back is enough.
+ */
+const sectionEl = (key: string) =>
+  ["desktop", "mobile"]
+    .map((v) => document.getElementById(`sec-${key}-${v}`))
+    .find((el) => el && el.offsetParent !== null) ?? null;
+
 /* ── Option card with discount support ── */
 const OptionCard = ({
   label, description, price, originalPrice, selected, onClick,
@@ -125,6 +142,58 @@ const BookDetail = () => {
   const [reviewHover, setReviewHover] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+  const [activeSection, setActiveSection] = useState("desc");
+
+  // Highlight whichever section is currently near the top of the viewport.
+  useEffect(() => {
+    const els = SECTION_TABS.flatMap((t) =>
+      ["desktop", "mobile"].map((v) => document.getElementById(`sec-${t.key}-${v}`))
+    ).filter((el): el is HTMLElement => el !== null);
+    if (!els.length) return;
+
+    // A callback only carries the entries that *changed*, so intersecting
+    // sections are accumulated across callbacks and the topmost one wins.
+    const visible = new Set<string>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) =>
+          e.isIntersecting ? visible.add(e.target.id) : visible.delete(e.target.id)
+        );
+        if (!visible.size) return;
+        const topId = [...visible]
+          .map((id) => ({
+            id,
+            top: document.getElementById(id)?.getBoundingClientRect().top ?? Infinity,
+          }))
+          .sort((a, b) => a.top - b.top)[0].id;
+        setActiveSection(topId.split("-")[1]);
+      },
+      { rootMargin: "-96px 0px -55% 0px" }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  const sectionTabs = () => (
+    <div className="flex rounded-lg bg-secondary p-1">
+      {SECTION_TABS.map((t) => (
+        <button
+          key={t.key}
+          onClick={() => sectionEl(t.key)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+          aria-current={activeSection === t.key ? "true" : undefined}
+          className={`flex-1 rounded-md px-2 py-2.5 text-sm font-bold transition-colors ${
+            activeSection === t.key
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {t.label}
+          {t.key === "reviews" && <span className="ml-1.5 text-brand">{bookReviews.length}</span>}
+        </button>
+      ))}
+    </div>
+  );
 
   const handleReviewSubmit = () => {
     if (reviewRating > 0 && reviewText.trim()) {
@@ -250,28 +319,24 @@ const BookDetail = () => {
           alt={authorName}
           className="h-14 w-14 tablet:h-16 tablet:w-16 rounded-full object-cover shrink-0"
         />
-        <div className="min-w-0 pt-0.5">
+        <div className="min-w-0 pt-0.5 flex-1">
           <h3 className="text-base tablet:text-lg font-bold leading-tight">{authorName}</h3>
           <p className="mt-1 text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
             {sellerProfile.intro}
           </p>
         </div>
-      </div>
-
-      {sellerProfile.contactUrl && (
-        <div className="relative inline-block mt-2.5 ml-7 tablet:ml-9">
-          {/* Speech-bubble tail pointing back up at the avatar. */}
-          <span className="absolute -top-1 left-4 h-3 w-3 rotate-45 rounded-[2px] bg-kakao" />
+        {sellerProfile.contactUrl && (
           <a
             href={sellerProfile.contactUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative inline-flex items-center rounded-xl bg-kakao px-4 py-2 text-xs font-bold text-kakao-foreground transition-opacity hover:opacity-90"
+            className="shrink-0 inline-flex items-center gap-1.5 self-center rounded-lg border border-border px-3 py-2 text-xs font-semibold hover:bg-secondary transition-colors"
           >
-            1:1 문의하기
+            <Mail className="h-3.5 w-3.5" />
+            <span className="hidden tablet:inline">1:1 문의하기</span>
           </a>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 
@@ -288,9 +353,11 @@ const BookDetail = () => {
         {bookReviews.slice(0, 4).map((review, i) => (
           <div key={i} className="rounded-xl border border-border p-4 tablet:p-5">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center text-xs font-bold shrink-0">
-                {review.name.slice(0, 1)}
-              </div>
+              <img
+                src={DEFAULT_AVATAR}
+                alt=""
+                className="h-9 w-9 rounded-full object-cover shrink-0"
+              />
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm font-bold truncate">{review.name}</span>
@@ -308,7 +375,7 @@ const BookDetail = () => {
       </div>
       <div className="text-center mt-4 tablet:mt-5">
         <a
-          href={`#reviews-board-${variant}`}
+          href={`#sec-reviews-${variant}`}
           className="text-sm font-medium text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
         >
           전체 후기 보기
@@ -325,15 +392,17 @@ const BookDetail = () => {
     const start = (reviewPage - 1) * REVIEWS_PER_PAGE;
     const rows = bookReviews.slice(start, start + REVIEWS_PER_PAGE);
     return (
-      <div id={`reviews-board-${variant}`} className="scroll-mt-24">
+      <div id={`sec-reviews-${variant}`} className="scroll-mt-24">
         {sectionHeading(`전체 후기 (${bookReviews.length})`)}
         <div className="border-t border-border">
           {rows.map((review, i) => (
             <div key={start + i} className="border-b border-border py-4 tablet:py-5">
               <div className="flex items-center gap-2 mb-2">
-                <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold shrink-0">
-                  {review.name.slice(0, 1)}
-                </div>
+                <img
+                  src={DEFAULT_AVATAR}
+                  alt=""
+                  className="h-8 w-8 rounded-full object-cover shrink-0"
+                />
                 <span className="text-sm font-bold">{review.name}</span>
                 {review.tags.map((tag) => (
                   <span key={tag} className="hidden tablet:inline px-1.5 py-0.5 rounded bg-secondary text-[11px] text-muted-foreground">
@@ -411,7 +480,7 @@ const BookDetail = () => {
         <div className="grid grid-cols-1 desktop:grid-cols-[1fr_380px] gap-6 desktop:gap-10 items-start">
           {/* Left: Hero image + content sections */}
           <div>
-            <div className="rounded-xl tablet:rounded-2xl overflow-hidden aspect-[4/3] bg-[#f4f4f6]">
+            <div className="rounded-xl tablet:rounded-2xl overflow-hidden aspect-video bg-[#f4f4f6]">
               <img src={book.image} alt={book.title} className="w-full h-full object-contain" />
             </div>
 
@@ -420,8 +489,11 @@ const BookDetail = () => {
               {/* Reviews */}
               {reviewList("desktop")}
 
+              {/* Section tabs */}
+              {sectionTabs()}
+
               {/* Description */}
-              <div>
+              <div id="sec-desc-desktop" className="scroll-mt-24">
                 <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
                   <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
                   상세 설명
@@ -430,7 +502,7 @@ const BookDetail = () => {
               </div>
 
               {/* TOC */}
-              <div>
+              <div id="sec-toc-desktop" className="scroll-mt-24">
                 <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-5 tablet:mb-6">
                   <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
                   전체목차
@@ -458,7 +530,7 @@ const BookDetail = () => {
               </div>
 
               {/* Author — last, per review feedback */}
-              {authorSection()}
+              <div id="sec-author-desktop" className="scroll-mt-24">{authorSection()}</div>
 
               {/* Full review board */}
               {reviewBoard("desktop")}
@@ -491,8 +563,8 @@ const BookDetail = () => {
               {isPurchased ? (
                 <div className="rounded-2xl border border-border p-6 space-y-4">
                   <div className="text-center space-y-2">
-                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                      <BookOpen className="h-6 w-6 text-primary" />
+                    <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto">
+                      <CircleCheck className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <p className="text-sm font-bold">구매 완료된 전자책입니다</p>
                     <p className="text-xs text-muted-foreground">웹 뷰어에서 바로 읽을 수 있어요</p>
@@ -597,8 +669,8 @@ const BookDetail = () => {
 
           {isPurchased && (
             <div className="rounded-xl border border-border p-5 text-center space-y-3">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                <BookOpen className="h-5 w-5 text-primary" />
+              <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto">
+                <CircleCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <p className="text-sm font-bold">구매 완료된 전자책입니다</p>
             </div>
@@ -610,8 +682,11 @@ const BookDetail = () => {
           {/* Reviews — TOP */}
           {reviewList("mobile")}
 
+          {/* Section tabs */}
+          {sectionTabs()}
+
           {/* Description */}
-          <div>
+          <div id="sec-desc-mobile" className="scroll-mt-24">
             <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-3 tablet:mb-4">
               <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
               상세 설명
@@ -620,7 +695,7 @@ const BookDetail = () => {
           </div>
 
           {/* TOC */}
-          <div>
+          <div id="sec-toc-mobile" className="scroll-mt-24">
             <h2 className="text-base tablet:text-lg font-bold flex items-center gap-2 mb-5 tablet:mb-6">
               <span className="w-1 h-5 tablet:h-6 bg-primary rounded-full" />
               전체목차
@@ -655,7 +730,7 @@ const BookDetail = () => {
           </div>
 
           {/* Author — last, per review feedback */}
-          {authorSection()}
+          <div id="sec-author-mobile" className="scroll-mt-24">{authorSection()}</div>
 
           {/* Full review board */}
           {reviewBoard("mobile")}
