@@ -244,29 +244,29 @@ const BookDetail = () => {
   const authorSection = () => (
     <div>
       {sectionHeading("작가 소개")}
-      <div className="flex items-start gap-4 tablet:gap-5">
+      <div className="flex items-start gap-3 tablet:gap-4">
         <img
           src={sellerProfile.profileImage || DEFAULT_AVATAR}
           alt={authorName}
-          className="h-20 w-20 tablet:h-24 tablet:w-24 rounded-full object-cover shrink-0"
+          className="h-14 w-14 tablet:h-16 tablet:w-16 rounded-full object-cover shrink-0"
         />
-        <div className="min-w-0 pt-0.5 tablet:pt-1">
-          <h3 className="text-xl tablet:text-2xl font-black leading-tight">{authorName}</h3>
-          <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+        <div className="min-w-0 pt-0.5">
+          <h3 className="text-base tablet:text-lg font-bold leading-tight">{authorName}</h3>
+          <p className="mt-1 text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
             {sellerProfile.intro}
           </p>
         </div>
       </div>
 
       {sellerProfile.contactUrl && (
-        <div className="relative inline-block mt-3 ml-10 tablet:ml-14">
+        <div className="relative inline-block mt-2.5 ml-7 tablet:ml-9">
           {/* Speech-bubble tail pointing back up at the avatar. */}
-          <span className="absolute -top-1 left-5 h-3.5 w-3.5 rotate-45 rounded-[2px] bg-kakao" />
+          <span className="absolute -top-1 left-4 h-3 w-3 rotate-45 rounded-[2px] bg-kakao" />
           <a
             href={sellerProfile.contactUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative inline-flex items-center rounded-2xl bg-kakao px-5 py-2.5 text-sm font-bold text-kakao-foreground transition-opacity hover:opacity-90"
+            className="relative inline-flex items-center rounded-xl bg-kakao px-4 py-2 text-xs font-bold text-kakao-foreground transition-opacity hover:opacity-90"
           >
             1:1 문의하기
           </a>
