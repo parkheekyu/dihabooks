@@ -1,17 +1,19 @@
 import { Book } from "@/components/BookCard";
-import { BookOpen, Youtube, Camera, Handshake, Bot, Wallet, Sparkles, Palette, Megaphone, Code, LayoutGrid, CircleDollarSign, type LucideIcon } from "lucide-react";
+import { BookOpen, Youtube, Dumbbell, Handshake, Bot, Wallet, Sparkles, Palette, Megaphone, Code, LayoutGrid, CircleDollarSign, type LucideIcon } from "lucide-react";
 
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
 import hero3 from "@/assets/hero-3.jpg";
 
+// `label` is also the matching key for Book.category on the store/home filters,
+// so renaming one here means renaming it on every book below too.
 export const categories: { id: string; label: string; icon?: LucideIcon }[] = [
   { id: "all", label: "전체", icon: LayoutGrid },
+  { id: "basic", label: "기초 체력", icon: Dumbbell },
   { id: "youtube", label: "유튜브", icon: Youtube },
-  { id: "sns", label: "SNS", icon: Camera },
   { id: "ai", label: "AI/자동화", icon: Bot },
-  { id: "affiliate", label: "제휴마케팅", icon: Handshake },
-  { id: "income", label: "수익인증", icon: CircleDollarSign },
+  { id: "affiliate", label: "제휴 마케팅", icon: Handshake },
+  { id: "income", label: "수익 인증", icon: CircleDollarSign },
 ];
 
 export type HeroSlide = { id: number; image?: string; youtubeId?: string };
@@ -107,7 +109,7 @@ export const sampleBooks: Book[] = [
     originalPrice: 59000,
     rating: 5.0,
     reviewCount: 176,
-    category: "제휴마케팅",
+    category: "제휴 마케팅",
     image: "/books/book-07.jpg",
     badge: "TOP",
     pageCount: 224,
@@ -169,7 +171,7 @@ export const sampleBooks: Book[] = [
     originalPrice: 42000,
     rating: 4.8,
     reviewCount: 219,
-    category: "제휴마케팅",
+    category: "제휴 마케팅",
     image: "/books/book-12.jpg",
     badge: "NEW",
     pageCount: 150,

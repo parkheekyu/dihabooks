@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroVideo from "@/components/HeroVideo";
 import { categories, heroSlides, sampleBooks, reviews } from "@/data/mockData";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import ctaBg from "@/assets/cta-bg.jpg";
 
 const Index = () => {
@@ -14,7 +15,12 @@ const Index = () => {
   const [paused, setPaused] = useState(false);
   const reviewsRef = useRef<HTMLDivElement>(null);
 
-  const SLIDE_W = 46; // % width of center slide (neighbors expand & show dimmed on both sides)
+  // % width of the center slide. The peek layout only reads well on a wide screen:
+  // at 46% a 390px phone leaves a 180px card, and even 768px gives just 333px. So
+  // below the desktop breakpoint the centre slide takes nearly the full width and
+  // the neighbours only hint at the edges.
+  const isNarrow = useMediaQuery("(max-width: 1023px)");
+  const SLIDE_W = isNarrow ? 88 : 46;
 
   // Infinite loop: clone last slide at front, first slide at end
   const n = heroSlides.length;
