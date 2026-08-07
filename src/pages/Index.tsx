@@ -1,29 +1,68 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, type TransitionEvent } from "react";
 import { Link } from "react-router-dom";
-import { Star, ArrowRight } from "lucide-react";
+import { Star, ArrowRight, ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 
 import BookCard from "@/components/BookCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import HeroVideo from "@/components/HeroVideo";
 import { categories, heroSlides, sampleBooks, reviews } from "@/data/mockData";
 import ctaBg from "@/assets/cta-bg.jpg";
 
 const Index = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [paused, setPaused] = useState(false);
+  const reviewsRef = useRef<HTMLDivElement>(null);
 
+  const SLIDE_W = 46; // % width of center slide (neighbors expand & show dimmed on both sides)
+
+  // Infinite loop: clone last slide at front, first slide at end
+  const n = heroSlides.length;
+  const slidesEx = [heroSlides[n - 1], ...heroSlides, heroSlides[0]];
+  const [pos, setPos] = useState(1); // index into slidesEx (1 = first real slide)
+  const [anim, setAnim] = useState(true);
+  const realIndex = ((pos - 1) % n + n) % n;
+
+  const scrollReviews = (dir: "left" | "right") => {
+    const el = reviewsRef.current;
+    if (!el) return;
+    const amount = Math.round(el.clientWidth * 0.9);
+    el.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
+  };
+
+  const lockRef = useRef(false); // ignore clicks while a slide transition is running
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    if (lockRef.current) return;
+    lockRef.current = true;
+    setAnim(true); setPos((p) => p + 1);
+  }, []);
+  const prevSlide = useCallback(() => {
+    if (lockRef.current) return;
+    lockRef.current = true;
+    setAnim(true); setPos((p) => p - 1);
   }, []);
 
-  const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
-  }, []);
+  // When landing on a cloned edge, snap (without animation) to the real slide
+  const handleTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
+    // only react to the track's own transform transition (not children's opacity)
+    if (e.target !== e.currentTarget || e.propertyName !== "transform") return;
+    if (pos === n + 1) { setAnim(false); setPos(1); }
+    else if (pos === 0) { setAnim(false); setPos(n); }
+    lockRef.current = false;
+  };
+  useEffect(() => {
+    if (!anim) {
+      const id = requestAnimationFrame(() => requestAnimationFrame(() => setAnim(true)));
+      return () => cancelAnimationFrame(id);
+    }
+  }, [anim]);
 
   useEffect(() => {
+    if (paused) return;
+    if (heroSlides[realIndex]?.youtubeId) return; // video slide advances itself on end
     const timer = setInterval(nextSlide, 5000);
     return () => clearInterval(timer);
-  }, [nextSlide]);
+  }, [nextSlide, paused, realIndex]);
 
   const filteredBooks =
     activeCategory === "all"
@@ -35,53 +74,129 @@ const Index = () => {
       <Header />
 
       <main className="flex-1">
-        {/* Hero Carousel */}
-        <section className="relative overflow-hidden bg-background">
-          <div className="relative aspect-[2/1] tablet:aspect-[5/2] desktop:aspect-[4/1] overflow-hidden">
-            {heroSlides.map((slide, i) => (
-              <img
-                key={slide.id}
-                src={slide.image}
-                alt=""
-                width={1920}
-                height={600}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-                  i === currentSlide ? "opacity-100" : "opacity-0"
-                }`}
-              />
-            ))}
-            {/* Controls */}
-            <div className="absolute bottom-3 tablet:bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 tablet:gap-3">
-              {heroSlides.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentSlide(i)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    i === currentSlide ? "bg-background w-5 tablet:w-6" : "bg-background/50"
-                  }`}
-                />
-              ))}
+        {/* Hero Carousel (peek style, infinite loop) */}
+        <section className="relative overflow-hidden bg-background pt-4 tablet:pt-6">
+          <div className="relative overflow-hidden w-full">
+            <div
+              className="flex"
+              style={{
+                transform: `translateX(calc(${pos} * -${SLIDE_W}% + ${(100 - SLIDE_W) / 2}%))`,
+                transition: anim ? "transform 450ms cubic-bezier(0.32, 0.72, 0, 1)" : "none",
+              }}
+              onTransitionEnd={handleTransitionEnd}
+            >
+              {slidesEx.map((slide, i) => {
+                const active = i === pos;
+                return (
+                  <div key={i} className="shrink-0 px-1.5 tablet:px-2.5" style={{ width: `${SLIDE_W}%` }}>
+                    <div
+                      className={`relative rounded-xl tablet:rounded-2xl overflow-hidden aspect-[16/9] tablet:aspect-[1530/688] transition-opacity duration-300 ${
+                        active ? "opacity-100" : "opacity-40 cursor-pointer"
+                      }`}
+                      onClick={() => !active && (i < pos ? prevSlide() : nextSlide())}
+                    >
+                      {slide.youtubeId ? (
+                        active && i === 1 ? (
+                          // live video (only for the real first slide when centered)
+                          <HeroVideo youtubeId={slide.youtubeId} paused={paused} onEnded={nextSlide} />
+                        ) : (
+                          // thumbnail (neighbors / clone), letterboxed on black
+                          <div className="absolute inset-0 bg-black flex items-center justify-center">
+                            <img
+                              src={`https://img.youtube.com/vi/${slide.youtubeId}/maxresdefault.jpg`}
+                              alt=""
+                              className="h-full w-auto max-w-full object-contain"
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <img
+                          src={slide.image}
+                          alt=""
+                          width={1920}
+                          height={600}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Fixed controls (anchored to center card's right side, always visible) */}
+            <div
+              className="absolute bottom-3 tablet:bottom-5 z-10 flex items-center gap-0.5 rounded-full bg-black/35 backdrop-blur-sm text-white pl-2 pr-1 py-1"
+              style={{ right: `calc(${(100 - SLIDE_W) / 2}% + 44px)` }}
+            >
+              <button
+                type="button"
+                aria-label={paused ? "재생" : "일시정지"}
+                onClick={() => setPaused((p) => !p)}
+                className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+              >
+                {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+              </button>
+              <span className="px-1.5 text-xs font-medium tabular-nums">
+                {realIndex + 1} / {n}
+              </span>
+              <button
+                type="button"
+                aria-label="이전 배너"
+                onClick={prevSlide}
+                className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                aria-label="다음 배너"
+                onClick={nextSlide}
+                className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
             </div>
           </div>
         </section>
 
-        {/* Category Tabs */}
+        {/* Category Tiles */}
         <section className="container px-4 mt-6 tablet:mt-8">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`flex items-center gap-1.5 px-3 tablet:px-4 py-2 rounded-full text-xs tablet:text-sm font-medium whitespace-nowrap transition-all ${
-                  activeCategory === cat.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "bg-secondary text-muted-foreground hover:bg-secondary/80"
-                }`}
-              >
-                {cat.icon && <cat.icon className="h-3.5 w-3.5" />}
-                {cat.label}
-              </button>
-            ))}
+          <div className="flex gap-4 tablet:gap-7 overflow-x-auto pt-1.5 pb-2 scrollbar-hide -mx-4 px-4 justify-start desktop:justify-center">
+            {categories.map((cat) => {
+              const active = activeCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className="group flex flex-col items-center gap-2 shrink-0"
+                >
+                  <span
+                    className={`flex h-14 w-14 tablet:h-16 tablet:w-16 items-center justify-center rounded-2xl transition-all ${
+                      active
+                        ? "bg-primary/10 ring-1 ring-primary/40"
+                        : "bg-secondary group-hover:bg-secondary/70"
+                    }`}
+                  >
+                    {cat.icon && (
+                      <cat.icon
+                        className={`h-6 w-6 tablet:h-7 tablet:w-7 transition-colors ${
+                          active ? "text-primary" : "text-foreground/50 group-hover:text-foreground/70"
+                        }`}
+                        strokeWidth={1.8}
+                      />
+                    )}
+                  </span>
+                  <span
+                    className={`text-xs tablet:text-sm whitespace-nowrap transition-colors ${
+                      active ? "font-bold text-foreground" : "font-medium text-muted-foreground"
+                    }`}
+                  >
+                    {cat.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </section>
 
@@ -102,7 +217,7 @@ const Index = () => {
             </Link>
           </div>
           <div className="grid grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-4 gap-3 tablet:gap-4 desktop:gap-6">
-            {filteredBooks.map((book) => (
+            {filteredBooks.slice(0, 8).map((book) => (
               <BookCard key={book.id} book={book} />
             ))}
           </div>
@@ -118,11 +233,33 @@ const Index = () => {
                 <p className="text-xs tablet:text-sm text-muted-foreground mt-2 leading-relaxed">
                   나도 할 수 있을까 고민이 된다면{"\n"}수강생들의 성공 경험을 들어보세요.
                 </p>
+                {/* Carousel controls */}
+                <div className="hidden desktop:flex items-center gap-2 mt-5">
+                  <button
+                    type="button"
+                    aria-label="이전 후기"
+                    onClick={() => scrollReviews("left")}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background shadow-sm hover:bg-secondary transition-colors"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="다음 후기"
+                    onClick={() => scrollReviews("right")}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background shadow-sm hover:bg-secondary transition-colors"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
               {/* Right: review cards */}
               <div className="flex-1 min-w-0">
-                <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 desktop:mx-0 desktop:px-0">
+                <div
+                  ref={reviewsRef}
+                  className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide -mx-4 px-4 desktop:mx-0 desktop:px-0"
+                >
                   {reviews.map((review) => (
                     <div
                       key={review.id}

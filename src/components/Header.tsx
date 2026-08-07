@@ -19,7 +19,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isLoggedIn, role, logout, toggleRole } = useAuth();
+  const { user, isLoggedIn, role, logout, toggleRole, openAuth } = useAuth();
   const { wishCount } = useWishlist();
 
   const handleLogout = () => {
@@ -45,7 +45,7 @@ const Header = () => {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden tablet:flex items-center gap-6 tablet:ml-4">
+        <nav className="hidden tablet:flex items-center gap-7 tablet:ml-4">
           {navItems.map((item) =>
             (item as any).external ? (
               <a
@@ -53,7 +53,7 @@ const Header = () => {
                 href={item.path}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-base font-medium transition-colors hover:text-foreground text-muted-foreground"
+                className="text-base font-bold tracking-tight text-foreground/70 hover:text-foreground transition-colors"
               >
                 {item.label}
               </a>
@@ -61,13 +61,16 @@ const Header = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-base font-medium transition-colors hover:text-foreground ${
+                className={`relative text-base font-bold tracking-tight transition-colors hover:text-foreground ${
                   location.pathname === item.path
-                    ? "text-foreground"
-                    : "text-muted-foreground"
+                    ? "text-primary"
+                    : "text-foreground/70"
                 }`}
               >
                 {item.label}
+                {location.pathname === item.path && (
+                  <span className="absolute -right-2.5 top-0 h-1.5 w-1.5 rounded-full bg-primary" />
+                )}
               </Link>
             )
           )}
@@ -163,19 +166,12 @@ const Header = () => {
             <div className="flex items-center gap-1">
               <Link to="/become-seller">
                 <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground hover:bg-transparent">
-                  판매자 등록
+                  작가 등록
                 </Button>
               </Link>
-              <Link to="/login">
-                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground hover:bg-transparent">
-                  로그인
-                </Button>
-              </Link>
-              <Link to="/signup">
-                <Button size="sm" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-5">
-                  회원가입
-                </Button>
-              </Link>
+              <Button size="sm" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-5" onClick={() => openAuth("login")}>
+                로그인
+              </Button>
             </div>
           )}
         </div>
@@ -275,16 +271,9 @@ const Header = () => {
           ) : (
             <div className="flex flex-col gap-2 pt-2">
               <Link to="/become-seller" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full" size="sm">판매자 등록</Button>
+                <Button variant="outline" className="w-full" size="sm">작가 등록</Button>
               </Link>
-              <div className="flex gap-2">
-                <Link to="/login" className="flex-1" onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" className="w-full" size="sm">로그인</Button>
-                </Link>
-                <Link to="/signup" className="flex-1" onClick={() => setMobileOpen(false)}>
-                  <Button className="w-full bg-foreground text-background" size="sm">회원가입</Button>
-                </Link>
-              </div>
+              <Button className="w-full bg-foreground text-background" size="sm" onClick={() => { setMobileOpen(false); openAuth("login"); }}>로그인</Button>
             </div>
           )}
         </div>

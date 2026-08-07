@@ -393,8 +393,8 @@ const BookDetail = () => {
         <div className="grid grid-cols-1 desktop:grid-cols-[1fr_380px] gap-6 desktop:gap-10 items-start">
           {/* Left: Hero image + content sections */}
           <div>
-            <div className="rounded-xl tablet:rounded-2xl overflow-hidden aspect-video bg-secondary">
-              <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+            <div className="rounded-xl tablet:rounded-2xl overflow-hidden aspect-[4/3] bg-[#f4f4f6]">
+              <img src={book.image} alt={book.title} className="w-full h-full object-contain" />
             </div>
 
             {/* ═══ Content sections (desktop: inside grid for sticky sidebar) ═══ */}

@@ -46,11 +46,11 @@ const BookCard = ({ book }: BookCardProps) => {
 
   return (
     <Link to={`/book/${book.id}`} className="group block">
-      <div className="relative overflow-hidden rounded-lg tablet:rounded-xl bg-secondary aspect-[4/3]">
+      <div className="relative overflow-hidden rounded-lg tablet:rounded-xl bg-[#f4f4f6] aspect-[4/3]">
         <img
           src={book.image}
           alt={book.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
         />
         {book.badge && (
           <span

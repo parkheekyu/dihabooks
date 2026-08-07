@@ -23,6 +23,10 @@ interface AuthContextType {
   login: () => void;
   logout: () => void;
   toggleRole: () => void;
+  authOpen: boolean;
+  authMode: "login" | "signup";
+  openAuth: (mode?: "login" | "signup") => void;
+  closeAuth: () => void;
 }
 
 const defaultSellerProfile: SellerProfile = {
@@ -39,6 +43,10 @@ const AuthContext = createContext<AuthContextType>({
   login: () => {},
   logout: () => {},
   toggleRole: () => {},
+  authOpen: false,
+  authMode: "login",
+  openAuth: () => {},
+  closeAuth: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -51,18 +59,22 @@ const mockUser: User = {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(mockUser); // 기본 로그인(멤버) 상태
   const [role, setRole] = useState<UserRole>("member");
   const [sellerProfile, setSellerProfile] = useState<SellerProfile>(defaultSellerProfile);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
-  const login = () => setUser(mockUser);
+  const login = () => { setUser(mockUser); setAuthOpen(false); };
   const logout = () => { setUser(null); setRole("member"); };
   const toggleRole = () => setRole(r => r === "member" ? "expert" : "member");
   const updateSellerProfile = (profile: Partial<SellerProfile>) =>
     setSellerProfile(prev => ({ ...prev, ...profile }));
+  const openAuth = (mode: "login" | "signup" = "login") => { setAuthMode(mode); setAuthOpen(true); };
+  const closeAuth = () => setAuthOpen(false);
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, role, sellerProfile, updateSellerProfile, login, logout, toggleRole }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, role, sellerProfile, updateSellerProfile, login, logout, toggleRole, authOpen, authMode, openAuth, closeAuth }}>
       {children}
     </AuthContext.Provider>
   );

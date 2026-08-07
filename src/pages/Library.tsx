@@ -20,7 +20,7 @@ const Library = () => {
             <ArrowLeft className="h-4 w-4" /> 메인으로
           </Link>
           <h1 className="text-lg tablet:text-xl font-bold">내 서재</h1>
-          <div className="w-8 h-8 rounded-full bg-secondary" />
+          <div className="w-8" />
         </div>
 
         <div className="flex flex-col desktop:flex-row gap-6 tablet:gap-8">
