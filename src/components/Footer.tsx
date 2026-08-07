@@ -14,10 +14,9 @@ const Footer = () => {
               className="h-6 tablet:h-7 w-auto"
             />
             <div className="text-[11px] tablet:text-xs leading-relaxed space-y-0.5">
-              <p>상호: 디지털노마드 하이클래스 | 대표: 최주원</p>
-              <p>사업자등록번호: 324-34-01744</p>
-              
-              <p>주소: 경기도 용인시 기흥구 서그내로 52, 제2층 223호</p>
+              <p>상호: 디하북스 | 대표: 최주원</p>
+              <p>사업자등록번호: 313-18-03233</p>
+              <p>주소: 경기도 용인시 기흥구 서천동로 94-1, 502호(농서동)</p>
               <p>연락처: 031-8007-1222</p>
             </div>
           </div>
@@ -29,7 +28,6 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-xs tablet:text-sm">
               <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-              <li><Link to="/contact" className="hover:text-white transition-colors">1:1 문의하기</Link></li>
               <li><Link to="/author-guide" className="hover:text-white transition-colors">작가 등록 가이드</Link></li>
             </ul>
           </div>

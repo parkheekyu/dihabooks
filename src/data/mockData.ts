@@ -61,7 +61,7 @@ export const sampleBooks: Book[] = [
     price: 24000,
     rating: 4.7,
     reviewCount: 208,
-    category: "SNS",
+    category: "제휴 마케팅",
     image: "/books/book-03.jpg",
     pageCount: 120,
   },
