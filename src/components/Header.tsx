@@ -164,11 +164,6 @@ const Header = () => {
             </>
           ) : (
             <div className="flex items-center gap-1">
-              <Link to="/become-seller">
-                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground hover:bg-transparent">
-                  작가 등록
-                </Button>
-              </Link>
               <Button size="sm" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-5" onClick={() => openAuth("login")}>
                 로그인
               </Button>
@@ -270,9 +265,6 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-2 pt-2">
-              <Link to="/become-seller" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full" size="sm">작가 등록</Button>
-              </Link>
               <Button className="w-full bg-foreground text-background" size="sm" onClick={() => { setMobileOpen(false); openAuth("login"); }}>로그인</Button>
             </div>
           )}
