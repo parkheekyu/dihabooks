@@ -76,7 +76,7 @@ const BookCard = ({ book }: BookCardProps) => {
       </div>
       <div className="mt-2 tablet:mt-3 space-y-0.5 tablet:space-y-1">
         <span
-          className={`text-[11px] tablet:text-xs font-medium px-2 py-0.5 rounded-full inline-block ${
+          className={`text-[11px] tablet:text-xs font-medium px-2 py-0.5 rounded inline-block ${
             CATEGORY_TAG_STYLES[book.category] ?? CATEGORY_TAG_FALLBACK
           }`}
         >
