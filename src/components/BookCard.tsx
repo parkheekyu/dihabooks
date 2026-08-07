@@ -75,22 +75,26 @@ const BookCard = ({ book }: BookCardProps) => {
         )}
       </div>
       <div className="mt-2 tablet:mt-3 space-y-0.5 tablet:space-y-1">
-        <span
-          className={`text-[11px] tablet:text-xs font-medium px-2 py-0.5 rounded inline-block ${
-            CATEGORY_TAG_STYLES[book.category] ?? CATEGORY_TAG_FALLBACK
-          }`}
-        >
-          {book.category}
-        </span>
+        {/* Category tag and rating share a row — min-w-0 lets the tag ellipsize
+            instead of pushing the rating out of the card on narrow columns. */}
+        <div className="flex items-center gap-1.5">
+          <span
+            className={`text-[11px] tablet:text-xs font-medium px-2 py-0.5 rounded shrink min-w-0 truncate ${
+              CATEGORY_TAG_STYLES[book.category] ?? CATEGORY_TAG_FALLBACK
+            }`}
+          >
+            {book.category}
+          </span>
+          <span className="flex items-center gap-1 shrink-0">
+            <Star className="h-3 w-3 tablet:h-3.5 tablet:w-3.5 fill-star text-star" />
+            <span className="text-[11px] tablet:text-xs font-medium">{book.rating}</span>
+            <span className="text-[11px] tablet:text-xs text-muted-foreground">({book.reviewCount})</span>
+          </span>
+        </div>
         <h3 className="text-xs tablet:text-sm font-semibold leading-snug line-clamp-2">
           {book.title}
         </h3>
         <p className="text-[11px] tablet:text-xs text-muted-foreground">{book.author}</p>
-        <div className="flex items-center gap-1">
-          <Star className="h-3 w-3 tablet:h-3.5 tablet:w-3.5 fill-star text-star" />
-          <span className="text-[11px] tablet:text-xs font-medium">{book.rating}</span>
-          <span className="text-[11px] tablet:text-xs text-muted-foreground">({book.reviewCount})</span>
-        </div>
         <div className="flex items-center gap-1.5 tablet:gap-2 flex-wrap">
           {discount && (
             <span className="text-[11px] tablet:text-xs font-bold text-primary">{discount}%</span>
