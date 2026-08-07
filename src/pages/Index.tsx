@@ -236,7 +236,7 @@ const Index = () => {
             <div className="flex flex-col desktop:flex-row desktop:items-start gap-6 desktop:gap-10">
               {/* Left: title */}
               <div className="desktop:w-64 shrink-0">
-                <h2 className="text-xl tablet:text-2xl font-bold">디하북스 수강생 후기</h2>
+                <h2 className="text-xl tablet:text-2xl font-bold">실시간 수강생 후기</h2>
                 <p className="text-xs tablet:text-sm text-muted-foreground mt-2 leading-relaxed">
                   나도 할 수 있을까 고민이 된다면{"\n"}수강생들의 성공 경험을 들어보세요.
                 </p>
@@ -285,9 +285,12 @@ const Index = () => {
                           />
                           <div>
                             <p className="text-sm font-medium">{review.author}</p>
-                            <div className="flex items-center gap-1">
-                              <Star className="h-3 w-3 fill-star text-star" />
-                              <span className="text-xs font-medium">{review.rating}</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="flex items-center gap-1">
+                                <Star className="h-3 w-3 fill-star text-star" />
+                                <span className="text-xs font-medium">{review.rating}</span>
+                              </span>
+                              <span className="text-[11px] text-muted-foreground">{review.date}</span>
                             </div>
                           </div>
                         </div>

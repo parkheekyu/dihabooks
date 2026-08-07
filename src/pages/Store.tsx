@@ -24,7 +24,9 @@ const Store = () => {
             전자책<span className="text-gradient-primary">스토어</span>
           </h1>
           <p className="text-xs tablet:text-sm text-muted-foreground mt-1">
-            {sampleBooks.length}개의 프리미엄 지식이 당신을 기다리고 있습니다.
+            {filteredBooks.length > 0
+              ? `${filteredBooks.length}개의 프리미엄 지식이 당신을 기다리고 있습니다.`
+              : "이 카테고리는 아직 준비 중입니다."}
           </p>
         </div>
 
@@ -81,14 +83,17 @@ const Store = () => {
               ))}
             </div>
 
-            <div className="grid grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-3 gap-3 tablet:gap-4 desktop:gap-6">
-              {filteredBooks.map((book) => (
-                <BookCard key={book.id} book={book} />
-              ))}
-            </div>
-
-            {filteredBooks.length === 0 && (
-              <div className="text-center py-16 tablet:py-20 text-muted-foreground">
+            {filteredBooks.length > 0 ? (
+              <div className="grid grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-3 gap-3 tablet:gap-4 desktop:gap-6">
+                {filteredBooks.map((book) => (
+                  <BookCard key={book.id} book={book} />
+                ))}
+              </div>
+            ) : (
+              /* Keeps the column's footprint when a category has no books —
+                 otherwise the grid collapses to zero height and the footer
+                 jumps up the page. */
+              <div className="flex min-h-[320px] tablet:min-h-[420px] flex-col items-center justify-center rounded-xl tablet:rounded-2xl border border-dashed border-border text-center text-muted-foreground px-4">
                 <p className="text-base tablet:text-lg font-medium">해당 카테고리에 전자책이 없습니다.</p>
                 <p className="text-xs tablet:text-sm mt-1">다른 카테고리를 선택해보세요.</p>
               </div>

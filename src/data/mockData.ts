@@ -198,6 +198,7 @@ export const reviews = [
     author: "성공환불입님",
     avatar: "성",
     rating: 5.0,
+    date: "2026.08.06",
   },
   {
     id: 2,
@@ -206,6 +207,7 @@ export const reviews = [
     author: "수리짱이님",
     avatar: "수",
     rating: 5.0,
+    date: "2026.08.05",
   },
   {
     id: 3,
@@ -214,6 +216,7 @@ export const reviews = [
     author: "달박님",
     avatar: "달",
     rating: 5.0,
+    date: "2026.08.03",
   },
   {
     id: 4,
@@ -222,6 +225,7 @@ export const reviews = [
     author: "퇴근왕님",
     avatar: "퇴",
     rating: 5.0,
+    date: "2026.07.31",
   },
   {
     id: 5,
@@ -230,6 +234,7 @@ export const reviews = [
     author: "초보탈출님",
     avatar: "초",
     rating: 4.9,
+    date: "2026.07.28",
   },
   {
     id: 6,
@@ -238,6 +243,7 @@ export const reviews = [
     author: "절약러님",
     avatar: "절",
     rating: 5.0,
+    date: "2026.07.24",
   },
   {
     id: 7,
@@ -246,6 +252,7 @@ export const reviews = [
     author: "방향잡음님",
     avatar: "방",
     rating: 5.0,
+    date: "2026.07.21",
   },
   {
     id: 8,
@@ -254,5 +261,6 @@ export const reviews = [
     author: "꾸준함님",
     avatar: "꾸",
     rating: 4.8,
+    date: "2026.07.17",
   },
 ];
