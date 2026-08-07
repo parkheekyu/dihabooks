@@ -54,7 +54,7 @@ const SellerProfile = () => {
 
             <div className="flex-1 min-w-0">
               <h1 className="text-lg font-bold mb-4 desktop:hidden">계정 설정</h1>
-              <h2 className="hidden desktop:block text-lg font-bold mb-6">판매자 프로필 설정</h2>
+              <h2 className="hidden desktop:block text-lg font-bold mb-6">작가 프로필 설정</h2>
 
               {/* Profile Header */}
               <div className="flex flex-col items-center text-center gap-3 pb-5 border-b border-border tablet:flex-row tablet:text-left tablet:items-center tablet:gap-4 tablet:pb-6">

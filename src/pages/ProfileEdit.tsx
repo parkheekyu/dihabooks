@@ -78,7 +78,7 @@ const ProfileEdit = () => {
                       role === "member" ? "bg-secondary text-muted-foreground" : "bg-primary/10 text-primary"
                     }`}
                   >
-                    {role === "member" ? "멤버" : "판매자"}
+                    {role === "member" ? "멤버" : "작가"}
                   </button>
                 </div>
               </div>

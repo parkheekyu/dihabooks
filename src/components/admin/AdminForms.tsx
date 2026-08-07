@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const mockForms = [
-  { id: "1", name: "판매자 신청서", fields: 8, submissions: 34, lastSubmission: "2026-03-30", status: "활성" },
+  { id: "1", name: "작가 신청서", fields: 8, submissions: 34, lastSubmission: "2026-03-30", status: "활성" },
   { id: "2", name: "고객 만족도 조사", fields: 12, submissions: 156, lastSubmission: "2026-03-29", status: "활성" },
   { id: "3", name: "전자책 심사 요청서", fields: 6, submissions: 18, lastSubmission: "2026-03-28", status: "활성" },
   { id: "4", name: "이벤트 참여 신청", fields: 5, submissions: 230, lastSubmission: "2026-03-15", status: "비활성" },

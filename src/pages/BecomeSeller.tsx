@@ -27,7 +27,7 @@ const sellers = [
     image: hero2,
     category: "제휴마케팅",
     stat: "최근 6개월 판매 수익 1,800만 원",
-    detail: "기업 회원 전문 판매자",
+    detail: "기업 회원 전문 작가",
   },
   {
     name: "AI마스터",
@@ -47,17 +47,17 @@ const benefits = [
   {
     icon: DollarSign,
     title: "투명한 정산과\n안전한 거래 시스템",
-    desc: "판매자의 안정적인 수익 활동을 위해 안전결제 시스템을 제공합니다.",
+    desc: "작가의 안정적인 수익 활동을 위해 안전결제 시스템을 제공합니다.",
   },
   {
     icon: Zap,
     title: "복잡한 준비 없이\n간편하게 판매 시작",
-    desc: "전문 지식이 있다면 누구나 판매자로 활동할 수 있어요. 지금 바로 시작하세요.",
+    desc: "전문 지식이 있다면 누구나 작가로 활동할 수 있어요. 지금 바로 시작하세요.",
   },
 ];
 
 const steps = [
-  { step: "Step 1", title: "카카오 로그인으로\n판매자 등록", desc: "간편하게 판매자로 등록하세요." },
+  { step: "Step 1", title: "카카오 로그인으로\n작가 등록", desc: "간편하게 작가로 등록하세요." },
   { step: "Step 2", title: "판매하고자 하는\n전자책을 등록", desc: "PDF 전자책을 업로드하고 상품 정보를 입력하세요." },
   { step: "Step 3", title: "회원들이 구매하면\n수익이 발생", desc: "별도 마케팅 없이도 플랫폼 내에서 노출됩니다." },
   { step: "Step 4", title: "수익금은\n빠르게 정산", desc: "구매 확정 후 2일 이내 수익금이 정산됩니다." },
@@ -81,7 +81,7 @@ const BecomeSeller = () => {
           </p>
           <Link to="/signup">
             <Button size="lg" className="mt-8 rounded-full px-10 text-base">
-              판매자 등록하기
+              작가 등록하기
             </Button>
           </Link>
         </div>
@@ -130,7 +130,7 @@ const BecomeSeller = () => {
         <div className="text-center mt-10">
           <Link to="/signup">
             <Button size="lg" className="rounded-full px-10">
-              판매자 등록하기
+              작가 등록하기
             </Button>
           </Link>
         </div>
@@ -140,7 +140,7 @@ const BecomeSeller = () => {
       <section className="bg-secondary/30 py-16 tablet:py-24">
         <div className="container px-4">
           <h2 className="text-2xl tablet:text-3xl font-black text-center leading-tight">
-            판매자의 더 나은 성장을 위해
+            작가의 더 나은 성장을 위해
             <br />
             디하북스가 함께 하고 있어요
           </h2>
@@ -161,7 +161,7 @@ const BecomeSeller = () => {
       {/* Steps */}
       <section className="container px-4 py-16 tablet:py-24">
         <h2 className="text-2xl tablet:text-3xl font-black text-center">
-          판매자, 이렇게 시작하면 돼요
+          작가, 이렇게 시작하면 돼요
         </h2>
         <div className="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-4 gap-6 mt-10 tablet:mt-14">
           {steps.map((s, i) => (
@@ -184,7 +184,7 @@ const BecomeSeller = () => {
       {/* Final CTA */}
       <section className="bg-primary text-primary-foreground py-16 tablet:py-20 text-center px-4">
         <h2 className="text-2xl tablet:text-3xl font-black">
-          이제, 판매자 등록을 시작해 볼까요?
+          이제, 작가 등록을 시작해 볼까요?
         </h2>
         <p className="text-sm tablet:text-base mt-3 opacity-80">
           전문 지식을 전자책으로 만들어 수익을 창출하세요
@@ -195,7 +195,7 @@ const BecomeSeller = () => {
             variant="secondary"
             className="mt-8 rounded-full px-10 text-base font-bold"
           >
-            판매자 등록하기
+            작가 등록하기
           </Button>
         </Link>
       </section>

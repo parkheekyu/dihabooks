@@ -9,7 +9,7 @@ const mockPosts = [
   { id: "2", title: "3월 이벤트: 전 상품 10% 할인", category: "이벤트", author: "관리자", date: "2026-03-25", views: 890, status: "게시중" },
   { id: "3", title: "전자책 제작 가이드", category: "가이드", author: "이매니저", date: "2026-03-20", views: 542, status: "게시중" },
   { id: "4", title: "서비스 이용약관 변경 안내", category: "공지사항", author: "관리자", date: "2026-03-15", views: 320, status: "비공개" },
-  { id: "5", title: "판매자 등록 방법 안내", category: "가이드", author: "박에디터", date: "2026-03-10", views: 678, status: "게시중" },
+  { id: "5", title: "작가 등록 방법 안내", category: "가이드", author: "박에디터", date: "2026-03-10", views: 678, status: "게시중" },
 ];
 
 const AdminPosts = () => (

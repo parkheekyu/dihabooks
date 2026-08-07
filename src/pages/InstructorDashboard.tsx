@@ -75,7 +75,7 @@ const InstructorDashboard = () => {
             {/* Desktop sidebar */}
             <aside className="hidden desktop:block w-52 shrink-0">
               <div className="sticky top-24">
-                <h2 className="text-lg font-bold mb-4">판매자 대시보드</h2>
+                <h2 className="text-lg font-bold mb-4">작가 대시보드</h2>
                 <nav className="space-y-0.5">
                   {sidebarItems.map((item) => (
                     <button
@@ -104,7 +104,7 @@ const InstructorDashboard = () => {
             {/* Content */}
             <div className="flex-1 min-w-0">
               {/* Mobile title */}
-              <h1 className="text-lg font-bold mb-6 desktop:hidden">판매자 대시보드</h1>
+              <h1 className="text-lg font-bold mb-6 desktop:hidden">작가 대시보드</h1>
 
               {/* Mobile horizontal nav */}
               <div className="desktop:hidden border-b border-border bg-background -mx-4 px-4 mb-6">

@@ -239,7 +239,7 @@ const BookDetail = () => {
     </button>
   );
 
-  // All four fields come from 판매자 프로필 설정 (/seller-profile).
+  // All four fields come from 작가 프로필 설정 (/seller-profile).
   const authorName = sellerProfile.nickname || book.author;
   const authorSection = () => (
     <div>
@@ -497,7 +497,7 @@ const BookDetail = () => {
                     <p className="text-sm font-bold">구매 완료된 전자책입니다</p>
                     <p className="text-xs text-muted-foreground">웹 뷰어에서 바로 읽을 수 있어요</p>
                   </div>
-                  <Button className="w-full h-12 rounded-xl text-base font-bold" onClick={() => navigate(`/reader/${book.id}`)}>
+                  <Button className="w-full h-12 rounded-xl text-base font-bold bg-foreground text-background hover:bg-foreground/90" onClick={() => navigate(`/reader/${book.id}`)}>
                     지금 바로 읽기
                   </Button>
                 </div>
@@ -526,7 +526,7 @@ const BookDetail = () => {
                   </div>
                   <div className="flex gap-2">
                     {wishButton()}
-                    <Button className="flex-1 h-12 rounded-xl text-base font-bold" onClick={handlePurchase}>
+                    <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-foreground text-background hover:bg-foreground/90" onClick={handlePurchase}>
                       지금 바로 구매하기
                     </Button>
                   </div>
@@ -666,7 +666,7 @@ const BookDetail = () => {
       <div className="desktop:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border px-4 py-3 z-40 safe-bottom">
         {isPurchased ? (
           <Button
-            className="w-full h-12 rounded-xl text-base font-bold"
+            className="w-full h-12 rounded-xl text-base font-bold bg-foreground text-background hover:bg-foreground/90"
             onClick={() => navigate(`/reader/${book.id}`)}
           >
             지금 바로 읽기
@@ -674,7 +674,7 @@ const BookDetail = () => {
         ) : (
           <div className="flex items-center gap-3">
             {wishButton()}
-            <Button className="flex-1 h-12 rounded-xl text-base font-bold" onClick={handlePurchase}>
+            <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-foreground text-background hover:bg-foreground/90" onClick={handlePurchase}>
               {currentOption.price.toLocaleString()}원 구매하기
             </Button>
           </div>

@@ -27,7 +27,7 @@ const Header = () => {
     navigate("/");
   };
 
-  const roleLabel = role === "member" ? "멤버" : "판매자";
+  const roleLabel = role === "member" ? "멤버" : "작가";
   const roleStyles = role === "member"
     ? "bg-secondary text-muted-foreground"
     : "bg-primary/10 text-primary";
@@ -138,7 +138,7 @@ const Header = () => {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="gap-2" onClick={() => { toggleRole(); }}>
-                        <ArrowRightLeft className="h-4 w-4" /> 판매자로 전환
+                        <ArrowRightLeft className="h-4 w-4" /> 작가로 전환
                       </DropdownMenuItem>
                     </>
                   ) : (
@@ -147,7 +147,7 @@ const Header = () => {
                         <BookOpen className="h-4 w-4" /> 내 서재
                       </DropdownMenuItem>
                       <DropdownMenuItem className="gap-2" onClick={() => navigate("/instructor")}>
-                        <LayoutDashboard className="h-4 w-4" /> 판매자 대시보드
+                        <LayoutDashboard className="h-4 w-4" /> 작가 대시보드
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="gap-2" onClick={() => { toggleRole(); }}>
@@ -243,7 +243,7 @@ const Header = () => {
                     <Button variant="outline" className="w-full gap-2" size="sm"><BookOpen className="h-3.5 w-3.5" /> 내 서재</Button>
                   </Link>
                   <Button variant="outline" className="w-full gap-2" size="sm" onClick={() => { toggleRole(); }}>
-                    <ArrowRightLeft className="h-3.5 w-3.5" /> 판매자로 전환
+                    <ArrowRightLeft className="h-3.5 w-3.5" /> 작가로 전환
                   </Button>
                 </>
               ) : (
@@ -252,7 +252,7 @@ const Header = () => {
                     <Button variant="outline" className="w-full gap-2" size="sm"><BookOpen className="h-3.5 w-3.5" /> 내 서재</Button>
                   </Link>
                   <Link to="/instructor" onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" className="w-full gap-2" size="sm"><LayoutDashboard className="h-3.5 w-3.5" /> 판매자 대시보드</Button>
+                    <Button variant="outline" className="w-full gap-2" size="sm"><LayoutDashboard className="h-3.5 w-3.5" /> 작가 대시보드</Button>
                   </Link>
                   <Button variant="outline" className="w-full gap-2" size="sm" onClick={() => { toggleRole(); }}>
                     <ArrowRightLeft className="h-3.5 w-3.5" /> 멤버로 전환

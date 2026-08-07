@@ -44,14 +44,14 @@ const Store = () => {
                       onClick={() => setActiveCategory(cat.id)}
                       className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                         activeCategory === cat.id
-                          ? "bg-primary text-primary-foreground"
+                          ? "bg-foreground text-background"
                           : "hover:bg-secondary text-foreground"
                       }`}
                     >
                       {cat.icon && <cat.icon className="h-4 w-4" />}
                       {cat.label}
                       {activeCategory === cat.id && (
-                        <span className="ml-auto w-2 h-2 rounded-full bg-primary-foreground" />
+                        <span className="ml-auto w-2 h-2 rounded-full bg-background" />
                       )}
                     </button>
                   </li>
@@ -73,7 +73,7 @@ const Store = () => {
                   onClick={() => setActiveCategory(cat.id)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                     activeCategory === cat.id
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-foreground text-background"
                       : "bg-secondary text-muted-foreground"
                   }`}
                 >

@@ -7,16 +7,16 @@ import {
 
 const mockMembers = [
   { id: "1", name: "김민수", email: "kim@example.com", role: "일반회원", joinDate: "2026-01-15", purchases: 3, status: "활성", lastLogin: "2026-03-30" },
-  { id: "2", name: "이수진", email: "lee@example.com", role: "판매자", joinDate: "2025-11-02", purchases: 0, status: "활성", lastLogin: "2026-03-29" },
+  { id: "2", name: "이수진", email: "lee@example.com", role: "작가", joinDate: "2025-11-02", purchases: 0, status: "활성", lastLogin: "2026-03-29" },
   { id: "3", name: "박영호", email: "park@example.com", role: "일반회원", joinDate: "2026-03-10", purchases: 1, status: "활성", lastLogin: "2026-03-28" },
   { id: "4", name: "최지은", email: "choi@example.com", role: "일반회원", joinDate: "2026-02-28", purchases: 5, status: "정지", lastLogin: "2026-02-20" },
-  { id: "5", name: "정하나", email: "jung@example.com", role: "판매자", joinDate: "2025-09-20", purchases: 0, status: "활성", lastLogin: "2026-03-30" },
+  { id: "5", name: "정하나", email: "jung@example.com", role: "작가", joinDate: "2025-09-20", purchases: 0, status: "활성", lastLogin: "2026-03-30" },
   { id: "6", name: "오진우", email: "oh@example.com", role: "일반회원", joinDate: "2026-03-25", purchases: 2, status: "활성", lastLogin: "2026-03-30" },
 ];
 
 const RoleBadge = ({ role }: { role: string }) => (
   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-    role === "판매자" ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"
+    role === "작가" ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"
   }`}>{role}</span>
 );
 
