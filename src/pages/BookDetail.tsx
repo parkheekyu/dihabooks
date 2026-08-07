@@ -526,7 +526,7 @@ const BookDetail = () => {
                   </div>
                   <div className="flex gap-2">
                     {wishButton()}
-                    <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-foreground text-background hover:bg-foreground/90" onClick={handlePurchase}>
+                    <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
                       지금 바로 구매하기
                     </Button>
                   </div>
@@ -674,7 +674,7 @@ const BookDetail = () => {
         ) : (
           <div className="flex items-center gap-3">
             {wishButton()}
-            <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-foreground text-background hover:bg-foreground/90" onClick={handlePurchase}>
+            <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
               {currentOption.price.toLocaleString()}원 구매하기
             </Button>
           </div>

@@ -34,6 +34,8 @@ export default {
         'desktop': '1024px',
       },
       colors: {
+        /** 스토어 제목과 구매 CTA에 쓰는 브랜드 블루. 테마와 무관하게 고정. */
+        brand: "#1843bc",
         kakao: {
           DEFAULT: "hsl(var(--kakao))",
           foreground: "hsl(var(--kakao-foreground))",

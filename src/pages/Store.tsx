@@ -21,7 +21,7 @@ const Store = () => {
         {/* Title */}
         <div className="mb-6 tablet:mb-8">
           <h1 className="text-2xl tablet:text-3xl font-black">
-            전자책<span className="text-gradient-primary">스토어</span>
+            전자책<span className="text-brand">스토어</span>
           </h1>
           <p className="text-xs tablet:text-sm text-muted-foreground mt-1">
             {filteredBooks.length > 0
@@ -44,14 +44,14 @@ const Store = () => {
                       onClick={() => setActiveCategory(cat.id)}
                       className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                         activeCategory === cat.id
-                          ? "bg-foreground text-background"
+                          ? "bg-foreground/10 text-foreground font-semibold"
                           : "hover:bg-secondary text-foreground"
                       }`}
                     >
                       {cat.icon && <cat.icon className="h-4 w-4" />}
                       {cat.label}
                       {activeCategory === cat.id && (
-                        <span className="ml-auto w-2 h-2 rounded-full bg-background" />
+                        <span className="ml-auto w-2 h-2 rounded-full bg-foreground" />
                       )}
                     </button>
                   </li>
@@ -73,7 +73,7 @@ const Store = () => {
                   onClick={() => setActiveCategory(cat.id)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                     activeCategory === cat.id
-                      ? "bg-foreground text-background"
+                      ? "bg-foreground/10 text-foreground font-semibold"
                       : "bg-secondary text-muted-foreground"
                   }`}
                 >
