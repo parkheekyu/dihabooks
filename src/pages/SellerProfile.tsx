@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { Plus, X, Edit, Briefcase, GraduationCap, Award, Wrench, FileText, Rocket } from "lucide-react";
+import { Plus, X, Edit, Briefcase, GraduationCap, Award, Wrench, FileText, Rocket, User, Camera, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,8 +11,35 @@ import AccountSidebar from "@/components/AccountSidebar";
 
 const SellerProfile = () => {
   const { user, isLoggedIn, sellerProfile, updateSellerProfile } = useAuth();
+
+  // Draft copy of the 작가 프로필 — committed to context on 저장.
+  const [nickname, setNickname] = useState(sellerProfile.nickname);
   const [intro, setIntro] = useState(sellerProfile.intro);
-  const [editingIntro, setEditingIntro] = useState(false);
+  const [contactUrl, setContactUrl] = useState(sellerProfile.contactUrl);
+  const [photo, setPhoto] = useState(sellerProfile.profileImage);
+  const [saved, setSaved] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const dirty =
+    nickname !== sellerProfile.nickname ||
+    intro !== sellerProfile.intro ||
+    contactUrl !== sellerProfile.contactUrl ||
+    photo !== sellerProfile.profileImage;
+
+  // No upload backend in the demo, so preview straight off the local blob.
+  // Revoke the previous one so repeated picks don't pile up.
+  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (photo.startsWith("blob:")) URL.revokeObjectURL(photo);
+    setPhoto(URL.createObjectURL(file));
+    setSaved(false);
+  };
+
+  const handleSave = () => {
+    updateSellerProfile({ nickname, intro, contactUrl, profileImage: photo });
+    setSaved(true);
+  };
 
   const [careers, setCareers] = useState([
     { id: "1", title: "프리랜서", duration: "3년 0개월" },
@@ -53,31 +80,93 @@ const SellerProfile = () => {
                 </div>
               </div>
 
-              {/* 소개 */}
+              {/* 작가 프로필 — 상품 페이지 하단 작가 소개에 그대로 노출 */}
               <div className="py-5 border-b border-border">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold">소개 <span className="text-destructive">*</span></h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs h-7 gap-1"
-                    onClick={() => setEditingIntro(!editingIntro)}
-                  >
-                    <Edit className="h-3 w-3" /> 편집
-                  </Button>
-                </div>
-                {editingIntro ? (
+                <h3 className="text-sm font-semibold">작가 프로필 <span className="text-destructive">*</span></h3>
+                <p className="text-xs text-muted-foreground mt-1 mb-4">
+                  여기서 설정한 내용이 상품 페이지 맨 아래 &lsquo;작가 소개&rsquo;에 그대로 표시됩니다.
+                </p>
+
+                {/* 프로필 사진 */}
+                <div className="flex items-center gap-4 mb-5">
+                  {photo ? (
+                    <img src={photo} alt="" className="h-20 w-20 rounded-full object-cover shrink-0" />
+                  ) : (
+                    <div className="h-20 w-20 rounded-full bg-primary/80 flex items-end justify-center overflow-hidden shrink-0">
+                      <User className="h-16 w-16 text-white translate-y-2" strokeWidth={0} fill="currentColor" />
+                    </div>
+                  )}
                   <div className="space-y-2">
-                    <Textarea
-                      value={intro}
-                      onChange={(e) => setIntro(e.target.value)}
-                      className="text-sm min-h-[80px]"
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhoto}
+                      className="hidden"
                     />
-                    <Button size="sm" className="text-xs" onClick={() => { updateSellerProfile({ intro }); setEditingIntro(false); }}>저장</Button>
+                    <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => fileRef.current?.click()}>
+                      <Camera className="h-3.5 w-3.5" /> 사진 {photo ? "변경" : "등록"}
+                    </Button>
+                    {photo && (
+                      <button
+                        onClick={() => { if (photo.startsWith("blob:")) URL.revokeObjectURL(photo); setPhoto(""); setSaved(false); }}
+                        className="block text-xs text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        사진 제거
+                      </button>
+                    )}
+                    <p className="text-[11px] text-muted-foreground">정사각형 이미지를 권장합니다.</p>
                   </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">{intro}</p>
-                )}
+                </div>
+
+                {/* 작가명 */}
+                <div className="space-y-1.5 mb-4">
+                  <label htmlFor="seller-nickname" className="text-xs font-semibold">작가명 (닉네임)</label>
+                  <Input
+                    id="seller-nickname"
+                    value={nickname}
+                    onChange={(e) => { setNickname(e.target.value); setSaved(false); }}
+                    placeholder="독자에게 보여질 이름"
+                    className="text-sm"
+                  />
+                </div>
+
+                {/* 소개 */}
+                <div className="space-y-1.5 mb-4">
+                  <label htmlFor="seller-intro" className="text-xs font-semibold">소개글</label>
+                  <Textarea
+                    id="seller-intro"
+                    value={intro}
+                    onChange={(e) => { setIntro(e.target.value); setSaved(false); }}
+                    placeholder="어떤 작가인지 2~3줄로 소개해주세요."
+                    className="text-sm min-h-[80px]"
+                  />
+                </div>
+
+                {/* 1:1 문의 링크 */}
+                <div className="space-y-1.5 mb-4">
+                  <label htmlFor="seller-contact" className="text-xs font-semibold">1:1 문의 링크</label>
+                  <Input
+                    id="seller-contact"
+                    type="url"
+                    value={contactUrl}
+                    onChange={(e) => { setContactUrl(e.target.value); setSaved(false); }}
+                    placeholder="https://open.kakao.com/o/..."
+                    className="text-sm"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    오픈채팅, 폼 등 문의받을 주소입니다. 비워두면 문의 버튼이 나타나지 않습니다.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Button size="sm" className="text-xs" onClick={handleSave} disabled={!dirty}>저장</Button>
+                  {saved && !dirty && (
+                    <span className="flex items-center gap-1 text-xs text-primary">
+                      <Check className="h-3.5 w-3.5" /> 저장되었습니다
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* 활동 정보 */}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2, BookOpen, Send, ThumbsUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Heart, ArrowLeft, Share2, BookOpen, Send, ThumbsUp, ChevronLeft, ChevronRight, User } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -238,22 +238,45 @@ const BookDetail = () => {
     </button>
   );
 
+  // All four fields come from 판매자 프로필 설정 (/seller-profile).
+  const authorName = sellerProfile.nickname || book.author;
   const authorSection = () => (
     <div>
       {sectionHeading("작가 소개")}
-      <div className="flex items-start gap-3">
-        {sellerProfile.profileImage && (
+      <div className="flex items-start gap-4 tablet:gap-5">
+        {sellerProfile.profileImage ? (
           <img
             src={sellerProfile.profileImage}
-            alt={book.author}
-            className="h-12 w-12 rounded-full object-cover border border-border shrink-0"
+            alt={authorName}
+            className="h-20 w-20 tablet:h-24 tablet:w-24 rounded-full object-cover shrink-0"
           />
+        ) : (
+          <div className="h-20 w-20 tablet:h-24 tablet:w-24 rounded-full bg-primary/80 flex items-end justify-center overflow-hidden shrink-0">
+            <User className="h-16 w-16 tablet:h-[4.75rem] tablet:w-[4.75rem] text-white translate-y-2" strokeWidth={0} fill="currentColor" />
+          </div>
         )}
-        <div>
-          <p className="text-sm font-semibold mb-1">{book.author}</p>
-          <p className="text-sm text-muted-foreground leading-relaxed">{sellerProfile.intro}</p>
+        <div className="min-w-0 pt-0.5 tablet:pt-1">
+          <h3 className="text-xl tablet:text-2xl font-black leading-tight">{authorName}</h3>
+          <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+            {sellerProfile.intro}
+          </p>
         </div>
       </div>
+
+      {sellerProfile.contactUrl && (
+        <div className="relative inline-block mt-3 ml-10 tablet:ml-14">
+          {/* Speech-bubble tail pointing back up at the avatar. */}
+          <span className="absolute -top-1 left-5 h-3.5 w-3.5 rotate-45 rounded-[2px] bg-kakao" />
+          <a
+            href={sellerProfile.contactUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative inline-flex items-center rounded-2xl bg-kakao px-5 py-2.5 text-sm font-bold text-kakao-foreground transition-opacity hover:opacity-90"
+          >
+            1:1 문의하기
+          </a>
+        </div>
+      )}
     </div>
   );
 

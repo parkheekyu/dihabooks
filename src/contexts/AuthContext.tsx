@@ -9,9 +9,13 @@ interface User {
   profileImage: string;
 }
 
+// Shown verbatim in the 작가 소개 block at the bottom of every product page.
 interface SellerProfile {
+  nickname: string;
   intro: string;
   profileImage: string;
+  /** 1:1 문의 링크. Empty hides the contact button. */
+  contactUrl: string;
 }
 
 interface AuthContextType {
@@ -30,8 +34,10 @@ interface AuthContextType {
 }
 
 const defaultSellerProfile: SellerProfile = {
-  intro: "마케팅, 디자인하는 디하북스 판매자입니다.",
+  nickname: "크리에이터 김",
+  intro: "작가에 대한 소개글. 안녕하세요.\n저는 누구누구입니다. 만나서 반갑습니다.",
   profileImage: "",
+  contactUrl: "https://open.kakao.com/",
 };
 
 const AuthContext = createContext<AuthContextType>({
