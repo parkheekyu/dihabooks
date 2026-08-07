@@ -33,10 +33,6 @@ const BookCard = ({ book }: BookCardProps) => {
   const { isLoggedIn } = useAuth();
   const wished = isWished(book.id);
 
-  const discount = book.originalPrice
-    ? Math.round((1 - book.price / book.originalPrice) * 100)
-    : null;
-
   const handleWish = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -95,15 +91,9 @@ const BookCard = ({ book }: BookCardProps) => {
           {book.title}
         </h3>
         <p className="text-[11px] tablet:text-xs text-muted-foreground">{book.author}</p>
+        {/* Sale price only — the discount rate and struck-through list price stay
+            on the product detail page. */}
         <div className="flex items-center gap-1.5 tablet:gap-2 flex-wrap">
-          {discount && (
-            <span className="text-[11px] tablet:text-xs font-bold text-primary">{discount}%</span>
-          )}
-          {book.originalPrice && (
-            <span className="text-[11px] tablet:text-xs text-muted-foreground line-through">
-              {book.originalPrice.toLocaleString()}원
-            </span>
-          )}
           <span className="text-xs tablet:text-sm font-bold">{book.price.toLocaleString()}원</span>
         </div>
       </div>
