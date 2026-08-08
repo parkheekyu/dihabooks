@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { Mail, Send, Check, ShoppingBag } from "lucide-react";
+import { Mail, Send, Check, ShoppingBag, Headset } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AccountSidebar from "@/components/AccountSidebar";
@@ -12,8 +12,10 @@ import { DEFAULT_AVATAR } from "@/lib/constants";
 
 const INQUIRY_TYPES = ["내용 문의", "자료 요청", "오류 신고", "기타"];
 
+const PLATFORM_TYPES = ["정산 문의", "상품 등록/심사", "계정 문제", "기타"];
+
 const Support = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, role } = useAuth();
 
   // 구매한 전자책만 문의 대상. 같은 작가의 책을 여러 권 샀어도 티켓은 주문 단위로 연다.
   const contactable = mockPurchases
@@ -25,6 +27,12 @@ const Support = () => {
   const [type, setType] = useState(INQUIRY_TYPES[0]);
   const [message, setMessage] = useState("");
   const [sentIds, setSentIds] = useState<string[]>([]);
+
+  // 작가 계정의 1:1 문의는 작가 컨택이 아니라 플랫폼 고객센터로 간다.
+  const isExpert = role === "expert";
+  const [platformType, setPlatformType] = useState(PLATFORM_TYPES[0]);
+  const [platformMsg, setPlatformMsg] = useState("");
+  const [platformSent, setPlatformSent] = useState(false);
 
   if (!isLoggedIn) return <Navigate to="/login" replace />;
 
@@ -52,10 +60,83 @@ const Support = () => {
               <h1 className="text-lg font-bold mb-1 desktop:hidden">1:1 문의</h1>
               <h2 className="hidden desktop:block text-lg font-bold mb-1">1:1 문의</h2>
               <p className="text-xs text-muted-foreground mb-5 tablet:mb-6">
-                구매하신 전자책의 작가에게만 문의할 수 있습니다. 문의하실 책을 선택해주세요.
+                {isExpert
+                  ? "디하북스 고객센터로 접수됩니다. 평일 10:00 - 18:00에 순차적으로 답변드립니다."
+                  : "구매하신 전자책의 작가에게만 문의할 수 있습니다. 문의하실 책을 선택해주세요."}
               </p>
 
-              {contactable.length === 0 ? (
+              {isExpert ? (
+                <div className="rounded-lg border border-border p-4 tablet:p-5">
+                  {platformSent ? (
+                    <div className="flex min-h-[220px] flex-col items-center justify-center text-center">
+                      <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
+                        <Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                      </div>
+                      <p className="text-sm font-bold">문의가 접수되었습니다</p>
+                      <p className="text-xs text-muted-foreground mt-1 mb-4">
+                        등록하신 이메일로 답변이 전달됩니다.
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs rounded-lg h-8"
+                        onClick={() => {
+                          setPlatformSent(false);
+                          setPlatformMsg("");
+                          setPlatformType(PLATFORM_TYPES[0]);
+                        }}
+                      >
+                        새 문의 작성
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Headset className="h-4 w-4 text-muted-foreground" />
+                        <p className="text-sm font-bold">디하북스 고객센터</p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5">
+                        {PLATFORM_TYPES.map((t) => (
+                          <button
+                            key={t}
+                            onClick={() => setPlatformType(t)}
+                            className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                              platformType === t
+                                ? "bg-foreground/10 text-foreground font-semibold"
+                                : "bg-secondary text-muted-foreground hover:text-foreground"
+                            }`}
+                          >
+                            {t}
+                          </button>
+                        ))}
+                      </div>
+
+                      <Textarea
+                        value={platformMsg}
+                        onChange={(e) => setPlatformMsg(e.target.value)}
+                        placeholder="문의하실 내용을 자세히 적어주세요."
+                        className="min-h-[140px] text-sm resize-none"
+                      />
+
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-[11px] text-muted-foreground">
+                          평일 10:00 - 18:00 (점심 12 - 13시, 주말·공휴일 제외)
+                        </p>
+                        <Button
+                          size="sm"
+                          className="text-xs h-8 gap-1.5 rounded-lg shrink-0"
+                          disabled={!platformMsg.trim()}
+                          onClick={() => setPlatformSent(true)}
+                        >
+                          <Send className="h-3 w-3" />
+                          문의 보내기
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : contactable.length === 0 ? (
                 <div className="flex min-h-[280px] flex-col items-center justify-center rounded-lg border border-dashed border-border text-center px-4">
                   <ShoppingBag className="h-6 w-6 text-muted-foreground mb-3" />
                   <p className="text-sm font-medium">아직 구매한 전자책이 없습니다.</p>

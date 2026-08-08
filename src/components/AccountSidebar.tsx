@@ -8,14 +8,14 @@ const AccountSidebar = () => {
   const { role, logout } = useAuth();
   const navigate = useNavigate();
 
+  // 작가 계정에는 프로필 수정·구매 내역 대신 작가 프로필 설정만 노출한다.
   const menuItems = [
-    { label: "프로필 수정", path: "/profile/edit", icon: User },
     ...(role === "expert"
-      ? [
-          { label: "작가 프로필 설정", path: "/seller-profile", icon: Settings },
-        ]
-      : []),
-    { label: "구매 내역", path: "/purchases", icon: ShoppingBag },
+      ? [{ label: "작가 프로필 설정", path: "/seller-profile", icon: Settings }]
+      : [
+          { label: "프로필 수정", path: "/profile/edit", icon: User },
+          { label: "구매 내역", path: "/purchases", icon: ShoppingBag },
+        ]),
     { label: "1:1 문의", path: "/support", icon: Mail },
     { label: "자주 묻는 질문", path: "/faq", icon: HelpCircle },
   ];

@@ -218,18 +218,6 @@ const FAQ = () => {
                   })
                 )}
               </div>
-
-              {/* Contact CTA */}
-              <div className="mt-8 rounded-xl border border-border bg-background p-5 tablet:p-6 text-center">
-                <p className="text-sm font-bold mb-1">원하는 답변을 찾지 못하셨나요?</p>
-                <p className="text-xs text-muted-foreground mb-3">1:1 문의를 통해 궁금한 점을 물어보세요.</p>
-                <Link
-                  to="/support"
-                  className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
-                >
-                  1:1 문의하기
-                </Link>
-              </div>
             </div>
           </div>
         </div>
