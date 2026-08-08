@@ -94,6 +94,16 @@
     @apply border-border;
   }
 
+  /* Reserve the scrollbar gutter so a short page (no scrollbar) and a long page
+     (scrollbar) are the same width — otherwise the layout shifts sideways every
+     time you move between tabs. Only where the scrollbar actually takes up
+     space; touch devices use overlay scrollbars and would just lose 15px. */
+  @media (pointer: fine) {
+    html {
+      scrollbar-gutter: stable;
+    }
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }

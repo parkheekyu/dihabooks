@@ -1,15 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { ArrowLeft, ChevronDown, Search, HelpCircle, MessageSquare, BookOpenCheck } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
-
-const supportMenu = [
-  { label: "자주 묻는 질문", path: "/faq", icon: HelpCircle },
-  { label: "1:1 문의하기", path: "/support", icon: MessageSquare },
-  { label: "작가 등록 가이드", path: "/author-guide", icon: BookOpenCheck },
-];
+import AccountSidebar from "@/components/AccountSidebar";
 
 /** 멤버와 작가는 궁금한 게 다르므로 카테고리와 문항을 역할별로 나눈다. */
 const memberCategories = [
@@ -144,7 +138,6 @@ const FAQ = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [openId, setOpenId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const location = useLocation();
   const { role } = useAuth();
 
   const isExpert = role === "expert";
@@ -171,68 +164,19 @@ const FAQ = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 bg-secondary/30">
-        <div className="container px-4 py-6 tablet:py-10 max-w-5xl mx-auto">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <Link to="/" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <h1 className="text-xl font-bold">고객센터</h1>
-          </div>
+      <main className="flex-1">
+        <div className="container px-4 py-6 tablet:py-10">
+          <div className="flex flex-col desktop:flex-row gap-0 desktop:gap-10 max-w-5xl mx-auto">
+            <AccountSidebar />
 
-          <div className="flex gap-8">
-            {/* Desktop Sidebar */}
-            <aside className="hidden desktop:block w-52 shrink-0">
-              <div className="sticky top-24 rounded-2xl border border-border bg-background p-5 space-y-1">
-                <h3 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-3">
-                  Support
-                </h3>
-                <ul className="space-y-1">
-                  {supportMenu.map((item) => {
-                    const active = location.pathname === item.path;
-                    return (
-                      <li key={item.path}>
-                        <Link
-                          to={item.path}
-                          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                            active
-                              ? "bg-primary text-primary-foreground"
-                              : "hover:bg-secondary text-foreground"
-                          }`}
-                        >
-                          <item.icon className="h-4 w-4" />
-                          {item.label}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </aside>
-
-            {/* Content */}
             <div className="flex-1 min-w-0">
-              {/* Mobile support tabs */}
-              <div className="desktop:hidden flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide -mx-4 px-4">
-                {supportMenu.map((item) => {
-                  const active = location.pathname === item.path;
-                  return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                        active
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary text-muted-foreground"
-                      }`}
-                    >
-                      <item.icon className="h-3.5 w-3.5" />
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </div>
+              <h1 className="text-lg font-bold mb-4 desktop:hidden">마이페이지</h1>
+              <h2 className="hidden desktop:block text-lg font-bold mb-1">자주 묻는 질문</h2>
+              <p className="text-xs text-muted-foreground mb-5 tablet:mb-6">
+                {isExpert
+                  ? "작가 활동에 자주 나오는 질문을 모았습니다."
+                  : "구매와 열람에 대해 자주 나오는 질문을 모았습니다."}
+              </p>
 
               {/* Search */}
               <div className="relative mb-5">
