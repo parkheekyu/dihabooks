@@ -5,35 +5,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { sampleBooks } from "@/data/mockData";
+import { sampleBooks, mockPurchases } from "@/data/mockData";
 import AccountSidebar from "@/components/AccountSidebar";
 
-const mockPurchases = [
-  {
-    id: "ORD-20260315-001",
-    bookId: "1",
-    date: "2026.03.15 14:32",
-    status: "confirmed" as const,
-    price: 19000,
-    hasReview: false,
-  },
-  {
-    id: "ORD-20260310-002",
-    bookId: "3",
-    date: "2026.03.10 09:15",
-    status: "confirmed" as const,
-    price: 39000,
-    hasReview: true,
-  },
-  {
-    id: "ORD-20260301-003",
-    bookId: "5",
-    date: "2026.03.01 18:44",
-    status: "confirmed" as const,
-    price: 25000,
-    hasReview: false,
-  },
-];
 
 type StatusType = "confirmed" | "cancelled";
 
@@ -65,7 +39,7 @@ const PurchaseHistory = () => {
             <AccountSidebar />
 
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold mb-4 desktop:hidden">계정 설정</h1>
+              <h1 className="text-lg font-bold mb-4 desktop:hidden">마이페이지</h1>
               <h2 className="hidden desktop:block text-lg font-bold mb-6">구매 내역</h2>
 
               {/* Status Summary */}

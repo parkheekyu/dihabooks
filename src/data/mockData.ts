@@ -190,6 +190,34 @@ export const sampleBooks: Book[] = [
   },
 ];
 
+/** 데모용 구매 내역. 구매 내역 화면과 1:1 문의(구매자 전용)에서 함께 사용. */
+export const mockPurchases = [
+  {
+    id: "ORD-20260315-001",
+    bookId: "1",
+    date: "2026.03.15 14:32",
+    status: "confirmed" as const,
+    price: 19000,
+    hasReview: false,
+  },
+  {
+    id: "ORD-20260310-002",
+    bookId: "3",
+    date: "2026.03.10 09:15",
+    status: "confirmed" as const,
+    price: 39000,
+    hasReview: true,
+  },
+  {
+    id: "ORD-20260301-003",
+    bookId: "5",
+    date: "2026.03.01 18:44",
+    status: "confirmed" as const,
+    price: 25000,
+    hasReview: false,
+  },
+];
+
 export const reviews = [
   {
     id: 1,

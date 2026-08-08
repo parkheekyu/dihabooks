@@ -22,6 +22,7 @@ import BecomeSeller from "./pages/BecomeSeller.tsx";
 import SellerProfile from "./pages/SellerProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PurchaseHistory from "./pages/PurchaseHistory.tsx";
+import Support from "./pages/Support.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import EbookForm from "./pages/EbookForm.tsx";
 import ProfileEdit from "./pages/ProfileEdit.tsx";
@@ -59,6 +60,7 @@ const App = () => (
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/purchases" element={<PurchaseHistory />} />
           
+          <Route path="/support" element={<Support />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/instructor/ebook/new" element={<EbookForm />} />
           <Route path="/instructor/ebook/edit" element={<EbookForm />} />

@@ -53,7 +53,7 @@ const SellerProfile = () => {
             <AccountSidebar />
 
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold mb-4 desktop:hidden">계정 설정</h1>
+              <h1 className="text-lg font-bold mb-4 desktop:hidden">마이페이지</h1>
               <h2 className="hidden desktop:block text-lg font-bold mb-6">작가 프로필 설정</h2>
 
               {/* Profile Header */}

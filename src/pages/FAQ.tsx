@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 
 const supportMenu = [
   { label: "자주 묻는 질문", path: "/faq", icon: HelpCircle },
-  { label: "1:1 문의하기", path: "/contact", icon: MessageSquare },
+  { label: "1:1 문의하기", path: "/support", icon: MessageSquare },
   { label: "작가 등록 가이드", path: "/author-guide", icon: BookOpenCheck },
 ];
 
@@ -33,7 +33,7 @@ const faqData = [
   {
     id: 3, category: "refund",
     question: "환불은 어떻게 하나요?",
-    answer: "구매 후 7일 이내, 전자책을 열람하지 않은 경우에 한해 전액 환불이 가능합니다. 내 정보 > 구매 내역에서 환불 요청을 하시거나, 1:1 문의를 통해 요청해주세요.",
+    answer: "구매 후 7일 이내, 전자책을 열람하지 않은 경우에 한해 전액 환불이 가능합니다. 마이페이지 > 구매 내역에서 환불 요청을 하시거나, 1:1 문의를 통해 요청해주세요.",
   },
   {
     id: 4, category: "refund",
@@ -63,7 +63,7 @@ const faqData = [
   {
     id: 9, category: "seller",
     question: "전자책을 판매하고 싶은데 어떻게 하나요?",
-    answer: "내 정보 > 전문가 전환을 통해 작가 등록을 할 수 있습니다. 작가 등록 후 전자책을 업로드하면 심사를 거쳐 스토어에 등록됩니다.",
+    answer: "마이페이지 > 전문가 전환을 통해 작가 등록을 할 수 있습니다. 작가 등록 후 전자책을 업로드하면 심사를 거쳐 스토어에 등록됩니다.",
   },
   {
     id: 10, category: "seller",
@@ -224,7 +224,7 @@ const FAQ = () => {
                 <p className="text-sm font-bold mb-1">원하는 답변을 찾지 못하셨나요?</p>
                 <p className="text-xs text-muted-foreground mb-3">1:1 문의를 통해 궁금한 점을 물어보세요.</p>
                 <Link
-                  to="/contact"
+                  to="/support"
                   className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
                 >
                   1:1 문의하기

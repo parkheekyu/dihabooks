@@ -129,7 +129,7 @@ const Header = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem className="gap-2" onClick={() => navigate("/profile")}>
-                    <User className="h-4 w-4" /> 내 정보
+                    <User className="h-4 w-4" /> 마이페이지
                   </DropdownMenuItem>
                   {role === "member" ? (
                     <>
@@ -235,7 +235,7 @@ const Header = () => {
                 </div>
               </div>
               <Link to="/profile" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full gap-2" size="sm"><User className="h-3.5 w-3.5" /> 내 정보</Button>
+                <Button variant="outline" className="w-full gap-2" size="sm"><User className="h-3.5 w-3.5" /> 마이페이지</Button>
               </Link>
               {role === "member" ? (
                 <>

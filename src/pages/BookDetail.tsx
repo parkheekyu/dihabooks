@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2, Send, ThumbsUp, ChevronLeft, ChevronRight, CircleCheck, Mail } from "lucide-react";
+import { Star, Heart, ArrowLeft, Share2, Send, ThumbsUp, ChevronLeft, ChevronRight, CircleCheck } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -325,17 +325,6 @@ const BookDetail = () => {
             {sellerProfile.intro}
           </p>
         </div>
-        {sellerProfile.contactUrl && (
-          <a
-            href={sellerProfile.contactUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 inline-flex items-center gap-1.5 self-center rounded-lg border border-border px-3 py-2 text-xs font-semibold hover:bg-secondary transition-colors"
-          >
-            <Mail className="h-3.5 w-3.5" />
-            <span className="hidden tablet:inline">1:1 문의하기</span>
-          </a>
-        )}
       </div>
     </div>
   );

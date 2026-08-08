@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, ShoppingBag, Settings, LogOut } from "lucide-react";
+import { User, ShoppingBag, Settings, LogOut, Mail, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -16,6 +16,8 @@ const AccountSidebar = () => {
         ]
       : []),
     { label: "구매 내역", path: "/purchases", icon: ShoppingBag },
+    { label: "1:1 문의", path: "/support", icon: Mail },
+    { label: "자주 묻는 질문", path: "/faq", icon: HelpCircle },
   ];
 
   const handleLogout = () => {
@@ -28,7 +30,7 @@ const AccountSidebar = () => {
       {/* Desktop sidebar */}
       <aside className="hidden desktop:block w-52 shrink-0">
         <div className="sticky top-24">
-          <h2 className="text-lg font-bold mb-4">계정 설정</h2>
+          <h2 className="text-lg font-bold mb-4">마이페이지</h2>
           <nav className="space-y-0.5">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path;

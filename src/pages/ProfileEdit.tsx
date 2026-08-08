@@ -52,9 +52,9 @@ const ProfileEdit = () => {
             {/* Content */}
             <div className="flex-1 min-w-0">
               {/* Mobile title */}
-              <h1 className="text-lg font-bold mb-4 desktop:hidden">계정 설정</h1>
+              <h1 className="text-lg font-bold mb-4 desktop:hidden">마이페이지</h1>
 
-              <h2 className="hidden desktop:block text-lg font-bold mb-6">내 정보</h2>
+              <h2 className="hidden desktop:block text-lg font-bold mb-6">프로필 수정</h2>
 
               {/* Profile image + name section */}
               <div className="flex flex-col items-center text-center gap-3 pb-5 border-b border-border tablet:flex-row tablet:text-left tablet:items-start tablet:gap-5 tablet:pb-6">
