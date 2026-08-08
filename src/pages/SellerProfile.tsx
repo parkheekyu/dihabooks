@@ -10,6 +10,11 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AccountSidebar from "@/components/AccountSidebar";
 
+const BANKS = [
+  "국민은행", "신한은행", "우리은행", "하나은행", "농협은행", "기업은행",
+  "카카오뱅크", "토스뱅크", "케이뱅크", "새마을금고", "우체국", "SC제일은행",
+];
+
 const SellerProfile = () => {
   const { user, isLoggedIn, sellerProfile, updateSellerProfile } = useAuth();
 
@@ -40,6 +45,24 @@ const SellerProfile = () => {
   const handleSave = () => {
     updateSellerProfile({ nickname, intro, contactUrl, profileImage: photo });
     setSaved(true);
+  };
+
+  // 정산 계좌는 공개 프로필과 성격이 달라 별도 블록·별도 저장으로 둔다.
+  const [bankName, setBankName] = useState(sellerProfile.bankName);
+  const [accountNumber, setAccountNumber] = useState(sellerProfile.accountNumber);
+  const [accountHolder, setAccountHolder] = useState(sellerProfile.accountHolder);
+  const [payoutSaved, setPayoutSaved] = useState(false);
+
+  const payoutDirty =
+    bankName !== sellerProfile.bankName ||
+    accountNumber !== sellerProfile.accountNumber ||
+    accountHolder !== sellerProfile.accountHolder;
+
+  const payoutComplete = !!(bankName && accountNumber.trim() && accountHolder.trim());
+
+  const handlePayoutSave = () => {
+    updateSellerProfile({ bankName, accountNumber, accountHolder });
+    setPayoutSaved(true);
   };
 
   if (!isLoggedIn) return <Navigate to="/login" replace />;
@@ -156,22 +179,73 @@ const SellerProfile = () => {
                 </div>
               </div>
 
-              {/* 활동 정보 */}
+              {/* 정산 계좌 */}
               <div className="py-5">
-                <h3 className="text-sm font-semibold mb-3">활동 정보</h3>
-                <div className="grid grid-cols-3 gap-2 tablet:gap-3">
-                  <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
-                    <p className="text-[11px] tablet:text-xs text-muted-foreground">총 집필 수</p>
-                    <p className="text-xl tablet:text-2xl font-bold mt-0.5 tablet:mt-1">3권</p>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-semibold">정산 계좌 <span className="text-destructive">*</span></h3>
+                  {!payoutComplete && (
+                    <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-destructive/10 text-destructive">
+                      미등록
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1 mb-4">
+                  판매 대금이 입금될 계좌입니다. 예금주가 작가 본인 명의와 일치해야 정산이 처리됩니다.
+                </p>
+
+                <div className="grid grid-cols-1 tablet:grid-cols-2 gap-3 mb-4">
+                  <div className="space-y-1.5">
+                    <label htmlFor="payout-bank" className="text-xs font-semibold">은행</label>
+                    <select
+                      id="payout-bank"
+                      value={bankName}
+                      onChange={(e) => { setBankName(e.target.value); setPayoutSaved(false); }}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
+                      <option value="">은행 선택</option>
+                      {BANKS.map((b) => (
+                        <option key={b} value={b}>{b}</option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
-                    <p className="text-[11px] tablet:text-xs text-muted-foreground">후기</p>
-                    <p className="text-xl tablet:text-2xl font-bold mt-0.5 tablet:mt-1">24개</p>
+
+                  <div className="space-y-1.5">
+                    <label htmlFor="payout-holder" className="text-xs font-semibold">예금주</label>
+                    <Input
+                      id="payout-holder"
+                      value={accountHolder}
+                      onChange={(e) => { setAccountHolder(e.target.value); setPayoutSaved(false); }}
+                      placeholder="계좌에 등록된 이름"
+                      className="text-sm"
+                    />
                   </div>
-                  <div className="rounded-lg bg-secondary/50 p-3 tablet:p-4 text-center">
-                    <p className="text-[11px] tablet:text-xs text-muted-foreground">평점</p>
-                    <p className="text-xl tablet:text-2xl font-bold mt-0.5 tablet:mt-1">4.8 <span className="text-xs tablet:text-sm font-normal text-muted-foreground">/ 5.0</span></p>
-                  </div>
+                </div>
+
+                <div className="space-y-1.5 mb-4">
+                  <label htmlFor="payout-number" className="text-xs font-semibold">계좌번호</label>
+                  <Input
+                    id="payout-number"
+                    inputMode="numeric"
+                    value={accountNumber}
+                    onChange={(e) => {
+                      // 숫자와 하이픈만 허용
+                      setAccountNumber(e.target.value.replace(/[^0-9-]/g, ""));
+                      setPayoutSaved(false);
+                    }}
+                    placeholder="'-' 없이 숫자만 입력"
+                    className="text-sm"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Button size="sm" className="text-xs" onClick={handlePayoutSave} disabled={!payoutDirty || !payoutComplete}>
+                    저장
+                  </Button>
+                  {payoutSaved && !payoutDirty && (
+                    <span className="flex items-center gap-1 text-xs text-primary">
+                      <Check className="h-3.5 w-3.5" /> 저장되었습니다
+                    </span>
+                  )}
                 </div>
               </div>
 

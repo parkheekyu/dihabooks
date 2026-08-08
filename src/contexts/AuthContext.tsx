@@ -16,6 +16,10 @@ interface SellerProfile {
   profileImage: string;
   /** 1:1 문의 링크. Empty hides the contact button. */
   contactUrl: string;
+  /** 정산 계좌. 예금주는 작가 본인 명의여야 정산이 처리된다. */
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
 }
 
 interface AuthContextType {
@@ -38,6 +42,9 @@ const defaultSellerProfile: SellerProfile = {
   intro: "작가에 대한 소개글. 안녕하세요.\n저는 누구누구입니다. 만나서 반갑습니다.",
   profileImage: "",
   contactUrl: "https://open.kakao.com/",
+  bankName: "",
+  accountNumber: "",
+  accountHolder: "",
 };
 
 const AuthContext = createContext<AuthContextType>({
