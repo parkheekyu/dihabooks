@@ -4,6 +4,7 @@ import { BookOpen, Youtube, Dumbbell, Handshake, Bot, Wallet, Sparkles, Palette,
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
 import hero3 from "@/assets/hero-3.jpg";
+import { asset } from "@/lib/constants";
 
 // `label` is also the matching key for Book.category on the store/home filters,
 // so renaming one here means renaming it on every book below too.
@@ -20,11 +21,11 @@ export type HeroSlide = { id: number; image?: string; youtubeId?: string };
 
 export const heroSlides: HeroSlide[] = [
   { id: 1, youtubeId: "xLUfDm5KLo8", image: hero1 },
-  { id: 2, image: "/hero/wolyeok-road.jpg" },
-  { id: 3, image: "/hero/movie-master.jpg" },
-  { id: 4, image: "/hero/yen-soncho.jpg" },
-  { id: 5, image: "/hero/shorts-intro.jpg" },
-  { id: 6, image: "/hero/phone-9000.jpg" },
+  { id: 2, image: asset("/hero/wolyeok-road.jpg") },
+  { id: 3, image: asset("/hero/movie-master.jpg") },
+  { id: 4, image: asset("/hero/yen-soncho.jpg") },
+  { id: 5, image: asset("/hero/shorts-intro.jpg") },
+  { id: 6, image: asset("/hero/phone-9000.jpg") },
 ];
 
 export const sampleBooks: Book[] = [
@@ -37,7 +38,7 @@ export const sampleBooks: Book[] = [
     rating: 4.9,
     reviewCount: 512,
     category: "유튜브",
-    image: "/books/book-01.jpg",
+    image: asset("/books/book-01.jpg"),
     badge: "BEST",
     pageCount: 168,
   },
@@ -50,7 +51,7 @@ export const sampleBooks: Book[] = [
     rating: 4.8,
     reviewCount: 143,
     category: "AI/자동화",
-    image: "/books/book-02.jpg",
+    image: asset("/books/book-02.jpg"),
     badge: "NEW",
     pageCount: 152,
   },
@@ -62,7 +63,7 @@ export const sampleBooks: Book[] = [
     rating: 4.7,
     reviewCount: 208,
     category: "제휴 마케팅",
-    image: "/books/book-03.jpg",
+    image: asset("/books/book-03.jpg"),
     pageCount: 120,
   },
   {
@@ -74,7 +75,7 @@ export const sampleBooks: Book[] = [
     rating: 4.8,
     reviewCount: 331,
     category: "유튜브",
-    image: "/books/book-04.jpg",
+    image: asset("/books/book-04.jpg"),
     pageCount: 138,
   },
   {
@@ -86,7 +87,7 @@ export const sampleBooks: Book[] = [
     rating: 4.9,
     reviewCount: 447,
     category: "유튜브",
-    image: "/books/book-05.jpg",
+    image: asset("/books/book-05.jpg"),
     badge: "BEST",
     pageCount: 176,
   },
@@ -98,7 +99,7 @@ export const sampleBooks: Book[] = [
     rating: 4.9,
     reviewCount: 389,
     category: "유튜브",
-    image: "/books/book-06.jpg",
+    image: asset("/books/book-06.jpg"),
     pageCount: 160,
   },
   {
@@ -110,7 +111,7 @@ export const sampleBooks: Book[] = [
     rating: 5.0,
     reviewCount: 176,
     category: "제휴 마케팅",
-    image: "/books/book-07.jpg",
+    image: asset("/books/book-07.jpg"),
     badge: "TOP",
     pageCount: 224,
   },
@@ -123,7 +124,7 @@ export const sampleBooks: Book[] = [
     rating: 5.0,
     reviewCount: 264,
     category: "유튜브",
-    image: "/books/book-08.jpg",
+    image: asset("/books/book-08.jpg"),
     badge: "TOP",
     pageCount: 240,
   },
@@ -136,7 +137,7 @@ export const sampleBooks: Book[] = [
     rating: 4.8,
     reviewCount: 298,
     category: "유튜브",
-    image: "/books/book-09.jpg",
+    image: asset("/books/book-09.jpg"),
     pageCount: 142,
   },
   {
@@ -148,7 +149,7 @@ export const sampleBooks: Book[] = [
     rating: 4.9,
     reviewCount: 187,
     category: "AI/자동화",
-    image: "/books/book-10.jpg",
+    image: asset("/books/book-10.jpg"),
     badge: "BEST",
     pageCount: 198,
   },
@@ -160,7 +161,7 @@ export const sampleBooks: Book[] = [
     rating: 4.7,
     reviewCount: 152,
     category: "AI/자동화",
-    image: "/books/book-11.jpg",
+    image: asset("/books/book-11.jpg"),
     pageCount: 134,
   },
   {
@@ -172,7 +173,7 @@ export const sampleBooks: Book[] = [
     rating: 4.8,
     reviewCount: 219,
     category: "제휴 마케팅",
-    image: "/books/book-12.jpg",
+    image: asset("/books/book-12.jpg"),
     badge: "NEW",
     pageCount: 150,
   },
@@ -185,7 +186,7 @@ export const sampleBooks: Book[] = [
     rating: 4.9,
     reviewCount: 173,
     category: "AI/자동화",
-    image: "/books/book-13.jpg",
+    image: asset("/books/book-13.jpg"),
     pageCount: 186,
   },
 ];

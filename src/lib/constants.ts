@@ -1,5 +1,11 @@
+/**
+ * public/ 에셋 경로. Vite의 base를 앞에 붙여 절대경로를 피한다.
+ * 일반 빌드에서는 "/", 오프라인(단독 HTML) 빌드에서는 "./"가 된다.
+ */
+export const asset = (p: string) => import.meta.env.BASE_URL + p.replace(/^\//, "");
+
 /** Placeholder shown wherever a seller has not uploaded a profile photo. */
-export const DEFAULT_AVATAR = "/brand/avatar-default.svg";
+export const DEFAULT_AVATAR = asset("/brand/avatar-default.svg");
 
 /**
  * Tint for the category chip on a book card, keyed by the category label in

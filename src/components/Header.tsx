@@ -9,6 +9,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
+import { asset } from "@/lib/constants";
 
 const navItems = [
   { label: "전자책 스토어", path: "/store" },
@@ -38,7 +39,7 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0">
           <img
-            src="/brand/dihabooks-logo-kr.png"
+            src={asset("/brand/dihabooks-logo-kr.png")}
             alt="디하북스"
             className="h-5 tablet:h-6 w-auto"
           />

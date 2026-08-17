@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { TicketPercent, Check } from "lucide-react";
+import { asset } from "@/lib/constants";
 
 const benefits = [
   "첫 구매 할인쿠폰 즉시 지급",
@@ -19,7 +20,7 @@ const AuthModal = () => {
         <div className="px-7 pt-11 pb-9 text-center">
           {/* Logo */}
           <img
-            src="/brand/dihabooks-logo-kr.png"
+            src={asset("/brand/dihabooks-logo-kr.png")}
             alt="디하북스"
             className="h-7 w-auto mx-auto"
           />

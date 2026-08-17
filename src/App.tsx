@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,6 +29,10 @@ import ProfileEdit from "./pages/ProfileEdit.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import OrderComplete from "./pages/OrderComplete.tsx";
 
+// file:// 로 열리는 오프라인 빌드에서는 history API 라우팅이 동작하지 않으므로
+// 해시 라우팅으로 전환한다. 일반 빌드(base "/")는 기존대로 BrowserRouter.
+const Router = import.meta.env.BASE_URL === "/" ? BrowserRouter : HashRouter;
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -39,7 +43,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthModal />
-      <BrowserRouter>
+      <Router>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
@@ -66,7 +70,7 @@ const App = () => (
           <Route path="/instructor/ebook/edit" element={<EbookForm />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
+      </Router>
     </TooltipProvider>
     </WishlistProvider>
     </AuthProvider>

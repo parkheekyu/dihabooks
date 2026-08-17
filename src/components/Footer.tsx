@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { asset } from "@/lib/constants";
 
 const Footer = () => {
   return (
@@ -9,7 +10,7 @@ const Footer = () => {
           <div className="space-y-3 col-span-2 tablet:col-span-1">
             {/* White variant — the footer sits on --footer-bg (near-black). */}
             <img
-              src="/brand/dihabooks-logo-en-white.png"
+              src={asset("/brand/dihabooks-logo-en-white.png")}
               alt="DIHABOOKS"
               className="h-6 tablet:h-7 w-auto"
             />
