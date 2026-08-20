@@ -87,7 +87,7 @@ const SellerProfile = () => {
                   className="h-14 w-14 tablet:h-16 tablet:w-16 rounded-full object-cover border border-border"
                 />
                 <div>
-                  <p className="font-bold text-sm tablet:text-base">{user?.name}</p>
+                  <p className="font-bold text-sm tablet:text-base">{user?.nickname}</p>
                   <p className="text-xs tablet:text-sm text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
@@ -155,7 +155,7 @@ const SellerProfile = () => {
 
                 {/* 1:1 문의 링크 */}
                 <div className="space-y-1.5 mb-4">
-                  <label htmlFor="seller-contact" className="text-xs font-semibold">1:1 문의 링크</label>
+                  <label htmlFor="seller-contact" className="text-xs font-semibold">1:1 문의 링크 (오픈채팅)</label>
                   <Input
                     id="seller-contact"
                     type="url"
@@ -165,7 +165,8 @@ const SellerProfile = () => {
                     className="text-sm"
                   />
                   <p className="text-[11px] text-muted-foreground">
-                    오픈채팅, 폼 등 문의받을 주소입니다. 비워두면 문의 버튼이 나타나지 않습니다.
+                    구매자가 마이페이지 &gt; 1:1 문의에서 &lsquo;문의하기&rsquo;를 누르면 이 주소로 연결됩니다.
+                    비워두면 문의 버튼 대신 &lsquo;문의 링크 미등록&rsquo;으로 표시됩니다.
                   </p>
                 </div>
 
