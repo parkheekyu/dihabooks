@@ -1,15 +1,32 @@
+import { useState } from "react";
 import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const mockOrders = [
-  { id: "ORD-2026-0512", customer: "김민수", product: "유튜브 알고리즘 마스터", date: "2026-03-30", amount: 19000, status: "완료", payment: "카카오페이" },
-  { id: "ORD-2026-0511", customer: "오진우", product: "ChatGPT 자동화 파이프라인", date: "2026-03-30", amount: 39000, status: "완료", payment: "신용카드" },
-  { id: "ORD-2026-0510", customer: "한서연", product: "인스타 릴스로 월 500만원", date: "2026-03-29", amount: 15000, status: "완료", payment: "카카오페이" },
-  { id: "ORD-2026-0509", customer: "박영호", product: "제휴마케팅 완전 가이드", date: "2026-03-29", amount: 12000, status: "환불요청", payment: "신용카드" },
-  { id: "ORD-2026-0508", customer: "최지은", product: "유튜브 알고리즘 마스터", date: "2026-03-28", amount: 19000, status: "취소", payment: "카카오페이" },
+type Order = {
+  id: string; customer: string; nickname: string; phone: string; email: string;
+  product: string; date: string; amount: number; status: string; payment: string;
+  paidAt: string; receiptEmail: string; note?: string;
+};
+
+const mockOrders: Order[] = [
+  { id: "ORD-2026-0512", customer: "김민수", nickname: "민수쓰", phone: "010-2841-1063", email: "kim@example.com",
+    product: "유튜브 알고리즘 마스터", date: "2026-03-30", amount: 19000, status: "완료", payment: "카카오페이",
+    paidAt: "2026-03-30 14:32", receiptEmail: "kim@example.com" },
+  { id: "ORD-2026-0511", customer: "오진우", nickname: "진우진우", phone: "010-6641-3390", email: "oh@example.com",
+    product: "ChatGPT 자동화 파이프라인", date: "2026-03-30", amount: 39000, status: "완료", payment: "신용카드",
+    paidAt: "2026-03-30 09:15", receiptEmail: "oh@example.com" },
+  { id: "ORD-2026-0510", customer: "한서연", nickname: "서연", phone: "010-4417-2250", email: "han@example.com",
+    product: "인스타 릴스로 월 500만원", date: "2026-03-29", amount: 15000, status: "완료", payment: "카카오페이",
+    paidAt: "2026-03-29 21:04", receiptEmail: "han@example.com" },
+  { id: "ORD-2026-0509", customer: "박영호", nickname: "영호형", phone: "010-3355-9021", email: "park@example.com",
+    product: "제휴마케팅 완전 가이드", date: "2026-03-29", amount: 12000, status: "환불요청", payment: "신용카드",
+    paidAt: "2026-03-29 11:48", receiptEmail: "park@example.com", note: "내용이 기대와 달라 환불 요청합니다." },
+  { id: "ORD-2026-0508", customer: "최지은", nickname: "지은지은", phone: "010-9084-2277", email: "choi@example.com",
+    product: "유튜브 알고리즘 마스터", date: "2026-03-28", amount: 19000, status: "취소", payment: "카카오페이",
+    paidAt: "2026-03-28 16:20", receiptEmail: "choi@example.com" },
 ];
-
 const statusColor: Record<string, string> = {
   "완료": "bg-green-100 text-green-700",
   "환불요청": "bg-yellow-100 text-yellow-700",
@@ -21,7 +38,15 @@ interface AdminOrdersProps {
   filter?: "all" | "refund";
 }
 
+const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
+  <div className="flex items-start gap-3 py-2 border-b border-border last:border-0">
+    <span className="w-24 shrink-0 text-xs text-muted-foreground">{label}</span>
+    <span className="text-sm">{value}</span>
+  </div>
+);
+
 const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
+  const [detail, setDetail] = useState<Order | null>(null);
   const filtered = filter === "refund"
     ? mockOrders.filter(o => o.status === "환불요청" || o.status === "취소" || o.status === "환불완료")
     : mockOrders;
@@ -39,12 +64,13 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
         <p className="text-sm text-muted-foreground ml-auto">{filtered.length}건</p>
       </div>
 
-      <div className="hidden tablet:block rounded-xl border border-border bg-background overflow-hidden">
-        <table className="w-full">
+      <div className="hidden tablet:block rounded-xl border border-border bg-background overflow-x-auto">
+        <table className="w-full min-w-[980px]">
           <thead>
             <tr className="border-b border-border bg-secondary/50">
               <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">주문번호</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">고객</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">구매자</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">연락처</th>
               <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">상품</th>
               <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">결제</th>
               <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">금액</th>
@@ -57,7 +83,11 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
             {filtered.map(o => (
               <tr key={o.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
                 <td className="px-4 py-3 text-xs text-muted-foreground">{o.id}</td>
-                <td className="px-4 py-3 text-sm">{o.customer}</td>
+                <td className="px-4 py-3">
+                  <p className="text-sm">{o.customer}</p>
+                  <p className="text-xs text-muted-foreground">{o.nickname}</p>
+                </td>
+                <td className="px-4 py-3 text-sm tabular-nums">{o.phone}</td>
                 <td className="px-4 py-3 text-sm font-medium max-w-[180px] truncate">{o.product}</td>
                 <td className="px-4 py-3 text-xs text-muted-foreground">{o.payment}</td>
                 <td className="px-4 py-3 text-sm text-right font-semibold">₩{o.amount.toLocaleString()}</td>
@@ -65,13 +95,16 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
                 <td className="px-4 py-3">
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[o.status] || "bg-secondary text-muted-foreground"}`}>{o.status}</span>
                 </td>
-                <td className="px-4 py-3 text-right">
-                  {o.status === "환불요청" && (
-                    <div className="flex gap-1.5 justify-end">
-                      <Button size="sm" variant="outline" className="h-7 px-2 text-xs">승인</Button>
-                      <Button size="sm" variant="outline" className="h-7 px-2 text-xs text-destructive">거절</Button>
-                    </div>
-                  )}
+                <td className="px-4 py-3">
+                  <div className="flex gap-1.5 justify-end">
+                    <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setDetail(o)}>상세</Button>
+                    {o.status === "환불요청" && (
+                      <>
+                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs">승인</Button>
+                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs text-destructive">거절</Button>
+                      </>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -87,22 +120,61 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
               <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${statusColor[o.status] || "bg-secondary text-muted-foreground"}`}>{o.status}</span>
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{o.id} · {o.customer}</span>
+              <span>{o.id} · {o.customer} · {o.phone}</span>
               <span>{o.date}</span>
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-border">
               <span className="text-xs text-muted-foreground">{o.payment}</span>
               <p className="text-sm font-semibold">₩{o.amount.toLocaleString()}</p>
             </div>
-            {o.status === "환불요청" && (
-              <div className="flex gap-2 pt-1">
-                <Button size="sm" variant="outline" className="flex-1 h-7 text-xs">환불 승인</Button>
-                <Button size="sm" variant="outline" className="flex-1 h-7 text-xs text-destructive">거절</Button>
-              </div>
-            )}
+            <div className="flex gap-2 pt-1">
+              <Button size="sm" variant="outline" className="flex-1 h-7 text-xs" onClick={() => setDetail(o)}>상세 보기</Button>
+              {o.status === "환불요청" && (
+                <>
+                  <Button size="sm" variant="outline" className="flex-1 h-7 text-xs">환불 승인</Button>
+                  <Button size="sm" variant="outline" className="flex-1 h-7 text-xs text-destructive">거절</Button>
+                </>
+              )}
+            </div>
           </div>
         ))}
       </div>
+
+      {/* 주문 상세 */}
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>주문 상세</DialogTitle></DialogHeader>
+          {detail && (
+            <div className="space-y-5">
+              <div>
+                <h4 className="text-xs font-semibold mb-1">구매자</h4>
+                <Row label="실명" value={detail.customer} />
+                <Row label="닉네임" value={detail.nickname} />
+                <Row label="연락처" value={<span className="tabular-nums">{detail.phone}</span>} />
+                <Row label="이메일" value={detail.email} />
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold mb-1">주문 정보</h4>
+                <Row label="주문번호" value={detail.id} />
+                <Row label="상품" value={detail.product} />
+                <Row label="결제수단" value={detail.payment} />
+                <Row label="결제금액" value={`₩${detail.amount.toLocaleString()}`} />
+                <Row label="결제일시" value={detail.paidAt} />
+                <Row label="영수증 발송" value={detail.receiptEmail} />
+                <Row label="상태" value={
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[detail.status] || "bg-secondary text-muted-foreground"}`}>{detail.status}</span>
+                } />
+              </div>
+              {detail.note && (
+                <div>
+                  <h4 className="text-xs font-semibold mb-2">요청 사유</h4>
+                  <p className="rounded-lg bg-secondary/60 px-3 py-2.5 text-sm">{detail.note}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
