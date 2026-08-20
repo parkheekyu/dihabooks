@@ -93,7 +93,7 @@ const Header = () => {
           {isLoggedIn ? (
             <>
               {/* Username */}
-              <span className="text-sm font-medium">{user?.name}</span>
+              <span className="text-sm font-medium">{user?.nickname}</span>
 
               {/* Role Tag (clickable toggle) */}
               <button
@@ -224,7 +224,7 @@ const Header = () => {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium">{user?.name}</p>
+                    <p className="text-sm font-medium">{user?.nickname}</p>
                     <button
                       onClick={toggleRole}
                       className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${roleStyles}`}

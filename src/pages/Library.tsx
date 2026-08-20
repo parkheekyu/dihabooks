@@ -34,7 +34,7 @@ const Library = () => {
                   className="h-12 w-12 tablet:h-14 tablet:w-14 rounded-full object-cover border-2 border-border desktop:mb-4 shrink-0"
                 />
                 <div>
-                  <h2 className="text-base tablet:text-lg font-bold">{user?.name ?? "닉네임"}님</h2>
+                  <h2 className="text-base tablet:text-lg font-bold">{user?.nickname ?? "닉네임"}님</h2>
                   <p className="text-xs text-muted-foreground uppercase tracking-wide">NOMAD EXPLORER</p>
                 </div>
               </div>

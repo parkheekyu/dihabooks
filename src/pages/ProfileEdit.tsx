@@ -70,7 +70,7 @@ const ProfileEdit = () => {
                   </label>
                 </div>
                 <div className="tablet:pt-1">
-                  <p className="font-bold text-sm tablet:text-base">{user?.name}</p>
+                  <p className="font-bold text-sm tablet:text-base">{user?.nickname}</p>
                   <p className="text-xs tablet:text-sm text-muted-foreground">{user?.email}</p>
                   <button
                     onClick={toggleRole}
