@@ -1,6 +1,7 @@
-Hero banner images go here. Expected files:
-- movie-master.jpg
-- wolyeok-road.jpg
-- phone-9000.jpg
-- yen-soncho.jpg
-- shorts-intro.jpg
+메인 상단 히어로 배너 이미지.
+
+- 파일: 1.png / 2.png / 3.png (표시 순서대로)
+- 권장 규격: 1870 x 841 (2.22:1)
+
+모바일(~767px)에서는 16:9로 잘립니다. 가로 기준 중앙 80%만 보이므로
+좌우 각 10%(약 187px)에는 텍스트나 인물을 두지 마세요.

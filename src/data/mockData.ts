@@ -1,9 +1,6 @@
 import { Book } from "@/components/BookCard";
 import { BookOpen, Youtube, Dumbbell, Handshake, Bot, Wallet, Sparkles, Palette, Megaphone, Code, LayoutGrid, CircleDollarSign, type LucideIcon } from "lucide-react";
 
-import hero1 from "@/assets/hero-1.jpg";
-import hero2 from "@/assets/hero-2.jpg";
-import hero3 from "@/assets/hero-3.jpg";
 import { asset } from "@/lib/constants";
 
 // `label` is also the matching key for Book.category on the store/home filters,
@@ -20,12 +17,9 @@ export const categories: { id: string; label: string; icon?: LucideIcon }[] = [
 export type HeroSlide = { id: number; image?: string; youtubeId?: string };
 
 export const heroSlides: HeroSlide[] = [
-  { id: 1, youtubeId: "xLUfDm5KLo8", image: hero1 },
-  { id: 2, image: asset("/hero/wolyeok-road.jpg") },
-  { id: 3, image: asset("/hero/movie-master.jpg") },
-  { id: 4, image: asset("/hero/yen-soncho.jpg") },
-  { id: 5, image: asset("/hero/shorts-intro.jpg") },
-  { id: 6, image: asset("/hero/phone-9000.jpg") },
+  { id: 1, image: asset("/hero/1.png") },
+  { id: 2, image: asset("/hero/2.png") },
+  { id: 3, image: asset("/hero/3.png") },
 ];
 
 export const sampleBooks: Book[] = [
