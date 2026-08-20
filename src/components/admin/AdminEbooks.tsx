@@ -1,10 +1,18 @@
-import { CheckCircle2, Ban } from "lucide-react";
+import { useState } from "react";
+import { CheckCircle2, Ban, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AdminEbookForm, { type NewEbook } from "@/components/admin/AdminEbookForm";
+import { toast } from "sonner";
 
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
 
-const mockEbooks = [
+type Ebook = {
+  id: string; title: string; author: string; price: number;
+  sales: number; status: string; image: string; description?: string;
+};
+
+const initialEbooks: Ebook[] = [
   { id: "1", title: "유튜브 알고리즘 마스터", author: "크리에이터 김", price: 19000, sales: 67, status: "승인", image: hero1 },
   { id: "2", title: "인스타 릴스로 월 500만원", author: "인스타 마스터", price: 15000, sales: 52, status: "승인", image: hero2 },
   { id: "3", title: "제휴마케팅 완전 가이드", author: "마케터 박", price: 12000, sales: 12, status: "심사대기", image: hero1 },
@@ -16,15 +24,49 @@ interface AdminEbooksProps {
 }
 
 const AdminEbooks = ({ filter = "all" }: AdminEbooksProps) => {
+  const [ebooks, setEbooks] = useState<Ebook[]>(initialEbooks);
+  const [mode, setMode] = useState<"list" | "create">("list");
+
   const filtered = filter === "pending"
-    ? mockEbooks.filter(e => e.status === "심사대기")
-    : mockEbooks;
+    ? ebooks.filter((e) => e.status === "심사대기")
+    : ebooks;
+
+  const addEbook = (b: NewEbook) => {
+    setEbooks((prev) => [
+      {
+        id: String(Date.now()),
+        title: b.title,
+        author: b.author,
+        price: b.price,
+        sales: 0,
+        status: "승인",
+        image: b.image,
+        description: b.description,
+      },
+      ...prev,
+    ]);
+    toast.success("상품이 등록되었습니다.");
+    setMode("list");
+  };
+
+  const priceLabel = (p: number) => (p === 0 ? "무료" : `₩${p.toLocaleString()}`);
+
+  if (mode === "create") {
+    return <AdminEbookForm onCancel={() => setMode("list")} onSubmit={addEbook} />;
+  }
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        {filter === "pending" ? "심사 대기" : "전체"} {filtered.length}권
-      </p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">
+          {filter === "pending" ? "심사 대기" : "전체"} {filtered.length}권
+        </p>
+        {filter !== "pending" && (
+          <Button size="sm" className="h-8 text-xs gap-1.5" onClick={() => setMode("create")}>
+            <Plus className="h-3.5 w-3.5" /> 상품 등록
+          </Button>
+        )}
+      </div>
 
       {/* Desktop table */}
       <div className="hidden tablet:block rounded-xl border border-border bg-background overflow-hidden">
@@ -40,7 +82,7 @@ const AdminEbooks = ({ filter = "all" }: AdminEbooksProps) => {
             </tr>
           </thead>
           <tbody>
-            {filtered.map(book => (
+            {filtered.map((book) => (
               <tr key={book.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
@@ -49,7 +91,7 @@ const AdminEbooks = ({ filter = "all" }: AdminEbooksProps) => {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm">{book.author}</td>
-                <td className="px-4 py-3 text-sm">₩{book.price.toLocaleString()}</td>
+                <td className="px-4 py-3 text-sm">{priceLabel(book.price)}</td>
                 <td className="px-4 py-3 text-sm">{book.sales}권</td>
                 <td className="px-4 py-3">
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -72,14 +114,14 @@ const AdminEbooks = ({ filter = "all" }: AdminEbooksProps) => {
 
       {/* Mobile cards */}
       <div className="tablet:hidden space-y-3">
-        {filtered.map(book => (
+        {filtered.map((book) => (
           <div key={book.id} className="rounded-xl border border-border bg-background p-4">
             <div className="flex gap-3">
               <img src={book.image} alt="" className="w-14 h-20 rounded-lg object-cover shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{book.title}</p>
                 <p className="text-xs text-muted-foreground">{book.author}</p>
-                <p className="text-sm font-semibold mt-1">₩{book.price.toLocaleString()} · {book.sales}권</p>
+                <p className="text-sm font-semibold mt-1">{priceLabel(book.price)} · {book.sales}권</p>
                 <div className="flex items-center gap-2 mt-2">
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
                     book.status === "승인" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
@@ -96,6 +138,7 @@ const AdminEbooks = ({ filter = "all" }: AdminEbooksProps) => {
           </div>
         ))}
       </div>
+
     </div>
   );
 };
