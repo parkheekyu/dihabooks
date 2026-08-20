@@ -56,7 +56,7 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="주문번호, 고객명 검색..." className="pl-9 rounded-lg bg-background" />
+          <Input placeholder="주문번호, 고객명, 이메일 검색..." className="pl-9 rounded-lg bg-background" />
         </div>
         <Button variant="outline" size="sm" className="gap-1.5 text-xs">
           <Filter className="h-3.5 w-3.5" /> 필터
@@ -65,37 +65,39 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
       </div>
 
       <div className="hidden tablet:block rounded-xl border border-border bg-background overflow-x-auto">
-        <table className="w-full min-w-[980px]">
+        <table className="w-full min-w-[1240px]">
           <thead>
             <tr className="border-b border-border bg-secondary/50">
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">주문번호</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">구매자</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">연락처</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">상품</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">결제</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">주문번호</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">구매자</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">연락처</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">이메일</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">상품</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">결제</th>
               <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">금액</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">날짜</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">상태</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">날짜</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">상태</th>
               <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {filtered.map(o => (
               <tr key={o.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-                <td className="px-4 py-3 text-xs text-muted-foreground">{o.id}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">{o.id}</td>
+                <td className="px-4 py-3 whitespace-nowrap">
                   <p className="text-sm">{o.customer}</p>
                   <p className="text-xs text-muted-foreground">{o.nickname}</p>
                 </td>
-                <td className="px-4 py-3 text-sm tabular-nums">{o.phone}</td>
+                <td className="px-4 py-3 text-sm tabular-nums whitespace-nowrap">{o.phone}</td>
+                <td className="px-4 py-3 text-sm whitespace-nowrap" title={o.email}>{o.email}</td>
                 <td className="px-4 py-3 text-sm font-medium max-w-[180px] truncate">{o.product}</td>
-                <td className="px-4 py-3 text-xs text-muted-foreground">{o.payment}</td>
+                <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">{o.payment}</td>
                 <td className="px-4 py-3 text-sm text-right font-semibold">₩{o.amount.toLocaleString()}</td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">{o.date}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">{o.date}</td>
+                <td className="px-4 py-3 whitespace-nowrap">
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[o.status] || "bg-secondary text-muted-foreground"}`}>{o.status}</span>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 whitespace-nowrap">
                   <div className="flex gap-1.5 justify-end">
                     <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setDetail(o)}>상세</Button>
                     {o.status === "환불요청" && (
@@ -120,9 +122,10 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
               <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${statusColor[o.status] || "bg-secondary text-muted-foreground"}`}>{o.status}</span>
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{o.id} · {o.customer} · {o.phone}</span>
-              <span>{o.date}</span>
+              <span className="truncate mr-2">{o.id} · {o.customer} · {o.phone}</span>
+              <span className="shrink-0">{o.date}</span>
             </div>
+            <p className="text-xs text-muted-foreground truncate">{o.email}</p>
             <div className="flex items-center justify-between pt-1 border-t border-border">
               <span className="text-xs text-muted-foreground">{o.payment}</span>
               <p className="text-sm font-semibold">₩{o.amount.toLocaleString()}</p>
