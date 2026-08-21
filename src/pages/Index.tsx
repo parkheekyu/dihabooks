@@ -321,22 +321,20 @@ const Index = () => {
 
         {/* CTA */}
         <section className="container px-4 my-14 tablet:my-20">
-          <div
-            className="relative rounded-xl tablet:rounded-2xl overflow-hidden p-6 tablet:p-10 desktop:p-16"
+          <Link
+            to="/welcome"
+            className="group relative block rounded-xl tablet:rounded-2xl overflow-hidden p-6 tablet:p-10 desktop:p-16"
             style={{ backgroundImage: `url(${ctaBg})`, backgroundSize: "cover", backgroundPosition: "center" }}
           >
             <div className="relative z-10">
               <h2 className="text-xl tablet:text-2xl desktop:text-3xl font-bold text-background">
                 디하북스가 처음이라면
               </h2>
-              <Link
-                to="/welcome"
-                className="inline-flex items-center gap-2 mt-3 tablet:mt-4 px-5 tablet:px-6 py-2.5 tablet:py-3 rounded-lg bg-background/20 text-background text-sm font-semibold hover:bg-background/30 transition-colors border border-background/30"
-              >
+              <span className="inline-flex items-center gap-2 mt-3 tablet:mt-4 px-5 tablet:px-6 py-2.5 tablet:py-3 rounded-lg bg-background/20 text-background text-sm font-semibold border border-background/30 transition-colors group-hover:bg-background/30">
                 더 알아보기 <ArrowRight className="h-4 w-4" />
-              </Link>
+              </span>
             </div>
-          </div>
+          </Link>
         </section>
       </main>
 
