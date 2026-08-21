@@ -16,7 +16,7 @@ const Welcome = () => (
   <div className="min-h-screen flex flex-col">
     <Header />
 
-    <main className="flex-1 bg-black">
+    <main className="flex-1 bg-background">
       {/* 통이미지는 원본 폭(860px)을 넘겨 늘리지 않는다. */}
       <img
         src={INTRO_IMAGE}
@@ -27,7 +27,7 @@ const Welcome = () => (
         className="block w-full max-w-[860px] mx-auto h-auto"
       />
 
-      <div className="bg-background">
+      <div>
         <div className="container px-4 py-10 tablet:py-14 text-center">
           <p className="text-sm tablet:text-base text-muted-foreground">
             지금 바로 나에게 맞는 전자책을 찾아보세요.
