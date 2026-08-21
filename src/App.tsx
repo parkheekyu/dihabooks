@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import AuthModal from "@/components/AuthModal";
 import Index from "./pages/Index.tsx";
+import Welcome from "./pages/Welcome.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
 import Store from "./pages/Store.tsx";
@@ -46,6 +47,7 @@ const App = () => (
       <Router>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/store" element={<Store />} />
