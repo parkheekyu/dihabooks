@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import AuthModal from "@/components/AuthModal";
+import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index.tsx";
 import Welcome from "./pages/Welcome.tsx";
 import Login from "./pages/Login.tsx";
@@ -45,6 +46,7 @@ const App = () => (
       <Sonner />
       <AuthModal />
       <Router>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/welcome" element={<Welcome />} />
