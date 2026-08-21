@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { asset } from "@/lib/constants";
 
 // 디자인팀이 통이미지 한 장으로 내려주는 소개 페이지.
-// 교체할 때는 public/welcome/intro.png 를 같은 이름으로 덮어쓰면 된다.
-const INTRO_IMAGE = asset("/welcome/intro.png");
+// 교체할 때는 public/welcome/intro.jpg 를 같은 이름으로 덮어쓰면 된다.
+const INTRO_IMAGE = asset("/welcome/intro.jpg");
 
 // 원본 비율(860 x 4000). 이미지 로드 전에도 자리를 잡아 레이아웃이 튀지 않게 한다.
 const INTRO_RATIO = "860 / 4000";
