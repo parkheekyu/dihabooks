@@ -68,7 +68,7 @@ const AuthModal = () => {
                   id="ob-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="주민등록상 이름"
+                  placeholder="실명"
                   autoComplete="name"
                   className="text-sm"
                 />
