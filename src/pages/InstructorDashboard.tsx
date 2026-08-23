@@ -45,16 +45,19 @@ type SaleStatus = "완료" | "요청중";
 /**
  * 작가에게는 구매자 ID·닉네임·실명까지만 보여준다.
  * 연락처·이메일은 관리자만 볼 수 있다.
+ *
+ * buyerId는 카카오 로그인으로 받는 회원번호가 그대로 들어간다.
+ * 10자리 안팎의 숫자라 열 너비를 그에 맞춰 잡아 뒀다.
  */
 const recentSales: {
   buyerId: string; nickname: string; name: string;
   book: string; date: string; amount: number; status: SaleStatus;
 }[] = [
-  { buyerId: "U-10482", nickname: "민수쓰", name: "김민수", book: "유튜브 알고리즘 마스터", date: "2026-03-30", amount: 19000, status: "완료" },
-  { buyerId: "U-10457", nickname: "진우진우", name: "오진우", book: "ChatGPT 자동화 파이프라인", date: "2026-03-30", amount: 39000, status: "요청중" },
-  { buyerId: "U-10433", nickname: "서연", name: "한서연", book: "인스타 릴스로 월 500만원", date: "2026-03-29", amount: 15000, status: "완료" },
-  { buyerId: "U-10419", nickname: "지은지은", name: "최지은", book: "유튜브 알고리즘 마스터", date: "2026-03-29", amount: 19000, status: "완료" },
-  { buyerId: "U-10388", nickname: "영호형", name: "박영호", book: "ChatGPT 자동화 파이프라인", date: "2026-03-28", amount: 39000, status: "완료" },
+  { buyerId: "3812947561", nickname: "민수쓰", name: "김민수", book: "유튜브 알고리즘 마스터", date: "2026-03-30", amount: 19000, status: "완료" },
+  { buyerId: "3809142277", nickname: "진우진우", name: "오진우", book: "ChatGPT 자동화 파이프라인", date: "2026-03-30", amount: 39000, status: "요청중" },
+  { buyerId: "3798550413", nickname: "서연", name: "한서연", book: "인스타 릴스로 월 500만원", date: "2026-03-29", amount: 15000, status: "완료" },
+  { buyerId: "3784201968", nickname: "지은지은", name: "최지은", book: "유튜브 알고리즘 마스터", date: "2026-03-29", amount: 19000, status: "완료" },
+  { buyerId: "3771038824", nickname: "영호형", name: "박영호", book: "ChatGPT 자동화 파이프라인", date: "2026-03-28", amount: 39000, status: "완료" },
 ];
 
 const saleStatusStyle: Record<SaleStatus, string> = {
@@ -340,28 +343,29 @@ const SalesContent = () => {
         <table className="w-full min-w-[700px]">
           <thead>
             <tr className="border-b border-border bg-secondary/50">
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">구매자 ID</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">구매자</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">전자책</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">날짜</th>
-              <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">금액</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">상태</th>
-              <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3"></th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">구매자 ID</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">닉네임</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">이름</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3">전자책</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">날짜</th>
+              <th className="text-right text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">금액</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">상태</th>
+              <th className="text-right text-xs font-medium text-muted-foreground px-3 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {recentSales.map((sale, i) => (
               <tr key={i} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-                <td className="px-4 py-3 text-sm tabular-nums whitespace-nowrap">{sale.buyerId}</td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <p className="text-sm">{sale.name}</p>
-                  <p className="text-xs text-muted-foreground">{sale.nickname}</p>
+                <td className="px-3 py-3 text-sm tabular-nums whitespace-nowrap">{sale.buyerId}</td>
+                <td className="px-3 py-3 text-sm whitespace-nowrap">{sale.nickname}</td>
+                <td className="px-3 py-3 text-sm whitespace-nowrap">{sale.name}</td>
+                <td className="px-3 py-3">
+                  <div className="max-w-[120px] truncate text-sm font-medium" title={sale.book}>{sale.book}</div>
                 </td>
-                <td className="px-4 py-3 text-sm font-medium">{sale.book}</td>
-                <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">{sale.date}</td>
-                <td className="px-4 py-3 text-sm font-semibold text-right whitespace-nowrap">₩{sale.amount.toLocaleString()}</td>
-                <td className="px-4 py-3"><SaleStatusBadge status={statusOf(i)} /></td>
-                <td className="px-4 py-3 text-right whitespace-nowrap">
+                <td className="px-3 py-3 text-sm text-muted-foreground whitespace-nowrap">{sale.date}</td>
+                <td className="px-3 py-3 text-sm font-semibold text-right whitespace-nowrap">₩{sale.amount.toLocaleString()}</td>
+                <td className="px-3 py-3"><SaleStatusBadge status={statusOf(i)} /></td>
+                <td className="px-3 py-3 text-right whitespace-nowrap">
                   {statusOf(i) === "완료" && (
                     <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => request(i)}>
                       환불 요청
