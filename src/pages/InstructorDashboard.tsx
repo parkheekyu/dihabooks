@@ -38,10 +38,11 @@ const mockBooks = [
 
 /**
  * 판매 1건의 상태.
- * 완료  = 판매가 끝난 정상 건. 작가가 환불을 요청할 수 있다.
- * 요청중 = 환불을 요청해 둔 건. 실제 승인·환불 처리는 관리자가 한다.
+ * 구매      = 결제가 끝난 정상 건. 작가가 환불을 요청할 수 있다.
+ * 요청중    = 환불을 요청해 둔 건. 승인 전이라 아직 결제는 살아 있다.
+ * 환불 완료 = 관리자가 승인해 결제가 취소된 건. 정산 대상에서 빠진다.
  */
-type SaleStatus = "완료" | "요청중";
+type SaleStatus = "구매" | "요청중" | "환불 완료";
 
 /**
  * 작가에게는 구매자 ID·닉네임·실명까지만 보여준다.
@@ -90,16 +91,17 @@ const recentSales: Sale[] = Array.from({ length: 137 }, (_, i) => {
     book: book.title,
     date: day.toISOString().slice(0, 10),
     amount: book.price,
-    // 두 번째 건만 요청중으로 두어 상태 배지가 보이게 한다.
-    status: i === 1 ? "요청중" : "완료",
+    // 앞쪽에 요청중·환불 완료를 섞어 세 가지 배지가 모두 보이게 한다.
+    status: i === 1 ? "요청중" : i === 4 || i === 9 ? "환불 완료" : "구매",
   };
 });
 
 const PAGE_SIZES = [20, 50, 100, 200];
 
 const saleStatusStyle: Record<SaleStatus, string> = {
-  "완료": "bg-green-100 text-green-700",
+  "구매": "bg-green-100 text-green-700",
   "요청중": "bg-yellow-100 text-yellow-700",
+  "환불 완료": "bg-secondary text-muted-foreground",
 };
 
 const SaleStatusBadge = ({ status }: { status: SaleStatus }) => (
@@ -456,7 +458,7 @@ const SalesContent = () => {
                     <td className="px-3 py-3 text-sm font-semibold text-right whitespace-nowrap">₩{sale.amount.toLocaleString()}</td>
                     <td className="px-3 py-3"><SaleStatusBadge status={statusOf(sale)} /></td>
                     <td className="px-3 py-3 text-right whitespace-nowrap">
-                      {statusOf(sale) === "완료" && (
+                      {statusOf(sale) === "구매" && (
                         <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => request(sale)}>
                           환불 요청
                         </Button>
@@ -483,7 +485,7 @@ const SalesContent = () => {
                     </p>
                     <SaleStatusBadge status={statusOf(sale)} />
                   </div>
-                  {statusOf(sale) === "완료" && (
+                  {statusOf(sale) === "구매" && (
                     <Button size="sm" variant="outline" className="h-7 px-2 text-xs shrink-0" onClick={() => request(sale)}>
                       환불 요청
                     </Button>
