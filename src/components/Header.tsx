@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Menu, X, LogOut, User, Heart, BookOpen, LayoutDashboard, ArrowRightLeft, ChevronDown } from "lucide-react";
+import { Search, Menu, X, LogOut, User, Heart, BookOpen, LayoutDashboard, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,7 +20,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isLoggedIn, role, logout, toggleRole, openAuth } = useAuth();
+  const { user, isLoggedIn, role, logout, openAuth } = useAuth();
   const { wishCount } = useWishlist();
 
   const handleLogout = () => {
@@ -95,13 +95,10 @@ const Header = () => {
               {/* Username */}
               <span className="text-sm font-medium">{user?.nickname}</span>
 
-              {/* Role Tag (clickable toggle) */}
-              <button
-                onClick={toggleRole}
-                className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${roleStyles}`}
-              >
+              {/* 역할 표시. 전환은 서비스에서 제공하지 않으므로 클릭 동작 없음. */}
+              <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${roleStyles}`}>
                 {roleLabel}
-              </button>
+              </span>
 
               {/* Notifications */}
               <NotificationDropdown />
@@ -132,29 +129,13 @@ const Header = () => {
                   <DropdownMenuItem className="gap-2" onClick={() => navigate("/profile")}>
                     <User className="h-4 w-4" /> 마이페이지
                   </DropdownMenuItem>
-                  {role === "member" ? (
-                    <>
-                      <DropdownMenuItem className="gap-2" onClick={() => navigate("/library")}>
-                        <BookOpen className="h-4 w-4" /> 내 서재
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="gap-2" onClick={() => { toggleRole(); }}>
-                        <ArrowRightLeft className="h-4 w-4" /> 작가로 전환
-                      </DropdownMenuItem>
-                    </>
-                  ) : (
-                    <>
-                      <DropdownMenuItem className="gap-2" onClick={() => navigate("/library")}>
-                        <BookOpen className="h-4 w-4" /> 내 서재
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="gap-2" onClick={() => navigate("/instructor")}>
-                        <LayoutDashboard className="h-4 w-4" /> 작가 대시보드
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="gap-2" onClick={() => { toggleRole(); }}>
-                        <ArrowRightLeft className="h-4 w-4" /> 멤버로 전환
-                      </DropdownMenuItem>
-                    </>
+                  <DropdownMenuItem className="gap-2" onClick={() => navigate("/library")}>
+                    <BookOpen className="h-4 w-4" /> 내 서재
+                  </DropdownMenuItem>
+                  {role === "expert" && (
+                    <DropdownMenuItem className="gap-2" onClick={() => navigate("/instructor")}>
+                      <LayoutDashboard className="h-4 w-4" /> 작가 대시보드
+                    </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="gap-2 text-destructive" onClick={handleLogout}>
@@ -225,12 +206,9 @@ const Header = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium">{user?.nickname}</p>
-                    <button
-                      onClick={toggleRole}
-                      className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${roleStyles}`}
-                    >
+                    <span className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${roleStyles}`}>
                       {roleLabel}
-                    </button>
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
@@ -238,27 +216,13 @@ const Header = () => {
               <Link to="/profile" onClick={() => setMobileOpen(false)}>
                 <Button variant="outline" className="w-full gap-2" size="sm"><User className="h-3.5 w-3.5" /> 마이페이지</Button>
               </Link>
-              {role === "member" ? (
-                <>
-                  <Link to="/library" onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" className="w-full gap-2" size="sm"><BookOpen className="h-3.5 w-3.5" /> 내 서재</Button>
-                  </Link>
-                  <Button variant="outline" className="w-full gap-2" size="sm" onClick={() => { toggleRole(); }}>
-                    <ArrowRightLeft className="h-3.5 w-3.5" /> 작가로 전환
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link to="/library" onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" className="w-full gap-2" size="sm"><BookOpen className="h-3.5 w-3.5" /> 내 서재</Button>
-                  </Link>
-                  <Link to="/instructor" onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" className="w-full gap-2" size="sm"><LayoutDashboard className="h-3.5 w-3.5" /> 작가 대시보드</Button>
-                  </Link>
-                  <Button variant="outline" className="w-full gap-2" size="sm" onClick={() => { toggleRole(); }}>
-                    <ArrowRightLeft className="h-3.5 w-3.5" /> 멤버로 전환
-                  </Button>
-                </>
+              <Link to="/library" onClick={() => setMobileOpen(false)}>
+                <Button variant="outline" className="w-full gap-2" size="sm"><BookOpen className="h-3.5 w-3.5" /> 내 서재</Button>
+              </Link>
+              {role === "expert" && (
+                <Link to="/instructor" onClick={() => setMobileOpen(false)}>
+                  <Button variant="outline" className="w-full gap-2" size="sm"><LayoutDashboard className="h-3.5 w-3.5" /> 작가 대시보드</Button>
+                </Link>
               )}
               <Button variant="ghost" className="w-full text-destructive" size="sm" onClick={() => { handleLogout(); setMobileOpen(false); }}>
                 로그아웃

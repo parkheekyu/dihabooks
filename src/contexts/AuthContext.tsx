@@ -110,7 +110,11 @@ const freshKakaoUser: User = {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(mockUser); // 기본 로그인(멤버) 상태
-  const [role, setRole] = useState<UserRole>("member");
+  // 서비스에는 역할 전환 UI가 없다. 데모에서 작가 화면을 확인해야 할 때만
+  // 주소에 ?role=expert 를 붙여 진입한다. (예: /instructor?role=expert)
+  const [role, setRole] = useState<UserRole>(
+    () => (new URLSearchParams(window.location.search).get("role") === "expert" ? "expert" : "member")
+  );
   const [sellerProfile, setSellerProfile] = useState<SellerProfile>(defaultSellerProfile);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
