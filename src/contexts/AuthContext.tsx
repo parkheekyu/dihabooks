@@ -30,6 +30,8 @@ interface SellerProfile {
 
 /** 첫 소셜 로그인 직후 반드시 받아야 하는 값. */
 export interface OnboardingInput {
+  /** 실명. 정산·본인확인용으로만 쓰고 화면에는 노출하지 않는다. */
+  name: string;
   nickname: string;
   gender: Gender;
   ageGroup: string;
@@ -120,9 +122,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setNeedsOnboarding(true);
   };
 
-  const completeOnboarding = ({ nickname, gender, ageGroup }: OnboardingInput) => {
+  const completeOnboarding = ({ name, nickname, gender, ageGroup }: OnboardingInput) => {
     setUser((prev) =>
-      prev ? { ...prev, nickname, gender, ageGroup, avatar: nickname.slice(0, 1) } : prev
+      prev ? { ...prev, name, nickname, gender, ageGroup, avatar: nickname.slice(0, 1) } : prev
     );
     setNeedsOnboarding(false);
     setAuthOpen(false);

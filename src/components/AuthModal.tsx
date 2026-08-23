@@ -10,16 +10,18 @@ const AGE_GROUPS = ["10대", "20대", "30대", "40대", "50대", "60대 이상"]
 const AuthModal = () => {
   const { authOpen, closeAuth, login, needsOnboarding, completeOnboarding } = useAuth();
 
+  const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [gender, setGender] = useState<Gender>("");
   const [ageGroup, setAgeGroup] = useState("");
 
-  const ready = nickname.trim().length > 0 && gender !== "" && ageGroup !== "";
+  const ready =
+    name.trim().length > 0 && nickname.trim().length > 0 && gender !== "" && ageGroup !== "";
 
   const submit = () => {
     if (!ready) return;
-    completeOnboarding({ nickname: nickname.trim(), gender, ageGroup });
-    setNickname(""); setGender(""); setAgeGroup("");
+    completeOnboarding({ name: name.trim(), nickname: nickname.trim(), gender, ageGroup });
+    setName(""); setNickname(""); setGender(""); setAgeGroup("");
   };
 
   return (
@@ -55,6 +57,23 @@ const AuthModal = () => {
                 <p className="text-[15px] font-bold">가입을 완료해주세요</p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   서비스 이용을 위해 아래 정보가 필요합니다.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="ob-name" className="text-xs font-semibold">
+                  이름 (실명) <span className="text-destructive">*</span>
+                </label>
+                <Input
+                  id="ob-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="주민등록상 이름"
+                  autoComplete="name"
+                  className="text-sm"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  결제·환불 확인용으로만 쓰이며 다른 회원에게 보이지 않습니다.
                 </p>
               </div>
 
