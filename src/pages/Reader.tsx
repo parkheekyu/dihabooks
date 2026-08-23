@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, List, X, CheckCircle2, PanelRight, ExternalLink, StickyNote } from "lucide-react";
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, List, X, CheckCircle2, Paperclip, Link2, FileText, Download } from "lucide-react";
 
 const mockToc = [
   {
@@ -30,41 +30,41 @@ const mockToc = [
 ];
 
 /**
- * 페이지별 참고 자료. 본문(PDF/이미지)에서는 링크를 누를 수 없으므로
- * 해당 페이지에 걸린 링크와 용어 주석을 우측 패널로 따로 제공한다.
+ * 페이지별 링크·첨부 자료. 본문(PDF/이미지)에서는 링크를 누를 수 없으므로
+ * 해당 페이지에 걸린 링크와 내려받을 자료를 우측 패널로 따로 제공한다.
  * 키는 페이지 번호이며, 없는 페이지는 빈 상태로 표시된다.
  */
 const mockResources: Record<number, {
-  links: { label: string; url: string; desc?: string }[];
-  notes: { term: string; body: string }[];
+  links: { label: string; url: string }[];
+  files: { name: string; size: string; url: string }[];
 }> = {
   1: {
     links: [
-      { label: "네이버 쇼핑파트너센터", url: "https://adcenter.shopping.naver.com", desc: "상품 노출·순위 지표를 확인하는 곳" },
-      { label: "네이버 검색광고", url: "https://searchad.naver.com", desc: "키워드 조회수 확인" },
+      { label: "부자되기 10계명 전체 요약본 (Notion)", url: "https://www.notion.so" },
+      { label: "강의 참고 유튜브 영상", url: "https://www.youtube.com" },
     ],
-    notes: [
-      { term: "쇼핑검색 순위", body: "적합도·인기도·신뢰도 세 축으로 산출된다. 셋 중 하나만 높다고 순위가 오르지 않는다." },
-      { term: "적합도", body: "상품명·카테고리·속성이 검색어와 얼마나 맞는지. 상품명에 키워드를 억지로 넣으면 오히려 감점된다." },
+    files: [
+      { name: "돈벌기 10계명 체크리스트.pdf", size: "1.2 MB", url: "#" },
+      { name: "실습 워크시트.xlsx", size: "340 KB", url: "#" },
     ],
   },
   5: {
     links: [
-      { label: "문제해결 사례 모음 (구글 시트)", url: "https://docs.google.com/spreadsheets", desc: "본문에서 언급한 30가지 사례" },
+      { label: "문제해결 사례 모음 (구글 시트)", url: "https://docs.google.com/spreadsheets" },
     ],
-    notes: [
-      { term: "문제해결", body: "돈을 버는 행위의 본질. 누군가의 불편을 대신 없애 주고 그 대가를 받는 구조를 말한다." },
+    files: [
+      { name: "문제해결 사례 30선.pdf", size: "820 KB", url: "#" },
     ],
   },
   10: {
     links: [
       { label: "부자되는 뇌 세팅 체크리스트", url: "https://example.com/checklist" },
     ],
-    notes: [],
+    files: [],
   },
 };
 
-const emptyResources = { links: [], notes: [] };
+const emptyResources = { links: [], files: [] };
 
 const Reader = () => {
   const { id } = useParams();
@@ -72,7 +72,6 @@ const Reader = () => {
   const [zoom, setZoom] = useState(100);
   const [tocOpen, setTocOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
-  const [panelTab, setPanelTab] = useState<"links" | "notes">("links");
   const [completedSections, setCompletedSections] = useState<string[]>(["1-0", "1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "1-7", "1-8", "1-9"]);
   const totalPages = 85;
 
@@ -102,74 +101,75 @@ const Reader = () => {
   };
 
   const resources = mockResources[currentPage] ?? emptyResources;
-  const resourceCount = resources.links.length + resources.notes.length;
+  const resourceCount = resources.links.length + resources.files.length;
 
   // TocContent와 마찬가지로 함수 호출식으로 쓴다. 본문 안에서 컴포넌트를
   // 선언하면 매 렌더마다 새 타입이 되어 서브트리가 통째로 다시 마운트된다.
   const ResourcePanel = () => (
-    <>
-      <div className="flex border-b border-border sticky top-0 bg-card z-10">
-        {([["links", "링크", resources.links.length], ["notes", "주석", resources.notes.length]] as const).map(
-          ([key, label, count]) => (
-            <button
-              key={key}
-              onClick={() => setPanelTab(key)}
-              className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-                panelTab === key
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {label} {count > 0 && <span className="text-xs">({count})</span>}
-            </button>
-          )
-        )}
-      </div>
+    <div className="p-4">
+      <p className="text-xs text-muted-foreground mb-4">
+        {currentPage}페이지에 등록된 링크와 자료입니다.
+      </p>
 
-      <div className="p-4">
-        <p className="text-xs text-muted-foreground mb-3">{currentPage}쪽 자료</p>
+      {resourceCount === 0 ? (
+        <p className="text-sm text-muted-foreground py-10 text-center">
+          이 페이지에는 등록된 자료가 없습니다.
+        </p>
+      ) : (
+        <>
+          {resources.links.length > 0 && (
+            <div className="mb-5">
+              <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground mb-2">
+                <Link2 className="h-3.5 w-3.5" /> 링크
+              </p>
+              <ul className="space-y-2">
+                {resources.links.map((l) => (
+                  <li key={l.url + l.label}>
+                    {/* 본문에서는 링크를 누를 수 없어 여기서 새 탭으로 열어준다. */}
+                    <a
+                      href={l.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-2 rounded-lg border border-border px-3 py-2.5 hover:bg-muted transition-colors"
+                    >
+                      <Link2 className="h-3.5 w-3.5 mt-0.5 shrink-0 text-primary" />
+                      <span className="text-sm text-foreground leading-snug">{l.label}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-        {panelTab === "links" ? (
-          resources.links.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">이 페이지에는 링크가 없습니다.</p>
-          ) : (
-            <ul className="space-y-2">
-              {resources.links.map((l) => (
-                <li key={l.url}>
-                  {/* 본문에서는 링크를 누를 수 없어 여기서 새 탭으로 열어준다. */}
-                  <a
-                    href={l.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block rounded-lg border border-border px-3 py-2.5 hover:bg-muted transition-colors"
-                  >
-                    <span className="flex items-start gap-2">
-                      <ExternalLink className="h-3.5 w-3.5 mt-0.5 shrink-0 text-primary" />
-                      <span className="min-w-0">
-                        <span className="block text-sm font-medium text-foreground">{l.label}</span>
-                        {l.desc && <span className="block text-xs text-muted-foreground mt-0.5">{l.desc}</span>}
-                        <span className="block text-[11px] text-muted-foreground/80 mt-1 truncate">{l.url}</span>
+          {resources.files.length > 0 && (
+            <div>
+              <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground mb-2">
+                <FileText className="h-3.5 w-3.5" /> 첨부 자료
+              </p>
+              <ul className="space-y-2">
+                {resources.files.map((f) => (
+                  <li key={f.name}>
+                    {/* 데모에는 실제 파일이 없어 주소는 비워 둔다. 연동 시 다운로드 URL로 교체. */}
+                    <a
+                      href={f.url}
+                      download
+                      className="flex items-center gap-2 rounded-lg border border-border px-3 py-2.5 hover:bg-muted transition-colors"
+                    >
+                      <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm text-foreground truncate">{f.name}</span>
+                        <span className="block text-[11px] text-muted-foreground mt-0.5">{f.size}</span>
                       </span>
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )
-        ) : resources.notes.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-8 text-center">이 페이지에는 주석이 없습니다.</p>
-        ) : (
-          <ul className="space-y-3">
-            {resources.notes.map((n) => (
-              <li key={n.term} className="rounded-lg bg-secondary/60 px-3 py-2.5">
-                <p className="text-sm font-semibold text-foreground">{n.term}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed mt-1">{n.body}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </>
+                      <Download className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 
   const TocContent = () => (
@@ -264,12 +264,12 @@ const Reader = () => {
           </button>
           <button
             onClick={() => setPanelOpen((v) => !v)}
-            aria-label="참고 자료"
+            aria-label="링크 · 자료"
             className={`relative p-2 rounded-lg transition-colors ${
               panelOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
             }`}
           >
-            <PanelRight className="h-4 w-4" />
+            <Paperclip className="h-4 w-4" />
             {resourceCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
                 {resourceCount}
@@ -377,7 +377,7 @@ const Reader = () => {
             <div className="tablet:hidden fixed inset-y-0 right-0 w-[85vw] max-w-[340px] bg-card z-50 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200">
               <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-card z-20">
                 <h2 className="text-sm font-bold flex items-center gap-1.5">
-                  <StickyNote className="h-4 w-4" /> 참고 자료
+                  <Paperclip className="h-4 w-4" /> 링크 · 자료
                 </h2>
                 <button onClick={() => setPanelOpen(false)} className="p-1 rounded-lg hover:bg-muted">
                   <X className="h-4 w-4" />
@@ -393,7 +393,7 @@ const Reader = () => {
           <div className="hidden tablet:block w-[320px] shrink-0 bg-card border-l border-border overflow-y-auto">
             <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-card z-20">
               <h2 className="text-sm font-bold flex items-center gap-1.5">
-                <StickyNote className="h-4 w-4" /> 참고 자료
+                <Paperclip className="h-4 w-4" /> 링크 · 자료
               </h2>
               <button onClick={() => setPanelOpen(false)} className="p-1 rounded-lg hover:bg-muted">
                 <X className="h-4 w-4" />
