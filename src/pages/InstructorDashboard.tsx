@@ -3,9 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   BookOpen, TrendingUp, DollarSign, Plus, MoreVertical,
   Eye, Edit, Trash2, BarChart3, ArrowUpRight, ArrowDownRight,
-  LayoutDashboard, FileText, ShoppingBag, Receipt
+  LayoutDashboard, FileText, ShoppingBag, Receipt, Search
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
@@ -49,16 +50,52 @@ type SaleStatus = "완료" | "요청중";
  * buyerId는 카카오 로그인으로 받는 회원번호가 그대로 들어간다.
  * 10자리 안팎의 숫자라 열 너비를 그에 맞춰 잡아 뒀다.
  */
-const recentSales: {
-  buyerId: string; nickname: string; name: string;
+type Sale = {
+  id: number; buyerId: string; nickname: string; name: string;
   book: string; date: string; amount: number; status: SaleStatus;
-}[] = [
-  { buyerId: "3812947561", nickname: "민수쓰", name: "김민수", book: "유튜브 알고리즘 마스터", date: "2026-03-30", amount: 19000, status: "완료" },
-  { buyerId: "3809142277", nickname: "진우진우", name: "오진우", book: "ChatGPT 자동화 파이프라인", date: "2026-03-30", amount: 39000, status: "요청중" },
-  { buyerId: "3798550413", nickname: "서연", name: "한서연", book: "인스타 릴스로 월 500만원", date: "2026-03-29", amount: 15000, status: "완료" },
-  { buyerId: "3784201968", nickname: "지은지은", name: "최지은", book: "유튜브 알고리즘 마스터", date: "2026-03-29", amount: 19000, status: "완료" },
-  { buyerId: "3771038824", nickname: "영호형", name: "박영호", book: "ChatGPT 자동화 파이프라인", date: "2026-03-28", amount: 39000, status: "완료" },
+};
+
+const saleBuyers = [
+  { buyerId: "3812947561", nickname: "민수쓰", name: "김민수" },
+  { buyerId: "3809142277", nickname: "진우진우", name: "오진우" },
+  { buyerId: "3798550413", nickname: "서연", name: "한서연" },
+  { buyerId: "3784201968", nickname: "지은지은", name: "최지은" },
+  { buyerId: "3771038824", nickname: "영호형", name: "박영호" },
+  { buyerId: "3765512097", nickname: "하나TV", name: "정하나" },
+  { buyerId: "3752338640", nickname: "수진작가", name: "이수진" },
+  { buyerId: "3743019582", nickname: "퇴근왕", name: "장도현" },
+  { buyerId: "3731884406", nickname: "초보탈출", name: "윤가영" },
+  { buyerId: "3720557318", nickname: "절약러", name: "신동규" },
 ];
+
+const saleBooks: { title: string; price: number }[] = [
+  { title: "유튜브 알고리즘 마스터", price: 19000 },
+  { title: "ChatGPT 자동화 파이프라인", price: 39000 },
+  { title: "인스타 릴스로 월 500만원", price: 15000 },
+  { title: "제휴마케팅 완전 가이드", price: 12000 },
+  { title: "퇴사 후 월 300만원 비결", price: 25000 },
+];
+
+/**
+ * 데모용 판매 데이터. 페이지 나눔·검색이 의미 있게 보이도록 137건을 만든다.
+ * 최신순이며 날짜는 2026-03-30부터 하루에 3건씩 거슬러 올라간다.
+ */
+const recentSales: Sale[] = Array.from({ length: 137 }, (_, i) => {
+  const buyer = saleBuyers[i % saleBuyers.length];
+  const book = saleBooks[i % saleBooks.length];
+  const day = new Date(Date.UTC(2026, 2, 30) - Math.floor(i / 3) * 86400000);
+  return {
+    id: i,
+    ...buyer,
+    book: book.title,
+    date: day.toISOString().slice(0, 10),
+    amount: book.price,
+    // 두 번째 건만 요청중으로 두어 상태 배지가 보이게 한다.
+    status: i === 1 ? "요청중" : "완료",
+  };
+});
+
+const PAGE_SIZES = [20, 50, 100, 200];
 
 const saleStatusStyle: Record<SaleStatus, string> = {
   "완료": "bg-green-100 text-green-700",
@@ -329,77 +366,165 @@ const BooksContent = () => {
 const SalesContent = () => {
   // 데모라 요청 상태만 화면에서 바꾼다. 실제 환불 승인·정산 반영은 관리자 쪽에서 처리한다.
   const [requested, setRequested] = useState<number[]>([]);
-  const statusOf = (i: number): SaleStatus =>
-    requested.includes(i) ? "요청중" : recentSales[i].status;
-  const request = (i: number) => setRequested((prev) => [...prev, i]);
+  const [query, setQuery] = useState("");
+  const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
+  const [page, setPage] = useState(1);
+
+  const statusOf = (sale: Sale): SaleStatus =>
+    requested.includes(sale.id) ? "요청중" : sale.status;
+  const request = (sale: Sale) => setRequested((prev) => [...prev, sale.id]);
+
+  // 구매자 ID·닉네임·이름·전자책 어디에 걸려도 찾히게 한다.
+  const keyword = query.trim().toLowerCase();
+  const filtered = keyword
+    ? recentSales.filter((s) =>
+        [s.buyerId, s.nickname, s.name, s.book].some((v) => v.toLowerCase().includes(keyword))
+      )
+    : recentSales;
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  // 검색어나 개수를 바꿔 페이지 수가 줄면 현재 페이지가 범위를 넘을 수 있다.
+  const currentPage = Math.min(page, totalPages);
+  const rows = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  // 현재 페이지 주변 5개만 노출한다.
+  const windowStart = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
+  const pageNumbers = Array.from(
+    { length: Math.min(5, totalPages) },
+    (_, i) => windowStart + i
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <h2 className="hidden desktop:block text-lg font-bold">판매 내역</h2>
-      <p className="text-sm text-muted-foreground">최근 판매 내역</p>
 
-      {/* Desktop table */}
-      <div className="hidden tablet:block rounded-xl border border-border overflow-hidden overflow-x-auto">
-        <table className="w-full min-w-[700px]">
-          <thead>
-            <tr className="border-b border-border bg-secondary/50">
-              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">구매자 ID</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">닉네임</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">이름</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3">전자책</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">날짜</th>
-              <th className="text-right text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">금액</th>
-              <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">상태</th>
-              <th className="text-right text-xs font-medium text-muted-foreground px-3 py-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentSales.map((sale, i) => (
-              <tr key={i} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-                <td className="px-3 py-3 text-sm tabular-nums whitespace-nowrap">{sale.buyerId}</td>
-                <td className="px-3 py-3 text-sm whitespace-nowrap">{sale.nickname}</td>
-                <td className="px-3 py-3 text-sm whitespace-nowrap">{sale.name}</td>
-                <td className="px-3 py-3">
-                  <div className="max-w-[120px] truncate text-sm font-medium" title={sale.book}>{sale.book}</div>
-                </td>
-                <td className="px-3 py-3 text-sm text-muted-foreground whitespace-nowrap">{sale.date}</td>
-                <td className="px-3 py-3 text-sm font-semibold text-right whitespace-nowrap">₩{sale.amount.toLocaleString()}</td>
-                <td className="px-3 py-3"><SaleStatusBadge status={statusOf(i)} /></td>
-                <td className="px-3 py-3 text-right whitespace-nowrap">
-                  {statusOf(i) === "완료" && (
-                    <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => request(i)}>
+      {/* 검색 + 페이지당 개수 */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[200px] max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+            placeholder="구매자 ID, 닉네임, 이름, 전자책 검색..."
+            className="pl-9 rounded-lg bg-background"
+          />
+        </div>
+        <select
+          value={pageSize}
+          onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+          aria-label="페이지당 개수"
+          className="h-9 rounded-lg border border-input bg-background px-2.5 text-sm"
+        >
+          {PAGE_SIZES.map((n) => (
+            <option key={n} value={n}>{n}개씩</option>
+          ))}
+        </select>
+        <p className="text-sm text-muted-foreground ml-auto">총 {filtered.length}건</p>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border py-16 text-center">
+          <p className="text-sm text-muted-foreground">검색 결과가 없습니다.</p>
+        </div>
+      ) : (
+        <>
+          {/* Desktop table */}
+          <div className="hidden tablet:block rounded-xl border border-border overflow-hidden overflow-x-auto">
+            <table className="w-full min-w-[700px]">
+              <thead>
+                <tr className="border-b border-border bg-secondary/50">
+                  <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">구매자 ID</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">닉네임</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">이름</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3">전자책</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">날짜</th>
+                  <th className="text-right text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">금액</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-3 py-3 whitespace-nowrap">상태</th>
+                  <th className="text-right text-xs font-medium text-muted-foreground px-3 py-3"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((sale) => (
+                  <tr key={sale.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
+                    <td className="px-3 py-3 text-sm tabular-nums whitespace-nowrap">{sale.buyerId}</td>
+                    <td className="px-3 py-3 text-sm whitespace-nowrap">{sale.nickname}</td>
+                    <td className="px-3 py-3 text-sm whitespace-nowrap">{sale.name}</td>
+                    <td className="px-3 py-3">
+                      <div className="max-w-[120px] truncate text-sm font-medium" title={sale.book}>{sale.book}</div>
+                    </td>
+                    <td className="px-3 py-3 text-sm text-muted-foreground whitespace-nowrap">{sale.date}</td>
+                    <td className="px-3 py-3 text-sm font-semibold text-right whitespace-nowrap">₩{sale.amount.toLocaleString()}</td>
+                    <td className="px-3 py-3"><SaleStatusBadge status={statusOf(sale)} /></td>
+                    <td className="px-3 py-3 text-right whitespace-nowrap">
+                      {statusOf(sale) === "완료" && (
+                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => request(sale)}>
+                          환불 요청
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="tablet:hidden space-y-0">
+            {rows.map((sale) => (
+              <div key={sale.id} className="py-4 border-b border-border last:border-0">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm font-medium flex-1">{sale.book}</p>
+                  <span className="text-sm font-semibold shrink-0">₩{sale.amount.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2 mt-1">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <p className="text-xs text-muted-foreground truncate">
+                      {sale.buyerId} · {sale.nickname}({sale.name}) · {sale.date}
+                    </p>
+                    <SaleStatusBadge status={statusOf(sale)} />
+                  </div>
+                  {statusOf(sale) === "완료" && (
+                    <Button size="sm" variant="outline" className="h-7 px-2 text-xs shrink-0" onClick={() => request(sale)}>
                       환불 요청
                     </Button>
                   )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile cards */}
-      <div className="tablet:hidden space-y-0">
-        {recentSales.map((sale, i) => (
-          <div key={i} className="py-4 border-b border-border last:border-0">
-            <div className="flex items-start justify-between gap-2">
-              <p className="text-sm font-medium flex-1">{sale.book}</p>
-              <span className="text-sm font-semibold shrink-0">₩{sale.amount.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center justify-between gap-2 mt-1">
-              <div className="flex items-center gap-2">
-                <p className="text-xs text-muted-foreground">{sale.buyerId} · {sale.nickname}({sale.name}) · {sale.date}</p>
-                <SaleStatusBadge status={statusOf(i)} />
+                </div>
               </div>
-              {statusOf(i) === "완료" && (
-                <Button size="sm" variant="outline" className="h-7 px-2 text-xs shrink-0" onClick={() => request(i)}>
-                  환불 요청
-                </Button>
-              )}
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+
+          {/* 페이지 */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-1 pt-2">
+              <Button
+                variant="outline" size="sm" className="h-8 px-2 text-xs"
+                disabled={currentPage === 1}
+                onClick={() => setPage(currentPage - 1)}
+              >
+                이전
+              </Button>
+              {pageNumbers.map((n) => (
+                <Button
+                  key={n}
+                  variant={n === currentPage ? "default" : "outline"}
+                  size="sm"
+                  className="h-8 w-8 p-0 text-xs"
+                  onClick={() => setPage(n)}
+                >
+                  {n}
+                </Button>
+              ))}
+              <Button
+                variant="outline" size="sm" className="h-8 px-2 text-xs"
+                disabled={currentPage === totalPages}
+                onClick={() => setPage(currentPage + 1)}
+              >
+                다음
+              </Button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
