@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   BookOpen, TrendingUp, DollarSign, Plus, MoreVertical,
   Eye, Edit, Trash2, BarChart3, ArrowUpRight, ArrowDownRight,
-  LayoutDashboard, FileText, ShoppingBag, Receipt, AlertCircle
+  LayoutDashboard, FileText, ShoppingBag, Receipt
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,28 +36,25 @@ const mockBooks = [
 ];
 
 /**
- * 판매 1건의 상태. 환불요청은 작가가 승인/거절해야 하는 처리 대상이다.
- * reason은 환불요청일 때만 채워진다.
+ * 판매 1건의 상태.
+ * 완료  = 판매가 끝난 정상 건. 작가가 환불을 요청할 수 있다.
+ * 요청중 = 환불을 요청해 둔 건. 실제 승인·환불 처리는 관리자가 한다.
  */
-type SaleStatus = "완료" | "환불요청" | "환불완료";
+type SaleStatus = "완료" | "요청중";
 
 const recentSales: {
-  buyer: string; book: string; date: string; amount: number;
-  status: SaleStatus; reason?: string;
+  buyer: string; book: string; date: string; amount: number; status: SaleStatus;
 }[] = [
   { buyer: "김**", book: "유튜브 알고리즘 마스터", date: "2026-03-30", amount: 19000, status: "완료" },
-  { buyer: "이**", book: "ChatGPT 자동화 파이프라인", date: "2026-03-30", amount: 39000, status: "환불요청",
-    reason: "내용이 상세페이지 설명과 달라 환불 요청합니다." },
+  { buyer: "이**", book: "ChatGPT 자동화 파이프라인", date: "2026-03-30", amount: 39000, status: "요청중" },
   { buyer: "박**", book: "인스타 릴스로 월 500만원", date: "2026-03-29", amount: 15000, status: "완료" },
-  { buyer: "최**", book: "유튜브 알고리즘 마스터", date: "2026-03-29", amount: 19000, status: "환불요청",
-    reason: "실수로 중복 결제했습니다." },
-  { buyer: "정**", book: "ChatGPT 자동화 파이프라인", date: "2026-03-28", amount: 39000, status: "환불완료" },
+  { buyer: "최**", book: "유튜브 알고리즘 마스터", date: "2026-03-29", amount: 19000, status: "완료" },
+  { buyer: "정**", book: "ChatGPT 자동화 파이프라인", date: "2026-03-28", amount: 39000, status: "완료" },
 ];
 
 const saleStatusStyle: Record<SaleStatus, string> = {
   "완료": "bg-green-100 text-green-700",
-  "환불요청": "bg-yellow-100 text-yellow-700",
-  "환불완료": "bg-secondary text-muted-foreground",
+  "요청중": "bg-yellow-100 text-yellow-700",
 };
 
 const SaleStatusBadge = ({ status }: { status: SaleStatus }) => (
@@ -65,8 +62,6 @@ const SaleStatusBadge = ({ status }: { status: SaleStatus }) => (
     {status}
   </span>
 );
-
-const refundPendingCount = recentSales.filter((s) => s.status === "환불요청").length;
 
 const monthlySales = [
   { month: "10월", amount: 180000 },
@@ -323,90 +318,77 @@ const BooksContent = () => {
 };
 
 /* ─── Sales History ─── */
-const SalesContent = () => (
-  <div className="space-y-6">
-    <h2 className="hidden desktop:block text-lg font-bold">판매 내역</h2>
-    <p className="text-sm text-muted-foreground">최근 판매 내역</p>
+const SalesContent = () => {
+  // 데모라 요청 상태만 화면에서 바꾼다. 실제 환불 승인·정산 반영은 관리자 쪽에서 처리한다.
+  const [requested, setRequested] = useState<number[]>([]);
+  const statusOf = (i: number): SaleStatus =>
+    requested.includes(i) ? "요청중" : recentSales[i].status;
+  const request = (i: number) => setRequested((prev) => [...prev, i]);
 
-    {/* 처리해야 할 환불요청이 있으면 먼저 알린다. */}
-    {refundPendingCount > 0 && (
-      <div className="flex items-start gap-2.5 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3">
-        <AlertCircle className="h-4 w-4 text-yellow-600 mt-0.5 shrink-0" />
-        <p className="text-sm text-yellow-800">
-          처리 대기 중인 <span className="font-bold">환불요청 {refundPendingCount}건</span>이 있습니다.
-          승인하면 결제가 취소되고 구매자의 열람 권한이 회수됩니다.
-        </p>
-      </div>
-    )}
+  return (
+    <div className="space-y-6">
+      <h2 className="hidden desktop:block text-lg font-bold">판매 내역</h2>
+      <p className="text-sm text-muted-foreground">최근 판매 내역</p>
 
-    {/* Desktop table */}
-    <div className="hidden tablet:block rounded-xl border border-border overflow-hidden overflow-x-auto">
-      <table className="w-full min-w-[760px]">
-        <thead>
-          <tr className="border-b border-border bg-secondary/50">
-            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">구매자</th>
-            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">전자책</th>
-            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">날짜</th>
-            <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">금액</th>
-            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">상태</th>
-            <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {recentSales.map((sale, i) => (
-            <tr key={i} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-              <td className="px-4 py-3 text-sm whitespace-nowrap">{sale.buyer}</td>
-              <td className="px-4 py-3 text-sm font-medium">
-                {sale.book}
-                {sale.reason && (
-                  <span className="block text-xs font-normal text-muted-foreground mt-0.5">
-                    사유: {sale.reason}
-                  </span>
-                )}
-              </td>
-              <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">{sale.date}</td>
-              <td className="px-4 py-3 text-sm font-semibold text-right whitespace-nowrap">₩{sale.amount.toLocaleString()}</td>
-              <td className="px-4 py-3"><SaleStatusBadge status={sale.status} /></td>
-              <td className="px-4 py-3 whitespace-nowrap">
-                {sale.status === "환불요청" && (
-                  <div className="flex gap-1.5 justify-end">
-                    <Button size="sm" variant="outline" className="h-7 px-2 text-xs">환불 승인</Button>
-                    <Button size="sm" variant="outline" className="h-7 px-2 text-xs text-destructive">거절</Button>
-                  </div>
-                )}
-              </td>
+      {/* Desktop table */}
+      <div className="hidden tablet:block rounded-xl border border-border overflow-hidden overflow-x-auto">
+        <table className="w-full min-w-[720px]">
+          <thead>
+            <tr className="border-b border-border bg-secondary/50">
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">구매자</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">전자책</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">날짜</th>
+              <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">금액</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">상태</th>
+              <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3"></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {recentSales.map((sale, i) => (
+              <tr key={i} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
+                <td className="px-4 py-3 text-sm whitespace-nowrap">{sale.buyer}</td>
+                <td className="px-4 py-3 text-sm font-medium">{sale.book}</td>
+                <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">{sale.date}</td>
+                <td className="px-4 py-3 text-sm font-semibold text-right whitespace-nowrap">₩{sale.amount.toLocaleString()}</td>
+                <td className="px-4 py-3"><SaleStatusBadge status={statusOf(i)} /></td>
+                <td className="px-4 py-3 text-right whitespace-nowrap">
+                  {statusOf(i) === "완료" && (
+                    <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => request(i)}>
+                      환불 요청
+                    </Button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-    {/* Mobile cards */}
-    <div className="tablet:hidden space-y-0">
-      {recentSales.map((sale, i) => (
-        <div key={i} className="py-4 border-b border-border last:border-0">
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-medium flex-1">{sale.book}</p>
-            <span className="text-sm font-semibold shrink-0">₩{sale.amount.toLocaleString()}</span>
-          </div>
-          <div className="flex items-center gap-2 mt-1">
-            <p className="text-xs text-muted-foreground">{sale.buyer} · {sale.date}</p>
-            <SaleStatusBadge status={sale.status} />
-          </div>
-          {sale.reason && (
-            <p className="text-xs text-muted-foreground mt-1.5">사유: {sale.reason}</p>
-          )}
-          {sale.status === "환불요청" && (
-            <div className="flex gap-2 mt-2.5">
-              <Button size="sm" variant="outline" className="flex-1 h-7 text-xs">환불 승인</Button>
-              <Button size="sm" variant="outline" className="flex-1 h-7 text-xs text-destructive">거절</Button>
+      {/* Mobile cards */}
+      <div className="tablet:hidden space-y-0">
+        {recentSales.map((sale, i) => (
+          <div key={i} className="py-4 border-b border-border last:border-0">
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-sm font-medium flex-1">{sale.book}</p>
+              <span className="text-sm font-semibold shrink-0">₩{sale.amount.toLocaleString()}</span>
             </div>
-          )}
-        </div>
-      ))}
+            <div className="flex items-center justify-between gap-2 mt-1">
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-muted-foreground">{sale.buyer} · {sale.date}</p>
+                <SaleStatusBadge status={statusOf(i)} />
+              </div>
+              {statusOf(i) === "완료" && (
+                <Button size="sm" variant="outline" className="h-7 px-2 text-xs shrink-0" onClick={() => request(i)}>
+                  환불 요청
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* ─── Settlements ─── */
 const mockSettlements = [
