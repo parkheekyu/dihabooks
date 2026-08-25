@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -47,6 +47,17 @@ const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
 
 const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
   const [detail, setDetail] = useState<Order | null>(null);
+  // 데모라 화면 상태만 바꾼다. 실제로는 PG 결제 취소와 열람 권한 회수가 함께 돌아야 한다.
+  const [refunded, setRefunded] = useState<string[]>([]);
+  // 환불은 되돌릴 수 없어 한 번 더 확인받는다.
+  const [confirming, setConfirming] = useState(false);
+
+  const statusOf = (o: Order) => (refunded.includes(o.id) ? "환불완료" : o.status);
+  const closeDetail = () => { setDetail(null); setConfirming(false); };
+  const doRefund = (o: Order) => {
+    setRefunded((prev) => (prev.includes(o.id) ? prev : [...prev, o.id]));
+    setConfirming(false);
+  };
   const filtered = filter === "refund"
     ? mockOrders.filter(o => o.status === "환불요청" || o.status === "취소" || o.status === "환불완료")
     : mockOrders;
@@ -95,7 +106,7 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
                 <td className="px-4 py-3 text-sm text-right font-semibold">₩{o.amount.toLocaleString()}</td>
                 <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">{o.date}</td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[o.status] || "bg-secondary text-muted-foreground"}`}>{o.status}</span>
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[statusOf(o)] || "bg-secondary text-muted-foreground"}`}>{statusOf(o)}</span>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <div className="flex gap-1.5 justify-end">
@@ -119,7 +130,7 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
           <div key={o.id} className="rounded-xl border border-border bg-background p-4 space-y-2">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium flex-1 truncate mr-2">{o.product}</p>
-              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${statusColor[o.status] || "bg-secondary text-muted-foreground"}`}>{o.status}</span>
+              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${statusColor[statusOf(o)] || "bg-secondary text-muted-foreground"}`}>{statusOf(o)}</span>
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="truncate mr-2">{o.id} · {o.customer} · {o.phone}</span>
@@ -144,7 +155,7 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
       </div>
 
       {/* 주문 상세 */}
-      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+      <Dialog open={!!detail} onOpenChange={(o) => !o && closeDetail()}>
         <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>주문 상세</DialogTitle></DialogHeader>
           {detail && (
@@ -165,7 +176,7 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
                 <Row label="결제일시" value={detail.paidAt} />
                 <Row label="영수증 발송" value={detail.receiptEmail} />
                 <Row label="상태" value={
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[detail.status] || "bg-secondary text-muted-foreground"}`}>{detail.status}</span>
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[statusOf(detail)] || "bg-secondary text-muted-foreground"}`}>{statusOf(detail)}</span>
                 } />
               </div>
               {detail.note && (
@@ -174,6 +185,48 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
                   <p className="rounded-lg bg-secondary/60 px-3 py-2.5 text-sm">{detail.note}</p>
                 </div>
               )}
+
+              {/* 환불 처리 */}
+              <div className="border-t border-border pt-4">
+                {statusOf(detail) === "환불완료" ? (
+                  <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    환불이 완료된 주문입니다.
+                  </p>
+                ) : confirming ? (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-3">
+                    <p className="flex items-start gap-1.5 text-sm text-foreground">
+                      <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-destructive" />
+                      <span>
+                        ₩{detail.amount.toLocaleString()}을 환불합니다. 결제가 취소되고 구매자의
+                        열람 권한이 회수되며, 되돌릴 수 없습니다.
+                      </span>
+                    </p>
+                    <div className="flex justify-end gap-2 mt-3">
+                      <Button size="sm" variant="outline" className="text-xs" onClick={() => setConfirming(false)}>
+                        취소
+                      </Button>
+                      <Button size="sm" className="text-xs bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => doRefund(detail)}>
+                        환불 확정
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs text-muted-foreground">
+                      결제를 취소하고 구매자의 열람 권한을 회수합니다.
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs text-destructive border-destructive/40 hover:bg-destructive/10 shrink-0"
+                      onClick={() => setConfirming(true)}
+                    >
+                      환불 처리
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>
