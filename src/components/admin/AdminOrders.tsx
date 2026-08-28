@@ -8,25 +8,36 @@ type Order = {
   id: string; customer: string; nickname: string; phone: string; email: string;
   product: string; date: string; amount: number; status: string; payment: string;
   paidAt: string; receiptEmail: string; note?: string;
+  /** 구매자가 뷰어에 처음 접근한 시각. 접근하는 즉시 기록되며, 없으면 미열람. */
+  viewedAt?: string;
 };
 
 const mockOrders: Order[] = [
   { id: "ORD-2026-0512", customer: "김민수", nickname: "민수쓰", phone: "010-2841-1063", email: "kim@example.com",
     product: "유튜브 알고리즘 마스터", date: "2026-03-30", amount: 19000, status: "완료", payment: "카카오페이",
-    paidAt: "2026-03-30 14:32", receiptEmail: "kim@example.com" },
+    paidAt: "2026-03-30 14:32", receiptEmail: "kim@example.com", viewedAt: "2026-03-30 14:35" },
   { id: "ORD-2026-0511", customer: "오진우", nickname: "진우진우", phone: "010-6641-3390", email: "oh@example.com",
     product: "ChatGPT 자동화 파이프라인", date: "2026-03-30", amount: 39000, status: "완료", payment: "신용카드",
-    paidAt: "2026-03-30 09:15", receiptEmail: "oh@example.com" },
+    paidAt: "2026-03-30 09:15", receiptEmail: "oh@example.com", viewedAt: "2026-03-30 21:02" },
   { id: "ORD-2026-0510", customer: "한서연", nickname: "서연", phone: "010-4417-2250", email: "han@example.com",
     product: "인스타 릴스로 월 500만원", date: "2026-03-29", amount: 15000, status: "완료", payment: "카카오페이",
     paidAt: "2026-03-29 21:04", receiptEmail: "han@example.com" },
   { id: "ORD-2026-0509", customer: "박영호", nickname: "영호형", phone: "010-3355-9021", email: "park@example.com",
     product: "제휴마케팅 완전 가이드", date: "2026-03-29", amount: 12000, status: "환불요청", payment: "신용카드",
-    paidAt: "2026-03-29 11:48", receiptEmail: "park@example.com", note: "내용이 기대와 달라 환불 요청합니다." },
+    paidAt: "2026-03-29 11:48", receiptEmail: "park@example.com", viewedAt: "2026-03-29 12:10", note: "내용이 기대와 달라 환불 요청합니다." },
   { id: "ORD-2026-0508", customer: "최지은", nickname: "지은지은", phone: "010-9084-2277", email: "choi@example.com",
     product: "유튜브 알고리즘 마스터", date: "2026-03-28", amount: 19000, status: "취소", payment: "카카오페이",
     paidAt: "2026-03-28 16:20", receiptEmail: "choi@example.com" },
 ];
+/** 열람 여부는 환불 판단의 근거가 되므로 목록에서 바로 보이게 둔다. */
+const ViewedBadge = ({ viewedAt }: { viewedAt?: string }) => (
+  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${
+    viewedAt ? "bg-blue-100 text-blue-700" : "bg-secondary text-muted-foreground"
+  }`}>
+    {viewedAt ? "열람" : "미열람"}
+  </span>
+);
+
 const statusColor: Record<string, string> = {
   "완료": "bg-green-100 text-green-700",
   "환불요청": "bg-yellow-100 text-yellow-700",
@@ -76,7 +87,7 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
       </div>
 
       <div className="hidden tablet:block rounded-xl border border-border bg-background overflow-x-auto">
-        <table className="w-full min-w-[1240px]">
+        <table className="w-full min-w-[1330px]">
           <thead>
             <tr className="border-b border-border bg-secondary/50">
               <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">주문번호</th>
@@ -87,6 +98,7 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
               <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">결제</th>
               <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">금액</th>
               <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">날짜</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">열람</th>
               <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 whitespace-nowrap">상태</th>
               <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3"></th>
             </tr>
@@ -105,6 +117,7 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
                 <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">{o.payment}</td>
                 <td className="px-4 py-3 text-sm text-right font-semibold">₩{o.amount.toLocaleString()}</td>
                 <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">{o.date}</td>
+                <td className="px-4 py-3 whitespace-nowrap"><ViewedBadge viewedAt={o.viewedAt} /></td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[statusOf(o)] || "bg-secondary text-muted-foreground"}`}>{statusOf(o)}</span>
                 </td>
@@ -130,7 +143,10 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
           <div key={o.id} className="rounded-xl border border-border bg-background p-4 space-y-2">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium flex-1 truncate mr-2">{o.product}</p>
-              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${statusColor[statusOf(o)] || "bg-secondary text-muted-foreground"}`}>{statusOf(o)}</span>
+              <span className="flex items-center gap-1.5 shrink-0">
+                <ViewedBadge viewedAt={o.viewedAt} />
+                <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[statusOf(o)] || "bg-secondary text-muted-foreground"}`}>{statusOf(o)}</span>
+              </span>
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="truncate mr-2">{o.id} · {o.customer} · {o.phone}</span>
@@ -175,6 +191,11 @@ const AdminOrders = ({ filter = "all" }: AdminOrdersProps) => {
                 <Row label="결제금액" value={`₩${detail.amount.toLocaleString()}`} />
                 <Row label="결제일시" value={detail.paidAt} />
                 <Row label="영수증 발송" value={detail.receiptEmail} />
+                <Row label="열람" value={
+                  detail.viewedAt
+                    ? <span className="flex items-center gap-2"><ViewedBadge viewedAt={detail.viewedAt} /><span className="text-xs text-muted-foreground">{detail.viewedAt} 최초 열람</span></span>
+                    : <ViewedBadge />
+                } />
                 <Row label="상태" value={
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[statusOf(detail)] || "bg-secondary text-muted-foreground"}`}>{statusOf(detail)}</span>
                 } />
