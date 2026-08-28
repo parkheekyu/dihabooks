@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import PageResourceFields, { type ResourceLink, type ResourceFile } from "@/components/PageResourceFields";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { categories } from "@/data/mockData";
@@ -36,7 +37,11 @@ const EbookForm = () => {
     content: true,
     price: true,
     file: true,
+    resources: true,
   });
+
+  const [links, setLinks] = useState<ResourceLink[]>([]);
+  const [files, setFiles] = useState<ResourceFile[]>([]);
 
   const toggleSection = (key: keyof typeof sections) => {
     setSections(prev => ({ ...prev, [key]: !prev[key] }));
@@ -98,6 +103,15 @@ const EbookForm = () => {
     }
 
     const editorContent = editorRef.current?.innerHTML || "";
+
+    if (links.some((l) => !l.page || !l.label.trim() || !l.url.trim())) {
+      toast.error("링크는 페이지 번호·이름·주소를 모두 입력해주세요.");
+      return;
+    }
+    if (files.some((f) => !f.page)) {
+      toast.error("첨부 자료의 페이지 번호를 입력해주세요.");
+      return;
+    }
 
     if (submitForReview) {
       if (!coverPreview) {
@@ -363,6 +377,17 @@ const EbookForm = () => {
                 </label>
               )}
             </div>
+          </FormSection>
+
+          {/* ── 페이지별 링크 · 자료 ── */}
+          <FormSection title="페이지별 링크 · 자료" open={sections.resources} onToggle={() => toggleSection("resources")}>
+            <PageResourceFields
+              links={links}
+              files={files}
+              onLinksChange={setLinks}
+              onFilesChange={setFiles}
+              framed={false}
+            />
           </FormSection>
 
           {/* ── 안내 ── */}

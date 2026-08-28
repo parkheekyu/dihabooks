@@ -3,6 +3,7 @@ import { ArrowLeft, ImagePlus, Plus, X, Upload, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import RichTextEditor, { type RichTextEditorHandle } from "@/components/RichTextEditor";
+import PageResourceFields, { type ResourceLink, type ResourceFile } from "@/components/PageResourceFields";
 import { categories } from "@/data/mockData";
 import { toast } from "sonner";
 
@@ -19,6 +20,9 @@ export interface NewEbook {
   pdfName: string;
   description: string;
   toc: { chapter: string; subtopics: string[] }[];
+  /** 뷰어 오른쪽 '링크 · 자료' 탭에 페이지별로 노출된다. */
+  links: ResourceLink[];
+  files: ResourceFile[];
 }
 
 interface Props {
@@ -42,6 +46,8 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
   const [thumb, setThumb] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [toc, setToc] = useState([{ chapter: "", subtopics: "" }]);
+  const [links, setLinks] = useState<ResourceLink[]>([]);
+  const [files, setFiles] = useState<ResourceFile[]>([]);
 
   const editorRef = useRef<RichTextEditorHandle>(null);
   const thumbInputRef = useRef<HTMLInputElement>(null);
@@ -85,6 +91,12 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
       return toast.error("상세 설명을 입력해주세요.");
     }
     if (!pdfFile) return toast.error("전자책 PDF 파일을 업로드해주세요.");
+    if (links.some((l) => !l.page || !l.label.trim() || !l.url.trim())) {
+      return toast.error("링크는 페이지 번호·이름·주소를 모두 입력해주세요.");
+    }
+    if (files.some((f) => !f.page)) {
+      return toast.error("첨부 자료의 페이지 번호를 입력해주세요.");
+    }
 
     onSubmit({
       title: title.trim(),
@@ -103,6 +115,8 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
           chapter: r.chapter.trim(),
           subtopics: r.subtopics.split("\n").map((s) => s.trim()).filter(Boolean),
         })),
+      links,
+      files,
     });
   };
 
@@ -278,6 +292,13 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
           </div>
         ))}
       </section>
+
+      <PageResourceFields
+        links={links}
+        files={files}
+        onLinksChange={setLinks}
+        onFilesChange={setFiles}
+      />
 
       <div className="flex items-center justify-end gap-2 pb-4">
         <Button variant="outline" size="sm" onClick={onCancel}>취소</Button>
