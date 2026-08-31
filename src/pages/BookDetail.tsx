@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2, Send, ThumbsUp, ChevronLeft, ChevronRight, CircleCheck } from "lucide-react";
+import { Star, Heart, ArrowLeft, Share2, Send, ThumbsUp, ChevronLeft, ChevronRight, CircleCheck, BookOpen } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -136,6 +137,7 @@ const BookDetail = () => {
   const book = sampleBooks.find((b) => b.id === id) || sampleBooks[0];
   const wished = isWished(book.id);
   const [isPurchased, setIsPurchased] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(0);
   const [reviewPage, setReviewPage] = useState(1);
   const [reviewRating, setReviewRating] = useState(0);
@@ -306,6 +308,24 @@ const BookDetail = () => {
         {book.reviewCount + (wished ? 1 : 0)}
       </span>
     </button>
+  );
+
+  // 상품 등록의 '미리보기' 설정값. 비어 있으면 미리보기 버튼을 내보내지 않는다.
+  const preview = { start: 1, end: 8 };
+  const previewPages = Array.from(
+    { length: preview.end - preview.start + 1 },
+    (_, i) => preview.start + i
+  );
+
+  const previewButton = () => (
+    <Button
+      variant="outline"
+      aria-label="미리보기 열기"
+      className="w-full h-12 rounded-xl text-base font-bold gap-2"
+      onClick={() => setPreviewOpen(true)}
+    >
+      <BookOpen className="h-4 w-4" /> 미리보기
+    </Button>
   );
 
   // All four fields come from 작가 프로필 설정 (/seller-profile).
@@ -506,7 +526,7 @@ const BookDetail = () => {
                             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-sm font-bold shrink-0">{j + 1}</span>
                             <span className="text-sm flex-1">{sub.title}</span>
                             {sub.preview && (
-                              <button onClick={() => navigate(`/reader/${book.id}?preview=true`)} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0">
+                              <button onClick={() => setPreviewOpen(true)} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0">
                                 미리보기
                               </button>
                             )}
@@ -585,11 +605,14 @@ const BookDetail = () => {
                     <span className="text-sm font-bold">상품 금액</span>
                     <span className="text-xl font-black">{currentOption.price.toLocaleString()}원</span>
                   </div>
-                  <div className="flex gap-2">
-                    {wishButton()}
-                    <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
-                      지금 바로 구매하기
-                    </Button>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      {wishButton()}
+                      <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
+                        지금 바로 구매하기
+                      </Button>
+                    </div>
+                    {previewButton()}
                   </div>
                 </div>
               )}
@@ -704,7 +727,7 @@ const BookDetail = () => {
                         <span className="text-sm flex-1">{sub.title}</span>
                         {sub.preview && (
                           <button
-                            onClick={() => navigate(`/reader/${book.id}?preview=true`)}
+                            onClick={() => setPreviewOpen(true)}
                             className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
                           >
                             미리보기
@@ -736,14 +759,56 @@ const BookDetail = () => {
             지금 바로 읽기
           </Button>
         ) : (
-          <div className="flex items-center gap-3">
-            {wishButton()}
-            <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
-              {currentOption.price.toLocaleString()}원 구매하기
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              {wishButton()}
+              <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
+                {currentOption.price.toLocaleString()}원 구매하기
+              </Button>
+            </div>
+            <Button variant="outline" aria-label="미리보기 열기" className="w-full h-10 rounded-xl text-sm font-bold gap-2" onClick={() => setPreviewOpen(true)}>
+              <BookOpen className="h-4 w-4" /> 미리보기
             </Button>
           </div>
         )}
       </div>
+
+      {/* 미리보기 — 뷰어를 열지 않고 해당 페이지를 이미지로만 보여준다.
+          데모라 표지 이미지를 자리표시자로 쓰며, 실제로는 PDF의 해당 쪽을
+          이미지로 변환한 파일을 넣어야 한다. */}
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>미리보기 · {preview.start}~{preview.end}쪽</DialogTitle>
+          </DialogHeader>
+          <p className="text-xs text-muted-foreground">
+            구매 전 무료로 공개되는 페이지입니다. 전체 {book.pageCount ?? "-"}쪽 중 {previewPages.length}쪽을 보여드립니다.
+          </p>
+          <div className="space-y-3">
+            {previewPages.map((page) => (
+              <div key={page} className="relative overflow-hidden rounded-lg border border-border bg-secondary/30">
+                <img
+                  src={book.image}
+                  alt={`${page}쪽 미리보기`}
+                  loading="lazy"
+                  className="w-full aspect-[3/4] object-cover"
+                />
+                <span className="absolute bottom-2 right-2 rounded-md bg-foreground/70 px-2 py-0.5 text-[11px] font-medium text-background">
+                  {page}쪽
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-border pt-4">
+            <Button
+              className="w-full h-11 rounded-xl text-sm font-bold bg-brand text-white hover:bg-brand/90"
+              onClick={() => { setPreviewOpen(false); handlePurchase(); }}
+            >
+              이어서 보려면 구매하기
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
