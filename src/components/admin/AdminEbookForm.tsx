@@ -19,10 +19,13 @@ export interface NewEbook {
   /** 업로드된 전자책 원고 파일명. */
   pdfName: string;
   description: string;
-  /** preview를 켠 소제목은 상세 페이지에서 본문 앞 30%까지 무료로 공개된다. */
+  /**
+   * 소제목마다 시작 쪽만 받는다. 끝 쪽은 다음 소제목의 시작 직전으로 계산되므로
+   * 따로 입력받지 않는다. preview를 켠 소제목은 본문 앞 30%까지 무료로 공개된다.
+   */
   toc: {
-    chapter: string; startPage?: number; endPage?: number;
-    subtopics: { title: string; preview: boolean }[];
+    chapter: string;
+    subtopics: { title: string; page?: number; preview: boolean }[];
   }[];
   /** 뷰어 오른쪽 '링크 · 자료' 탭에 페이지별로 노출된다. */
   links: ResourceLink[];
@@ -49,7 +52,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
   const [pageCount, setPageCount] = useState("");
   const [thumb, setThumb] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [toc, setToc] = useState([{ chapter: "", startPage: "", endPage: "", subtopics: [{ title: "", preview: false }] }]);
+  const [toc, setToc] = useState([{ chapter: "", subtopics: [{ title: "", page: "", preview: false }] }]);
   const [links, setLinks] = useState<ResourceLink[]>([]);
   const [files, setFiles] = useState<ResourceFile[]>([]);
 
@@ -78,11 +81,11 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
     setPdfFile(file);
   };
 
-  const updateToc = (i: number, key: "chapter" | "startPage" | "endPage", v: string) =>
+  const updateToc = (i: number, key: "chapter", v: string) =>
     setToc((prev) => prev.map((row, idx) => (idx === i ? { ...row, [key]: v } : row)));
 
   // 소제목은 줄글이 아니라 항목별로 다뤄야 미리보기 체크를 붙일 수 있다.
-  const updateSub = (ci: number, si: number, patch: Partial<{ title: string; preview: boolean }>) =>
+  const updateSub = (ci: number, si: number, patch: Partial<{ title: string; page: string; preview: boolean }>) =>
     setToc((prev) =>
       prev.map((row, i) =>
         i === ci
@@ -92,12 +95,27 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
     );
   const addSub = (ci: number) =>
     setToc((prev) =>
-      prev.map((row, i) => (i === ci ? { ...row, subtopics: [...row.subtopics, { title: "", preview: false }] } : row))
+      prev.map((row, i) => (i === ci ? { ...row, subtopics: [...row.subtopics, { title: "", page: "", preview: false }] } : row))
     );
   const removeSub = (ci: number, si: number) =>
     setToc((prev) =>
       prev.map((row, i) => (i === ci ? { ...row, subtopics: row.subtopics.filter((_, j) => j !== si) } : row))
     );
+
+  /**
+   * 소제목의 끝 쪽은 입력받지 않고, 뒤에 오는 첫 번째 시작 쪽에서 1을 뺀 값으로 본다.
+   * 마지막 항목은 전체 페이지 수까지로 본다.
+   */
+  const rangeLabel = (ci: number, si: number) => {
+    const flat = toc.flatMap((row, i) => row.subtopics.map((sub, j) => ({ i, j, page: sub.page })));
+    const at = flat.findIndex((x) => x.i === ci && x.j === si);
+    const start = flat[at]?.page;
+    if (!start) return "";
+    const next = flat.slice(at + 1).find((x) => x.page);
+    const end = next ? Number(next.page) - 1 : pageCount ? Number(pageCount) : null;
+    if (end === null || end < Number(start)) return `~ ?`;
+    return `~ ${end}쪽`;
+  };
 
   const submit = () => {
     if (!thumb) return toast.error("썸네일 이미지를 선택해주세요.");
@@ -116,8 +134,12 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
     if (links.some((l) => !l.label.trim() || !l.url.trim())) {
       return toast.error("링크는 이름과 주소를 입력해주세요.");
     }
-    if (toc.some((r) => r.startPage && r.endPage && Number(r.endPage) < Number(r.startPage))) {
-      return toast.error("목차의 끝 쪽은 시작 쪽보다 작을 수 없습니다.");
+    const pages = toc
+      .flatMap((r) => r.subtopics)
+      .filter((sub) => sub.title.trim() && sub.page)
+      .map((sub) => Number(sub.page));
+    if (pages.some((n, idx) => idx > 0 && n < pages[idx - 1])) {
+      return toast.error("소제목의 시작 쪽은 목차 순서대로 커져야 합니다.");
     }
 
     onSubmit({
@@ -135,11 +157,13 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
         .filter((r) => r.chapter.trim())
         .map((r) => ({
           chapter: r.chapter.trim(),
-          startPage: r.startPage ? Number(r.startPage) : undefined,
-          endPage: r.endPage ? Number(r.endPage) : undefined,
           subtopics: r.subtopics
             .filter((sub) => sub.title.trim())
-            .map((sub) => ({ title: sub.title.trim(), preview: sub.preview })),
+            .map((sub) => ({
+              title: sub.title.trim(),
+              page: sub.page ? Number(sub.page) : undefined,
+              preview: sub.preview,
+            })),
         })),
       links,
       files,
@@ -284,10 +308,12 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-semibold">목차</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">상세 페이지 &lsquo;전체목차&rsquo;에 표시됩니다.</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              상세 페이지 &lsquo;전체목차&rsquo;에 표시됩니다. 소제목마다 시작 쪽만 넣으면 끝 쪽은 자동으로 잡힙니다.
+            </p>
           </div>
           <Button variant="outline" size="sm" className="text-xs gap-1"
-            onClick={() => setToc((p) => [...p, { chapter: "", startPage: "", endPage: "", subtopics: [{ title: "", preview: false }] }])}>
+            onClick={() => setToc((p) => [...p, { chapter: "", subtopics: [{ title: "", page: "", preview: false }] }])}>
             <Plus className="h-3 w-3" /> 챕터 추가
           </Button>
         </div>
@@ -309,27 +335,28 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
                 </button>
               )}
             </div>
-            {/* 챕터가 차지하는 페이지 구간. 뷰어 목차에서 해당 쪽으로 이동할 때 쓴다. */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground shrink-0">페이지</span>
-              <Input value={row.startPage} inputMode="numeric" aria-label="시작 쪽"
-                onChange={(e) => updateToc(i, "startPage", numeric(e.target.value))}
-                placeholder="시작" className="w-20 text-sm text-center" />
-              <span className="text-xs text-muted-foreground">~</span>
-              <Input value={row.endPage} inputMode="numeric" aria-label="끝 쪽"
-                onChange={(e) => updateToc(i, "endPage", numeric(e.target.value))}
-                placeholder="끝" className="w-20 text-sm text-center" />
-            </div>
             {/* 소제목 — 체크한 항목만 상세 페이지 목차에 미리보기 버튼이 붙는다. */}
             <div className="space-y-2 pt-1">
               {row.subtopics.map((sub, j) => (
                 <div key={j} className="flex items-center gap-2">
+                  <Input
+                    value={sub.page}
+                    inputMode="numeric"
+                    aria-label="시작 쪽"
+                    onChange={(e) => updateSub(i, j, { page: numeric(e.target.value) })}
+                    placeholder="쪽"
+                    className="w-[68px] shrink-0 text-sm text-center"
+                  />
                   <Input
                     value={sub.title}
                     onChange={(e) => updateSub(i, j, { title: e.target.value })}
                     placeholder={`소제목 ${j + 1}`}
                     className="text-sm flex-1 min-w-0"
                   />
+                  {/* 끝 쪽은 다음 소제목의 시작 직전으로 자동 계산된다. */}
+                  <span className="w-16 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+                    {rangeLabel(i, j)}
+                  </span>
                   <label className="flex items-center gap-1.5 text-xs cursor-pointer select-none shrink-0">
                     <input
                       type="checkbox"
