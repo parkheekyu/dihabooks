@@ -81,7 +81,7 @@ const PageResourceFields = ({ links, files, onLinksChange, onFilesChange, framed
               <Input
                 value={l.page}
                 onChange={(e) => setLink(i, "page", e.target.value.replace(/[^0-9]/g, ""))}
-                placeholder="전체"
+                placeholder="쪽수"
                 inputMode="numeric"
                 aria-label="페이지 번호 (비우면 전체)"
                 title="비워두면 모든 페이지에 표시됩니다"
@@ -140,7 +140,7 @@ const PageResourceFields = ({ links, files, onLinksChange, onFilesChange, framed
               <Input
                 value={f.page}
                 onChange={(e) => setFilePage(i, e.target.value.replace(/[^0-9]/g, ""))}
-                placeholder="전체"
+                placeholder="쪽수"
                 inputMode="numeric"
                 aria-label="페이지 번호 (비우면 전체)"
                 title="비워두면 모든 페이지에 표시됩니다"
