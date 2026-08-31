@@ -1,6 +1,7 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, List, X, CheckCircle2, Paperclip, Link2, FileText, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, List, X, CheckCircle2, Paperclip, Link2, FileText, Download, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const mockToc = [
   {
@@ -77,17 +78,34 @@ const emptyResources = { links: [], files: [] };
 
 const Reader = () => {
   const { id } = useParams();
-  const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+
+  /**
+   * 구매 전 미리보기. 로그인 없이 들어올 수 있고, from~to 밖으로는 넘어갈 수 없다.
+   * 실제 서비스에서는 이 구간의 원고만 내려줘야 한다(전체를 보내고 화면에서만
+   * 막으면 개발자 도구로 열람할 수 있음).
+   */
+  const isPreview = params.get("preview") === "1";
+  const previewFrom = Math.max(1, Number(params.get("from")) || 1);
+  const previewTo = Math.max(previewFrom, Number(params.get("to")) || previewFrom);
+
+  const [currentPage, setCurrentPage] = useState(isPreview ? previewFrom : 1);
   const [zoom, setZoom] = useState(100);
   const [tocOpen, setTocOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [completedSections, setCompletedSections] = useState<string[]>(["1-0", "1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "1-7", "1-8", "1-9"]);
   const totalPages = 85;
+  // 미리보기에서는 허용 구간 밖으로 나가지 못하게 막는다.
+  const minPage = isPreview ? previewFrom : 1;
+  const maxPage = isPreview ? Math.min(previewTo, totalPages) : totalPages;
+  const goPage = (p: number) => setCurrentPage(Math.min(maxPage, Math.max(minPage, p)));
+  const atPreviewEnd = isPreview && currentPage >= maxPage;
 
   const userEmail = "belleba@naver.com";
 
   const handleTocClick = (page: number) => {
-    setCurrentPage(page);
+    goPage(page);
     // Close TOC on mobile after selecting
     if (window.innerWidth < 768) {
       setTocOpen(false);
@@ -247,9 +265,17 @@ const Reader = () => {
       {/* Top bar */}
       <div className="flex items-center justify-between px-3 tablet:px-4 py-2.5 tablet:py-3 bg-card border-b border-border shrink-0">
         <div className="flex items-center gap-2 tablet:gap-3">
-          <Link to="/library" className="text-muted-foreground text-xs tablet:text-sm hover:text-foreground transition-colors">
-            ← 서재
+          <Link
+            to={isPreview ? `/book/${id}` : "/library"}
+            className="text-muted-foreground text-xs tablet:text-sm hover:text-foreground transition-colors"
+          >
+            ← {isPreview ? "상품" : "서재"}
           </Link>
+          {isPreview && (
+            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-primary/10 text-primary whitespace-nowrap">
+              미리보기
+            </span>
+          )}
           <button
             onClick={() => setTocOpen(!tocOpen)}
             className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -258,7 +284,7 @@ const Reader = () => {
           </button>
         </div>
         <span className="text-muted-foreground text-xs tablet:text-sm">
-          {currentPage} / {totalPages}
+          {currentPage} / {isPreview ? maxPage : totalPages}
         </span>
         <div className="flex items-center gap-1 tablet:gap-2">
           <button
@@ -353,6 +379,25 @@ const Reader = () => {
             </div>
           </div>
 
+          {/* 미리보기 마지막 쪽에서 더 못 넘어간다는 걸 알리고 구매로 이어 준다. */}
+          {atPreviewEnd && (
+            <div className="max-w-3xl mx-auto px-4 tablet:px-8 pb-10">
+              <div className="rounded-xl border border-border bg-card p-5 text-center">
+                <Lock className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-sm font-bold">미리보기는 여기까지입니다</p>
+                <p className="text-xs text-muted-foreground mt-1 mb-4">
+                  나머지 내용은 구매 후 보실 수 있습니다.
+                </p>
+                <Button
+                  className="w-full max-w-xs h-11 rounded-xl text-sm font-bold bg-brand text-white hover:bg-brand/90"
+                  onClick={() => navigate(`/book/${id}`)}
+                >
+                  지금 바로 구매하기
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Watermark overlay */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-16 tablet:gap-32 -rotate-[30deg] opacity-[0.07]">
@@ -366,15 +411,15 @@ const Reader = () => {
 
           {/* Navigation arrows - hidden on mobile (use swipe/progress bar) */}
           <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
+            onClick={() => goPage(currentPage - 1)}
+            disabled={currentPage <= minPage}
             className="hidden tablet:block absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground transition-all disabled:opacity-20"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() => goPage(currentPage + 1)}
+            disabled={currentPage >= maxPage}
             className="hidden tablet:block absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground transition-all disabled:opacity-20"
           >
             <ChevronRight className="h-5 w-5" />
@@ -423,15 +468,15 @@ const Reader = () => {
         {/* Mobile prev/next buttons */}
         <div className="flex tablet:hidden items-center gap-2 mb-2">
           <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
+            onClick={() => goPage(currentPage - 1)}
+            disabled={currentPage <= minPage}
             className="flex-1 py-2 rounded-lg bg-muted text-sm font-medium text-foreground disabled:opacity-30 active:bg-muted/70 transition-colors"
           >
             ← 이전
           </button>
           <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() => goPage(currentPage + 1)}
+            disabled={currentPage >= maxPage}
             className="flex-1 py-2 rounded-lg bg-muted text-sm font-medium text-foreground disabled:opacity-30 active:bg-muted/70 transition-colors"
           >
             다음 →
@@ -441,13 +486,13 @@ const Reader = () => {
           <span className="text-muted-foreground text-xs">{currentPage}</span>
           <input
             type="range"
-            min={1}
-            max={totalPages}
+            min={minPage}
+            max={maxPage}
             value={currentPage}
-            onChange={(e) => setCurrentPage(Number(e.target.value))}
+            onChange={(e) => goPage(Number(e.target.value))}
             className="flex-1 h-1 accent-primary"
           />
-          <span className="text-muted-foreground text-xs">{totalPages}</span>
+          <span className="text-muted-foreground text-xs">{maxPage}</span>
         </div>
       </div>
     </div>

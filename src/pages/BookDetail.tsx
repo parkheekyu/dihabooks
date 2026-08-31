@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Star, Heart, ArrowLeft, Share2, Send, ThumbsUp, ChevronLeft, ChevronRight, CircleCheck } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -12,65 +11,58 @@ import { DEFAULT_AVATAR } from "@/lib/constants";
 import { useWishlist } from "@/contexts/WishlistContext";
 
 /**
- * 미리보기(preview)는 소제목 단위로 켠다. 상품 등록의 목차 설정에서 체크한 값이며,
- * 켜진 소제목은 본문 앞부분 30%까지만 보이고 나머지는 가려진다.
+ * 상품 등록의 목차 설정에서 받은 값. page는 소제목이 시작하는 쪽이고,
+ * 끝 쪽은 다음 소제목의 시작 직전으로 본다. preview를 켠 소제목은
+ * 그 구간의 앞 30%까지 뷰어에서 무료로 볼 수 있다.
  */
 const tableOfContents = [
   {
     chapter: "프롤로그",
     title: "왜 지금 이 기술이 필요한가",
     subtopics: [
-      { title: "변화하는 디지털 경제 환경", preview: true },
-      { title: "이 책을 읽어야 하는 이유", preview: false },
-      { title: "성공 사례 미리보기", preview: true },
+      { title: "변화하는 디지털 경제 환경", page: 1, preview: true },
+      { title: "이 책을 읽어야 하는 이유", page: 6, preview: false },
+      { title: "성공 사례 미리보기", page: 11, preview: true },
     ],
   },
   {
     chapter: "Chapter 1",
     title: "마인드셋과 도구 준비하기",
     subtopics: [
-      { title: "성장형 사고방식 만들기", preview: true },
-      { title: "필수 도구 세팅 가이드", preview: false },
-      { title: "효율적인 워크플로우 구축", preview: false },
+      { title: "성장형 사고방식 만들기", page: 18, preview: true },
+      { title: "필수 도구 세팅 가이드", page: 26, preview: false },
+      { title: "효율적인 워크플로우 구축", page: 33, preview: false },
     ],
   },
   {
     chapter: "Chapter 2",
     title: "0원에서 100만원을 만드는 핵심 알고리즘",
     subtopics: [
-      { title: "수익화 구조 이해하기", preview: false },
-      { title: "트래픽을 수익으로 전환하는 법", preview: false },
-      { title: "실전 A/B 테스트 전략", preview: false },
-      { title: "자동 수익 파이프라인 설계", preview: false },
+      { title: "수익화 구조 이해하기", page: 40, preview: false },
+      { title: "트래픽을 수익으로 전환하는 법", page: 48, preview: false },
+      { title: "실전 A/B 테스트 전략", page: 56, preview: false },
+      { title: "자동 수익 파이프라인 설계", page: 63, preview: false },
     ],
   },
   {
     chapter: "Chapter 3",
     title: "지속 가능한 수익을 위한 자동화 시스템",
     subtopics: [
-      { title: "자동화 툴 비교 분석", preview: false },
-      { title: "노코드로 시스템 구축하기", preview: false },
-      { title: "유지보수 최소화 전략", preview: false },
+      { title: "자동화 툴 비교 분석", page: 70, preview: false },
+      { title: "노코드로 시스템 구축하기", page: 78, preview: false },
+      { title: "유지보수 최소화 전략", page: 86, preview: false },
     ],
   },
   {
     chapter: "에필로그",
     title: "당신의 항해를 응원하며",
     subtopics: [
-      { title: "앞으로의 로드맵", preview: false },
-      { title: "커뮤니티 활용법", preview: false },
+      { title: "앞으로의 로드맵", page: 92, preview: false },
+      { title: "커뮤니티 활용법", page: 97, preview: false },
     ],
   },
 ];
 
-/** 데모용 본문. 실제로는 해당 소제목의 원고에서 가져온다. */
-const previewBody = [
-  "많은 사람이 수익화를 어렵게 느끼는 이유는 방법을 몰라서가 아니라, 무엇부터 손대야 할지 순서를 모르기 때문입니다. 순서가 잡히면 같은 노력으로도 결과가 달라집니다.",
-  "이 챕터에서는 지금의 디지털 환경이 어떻게 바뀌었는지, 그리고 그 변화가 개인에게 어떤 기회를 만들어 주는지부터 짚습니다. 큰 그림을 먼저 봐야 이후에 나오는 실행 전략이 왜 그렇게 설계되었는지 이해할 수 있습니다.",
-  "특히 플랫폼이 트래픽을 배분하는 방식이 달라지면서, 예전에는 자본이 있어야 가능했던 노출을 이제는 기획과 꾸준함으로 만들 수 있게 되었습니다. 이 지점이 우리가 파고들 틈새입니다.",
-  "다만 기회가 열렸다고 해서 아무나 성공하는 것은 아닙니다. 대부분은 시작한 지 3주 안에 그만둡니다. 왜 그런지, 어떻게 하면 그 구간을 넘길 수 있는지를 구체적인 사례와 함께 살펴봅니다.",
-  "여기까지 읽으셨다면 이미 절반은 넘어오신 겁니다. 다음 장부터는 실제로 무엇을 어떤 순서로 해야 하는지, 하루에 얼마나 시간을 써야 하는지를 숫자로 정리해 드리겠습니다.",
-];
 
 const bookReviews = [
   { name: "노마드팀", tags: ["30대", "여성"], rating: 5, likes: 42, date: "2026.03.15", content: "진짜 실전에서 바로 쓸 수 있는 꿀팁만 모아놓셨네요. 문의 전혀 아깝지 않습니다! 이 가격에 이 정도 퀄리티면 정말 대만족이에요." },
@@ -150,7 +142,6 @@ const BookDetail = () => {
   const book = sampleBooks.find((b) => b.id === id) || sampleBooks[0];
   const wished = isWished(book.id);
   const [isPurchased, setIsPurchased] = useState(false);
-  const [previewAt, setPreviewAt] = useState<{ ci: number; si: number } | null>(null);
   const [selectedOption, setSelectedOption] = useState(0);
   const [reviewPage, setReviewPage] = useState(1);
   const [reviewRating, setReviewRating] = useState(0);
@@ -305,20 +296,24 @@ const BookDetail = () => {
     </h2>
   );
 
-  // 소제목 본문의 앞 30%만 남긴다. 나머지는 그라데이션 아래로 감춘다.
-  const previewParagraphs = (() => {
-    const full = previewBody.join("\n");
-    const limit = Math.max(1, Math.round(full.length * 0.3));
-    const out: string[] = [];
-    let used = 0;
-    for (const para of previewBody) {
-      if (used >= limit) break;
-      const room = limit - used;
-      out.push(para.length <= room ? para : para.slice(0, room).trimEnd() + "…");
-      used += para.length;
-    }
-    return out;
-  })();
+  /**
+   * 소제목의 미리보기 구간. 끝 쪽은 다음 소제목의 시작 직전이고,
+   * 그중 앞 30%까지만 열어 준다. 최소 한 쪽은 보이도록 올림 처리한다.
+   */
+  const previewRange = (ci: number, si: number) => {
+    const flat = tableOfContents.flatMap((sec, i) => sec.subtopics.map((sub, j) => ({ i, j, page: sub.page })));
+    const at = flat.findIndex((x) => x.i === ci && x.j === si);
+    const from = flat[at].page;
+    const next = flat[at + 1]?.page;
+    const last = (next ? next - 1 : book.pageCount ?? from);
+    const to = Math.max(from, from + Math.ceil((last - from + 1) * 0.3) - 1);
+    return { from, to };
+  };
+
+  const openPreview = (ci: number, si: number) => {
+    const { from, to } = previewRange(ci, si);
+    navigate(`/reader/${book.id}?preview=1&from=${from}&to=${to}`);
+  };
 
   // The heart IS the wishlist — there is deliberately no separate 장바구니 button.
   // h-12 matches the adjacent purchase Button exactly so the pair reads as one row.
@@ -536,7 +531,7 @@ const BookDetail = () => {
                             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-sm font-bold shrink-0">{j + 1}</span>
                             <span className="text-sm flex-1">{sub.title}</span>
                             {sub.preview && (
-                              <button onClick={() => setPreviewAt({ ci: si, si: j })} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0">
+                              <button onClick={() => openPreview(si, j)} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0">
                                 미리보기
                               </button>
                             )}
@@ -734,7 +729,7 @@ const BookDetail = () => {
                         <span className="text-sm flex-1">{sub.title}</span>
                         {sub.preview && (
                           <button
-                            onClick={() => setPreviewAt({ ci: si, si: j })}
+                            onClick={() => openPreview(si, j)}
                             className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
                           >
                             미리보기
@@ -774,47 +769,6 @@ const BookDetail = () => {
           </div>
         )}
       </div>
-
-      {/* 미리보기 — 목차에서 미리보기를 켠 소제목의 본문 앞 30%만 보여준다.
-          아래쪽은 그라데이션으로 가려 나머지는 구매 후 볼 수 있게 안내한다. */}
-      <Dialog open={previewAt !== null} onOpenChange={(open) => !open && setPreviewAt(null)}>
-        <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
-          {previewAt !== null && (
-            <>
-              <DialogHeader>
-                <DialogTitle>
-                  {tableOfContents[previewAt.ci].subtopics[previewAt.si].title}
-                </DialogTitle>
-              </DialogHeader>
-              <p className="text-xs text-muted-foreground">
-                {tableOfContents[previewAt.ci].chapter}. {tableOfContents[previewAt.ci].title} · 미리보기는 약 30%까지 제공됩니다
-              </p>
-
-              <div className="relative">
-                <div className="space-y-3 text-sm leading-relaxed text-foreground/90">
-                  {previewParagraphs.map((text, i) => (
-                    <p key={i}>{text}</p>
-                  ))}
-                </div>
-                {/* 잘린 지점이 자연스럽게 흐려지도록 덮는다. */}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background via-background/85 to-transparent" />
-              </div>
-
-              <div className="border-t border-border pt-4 space-y-3">
-                <p className="text-sm text-center text-muted-foreground">
-                  나머지 내용은 구매 후 보실 수 있습니다.
-                </p>
-                <Button
-                  className="w-full h-11 rounded-xl text-sm font-bold bg-brand text-white hover:bg-brand/90"
-                  onClick={() => { setPreviewAt(null); handlePurchase(); }}
-                >
-                  지금 바로 구매하기
-                </Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
 
       <Footer />
     </div>
