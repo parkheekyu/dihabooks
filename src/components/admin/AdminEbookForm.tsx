@@ -19,8 +19,11 @@ export interface NewEbook {
   /** 업로드된 전자책 원고 파일명. */
   pdfName: string;
   description: string;
-  /** preview를 켠 챕터는 상세 페이지에서 본문 앞 30%까지 무료로 공개된다. */
-  toc: { chapter: string; startPage?: number; endPage?: number; preview: boolean; subtopics: string[] }[];
+  /** preview를 켠 소제목은 상세 페이지에서 본문 앞 30%까지 무료로 공개된다. */
+  toc: {
+    chapter: string; startPage?: number; endPage?: number;
+    subtopics: { title: string; preview: boolean }[];
+  }[];
   /** 뷰어 오른쪽 '링크 · 자료' 탭에 페이지별로 노출된다. */
   links: ResourceLink[];
   files: ResourceFile[];
@@ -46,7 +49,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
   const [pageCount, setPageCount] = useState("");
   const [thumb, setThumb] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [toc, setToc] = useState([{ chapter: "", startPage: "", endPage: "", preview: false, subtopics: "" }]);
+  const [toc, setToc] = useState([{ chapter: "", startPage: "", endPage: "", subtopics: [{ title: "", preview: false }] }]);
   const [links, setLinks] = useState<ResourceLink[]>([]);
   const [files, setFiles] = useState<ResourceFile[]>([]);
 
@@ -75,8 +78,26 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
     setPdfFile(file);
   };
 
-  const updateToc = (i: number, key: "chapter" | "subtopics" | "startPage" | "endPage", v: string) =>
+  const updateToc = (i: number, key: "chapter" | "startPage" | "endPage", v: string) =>
     setToc((prev) => prev.map((row, idx) => (idx === i ? { ...row, [key]: v } : row)));
+
+  // 소제목은 줄글이 아니라 항목별로 다뤄야 미리보기 체크를 붙일 수 있다.
+  const updateSub = (ci: number, si: number, patch: Partial<{ title: string; preview: boolean }>) =>
+    setToc((prev) =>
+      prev.map((row, i) =>
+        i === ci
+          ? { ...row, subtopics: row.subtopics.map((sub, j) => (j === si ? { ...sub, ...patch } : sub)) }
+          : row
+      )
+    );
+  const addSub = (ci: number) =>
+    setToc((prev) =>
+      prev.map((row, i) => (i === ci ? { ...row, subtopics: [...row.subtopics, { title: "", preview: false }] } : row))
+    );
+  const removeSub = (ci: number, si: number) =>
+    setToc((prev) =>
+      prev.map((row, i) => (i === ci ? { ...row, subtopics: row.subtopics.filter((_, j) => j !== si) } : row))
+    );
 
   const submit = () => {
     if (!thumb) return toast.error("썸네일 이미지를 선택해주세요.");
@@ -116,8 +137,9 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
           chapter: r.chapter.trim(),
           startPage: r.startPage ? Number(r.startPage) : undefined,
           endPage: r.endPage ? Number(r.endPage) : undefined,
-          preview: r.preview,
-          subtopics: r.subtopics.split("\n").map((s) => s.trim()).filter(Boolean),
+          subtopics: r.subtopics
+            .filter((sub) => sub.title.trim())
+            .map((sub) => ({ title: sub.title.trim(), preview: sub.preview })),
         })),
       links,
       files,
@@ -265,7 +287,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
             <p className="text-xs text-muted-foreground mt-0.5">상세 페이지 &lsquo;전체목차&rsquo;에 표시됩니다.</p>
           </div>
           <Button variant="outline" size="sm" className="text-xs gap-1"
-            onClick={() => setToc((p) => [...p, { chapter: "", startPage: "", endPage: "", preview: false, subtopics: "" }])}>
+            onClick={() => setToc((p) => [...p, { chapter: "", startPage: "", endPage: "", subtopics: [{ title: "", preview: false }] }])}>
             <Plus className="h-3 w-3" /> 챕터 추가
           </Button>
         </div>
@@ -297,26 +319,38 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
               <Input value={row.endPage} inputMode="numeric" aria-label="끝 쪽"
                 onChange={(e) => updateToc(i, "endPage", numeric(e.target.value))}
                 placeholder="끝" className="w-20 text-sm text-center" />
-
-              {/* 체크하면 상세 페이지 목차에 미리보기 버튼이 붙고, 본문 앞 30%가 공개된다. */}
-              <label className="flex items-center gap-1.5 ml-auto text-xs cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={row.preview}
-                  onChange={(e) =>
-                    setToc((prev) => prev.map((r, idx) => (idx === i ? { ...r, preview: e.target.checked } : r)))
-                  }
-                  className="h-3.5 w-3.5 accent-primary"
-                />
-                미리보기 허용
-              </label>
             </div>
-            <textarea
-              value={row.subtopics}
-              onChange={(e) => updateToc(i, "subtopics", e.target.value)}
-              placeholder="소제목을 한 줄에 하나씩 입력"
-              className="w-full min-h-[72px] rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
+            {/* 소제목 — 체크한 항목만 상세 페이지 목차에 미리보기 버튼이 붙는다. */}
+            <div className="space-y-2 pt-1">
+              {row.subtopics.map((sub, j) => (
+                <div key={j} className="flex items-center gap-2">
+                  <Input
+                    value={sub.title}
+                    onChange={(e) => updateSub(i, j, { title: e.target.value })}
+                    placeholder={`소제목 ${j + 1}`}
+                    className="text-sm flex-1 min-w-0"
+                  />
+                  <label className="flex items-center gap-1.5 text-xs cursor-pointer select-none shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={sub.preview}
+                      onChange={(e) => updateSub(i, j, { preview: e.target.checked })}
+                      className="h-3.5 w-3.5 accent-primary"
+                    />
+                    미리보기
+                  </label>
+                  {row.subtopics.length > 1 && (
+                    <button onClick={() => removeSub(i, j)} aria-label="소제목 삭제"
+                      className="p-1.5 rounded-md hover:bg-secondary shrink-0">
+                      <X className="h-3.5 w-3.5 text-muted-foreground" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <Button variant="outline" size="sm" className="text-xs gap-1" onClick={() => addSub(i)}>
+                <Plus className="h-3 w-3" /> 소제목 추가
+              </Button>
+            </div>
           </div>
         ))}
       </section>

@@ -12,43 +12,58 @@ import { DEFAULT_AVATAR } from "@/lib/constants";
 import { useWishlist } from "@/contexts/WishlistContext";
 
 /**
- * 미리보기(preview)는 챕터 단위로 켠다. 상품 등록의 목차 설정에서 체크한 값이며,
- * 켜진 챕터는 본문 앞부분 30%까지만 보이고 나머지는 가려진다.
+ * 미리보기(preview)는 소제목 단위로 켠다. 상품 등록의 목차 설정에서 체크한 값이며,
+ * 켜진 소제목은 본문 앞부분 30%까지만 보이고 나머지는 가려진다.
  */
 const tableOfContents = [
   {
     chapter: "프롤로그",
     title: "왜 지금 이 기술이 필요한가",
-    preview: true,
-    subtopics: ["변화하는 디지털 경제 환경", "이 책을 읽어야 하는 이유", "성공 사례 미리보기"],
+    subtopics: [
+      { title: "변화하는 디지털 경제 환경", preview: true },
+      { title: "이 책을 읽어야 하는 이유", preview: false },
+      { title: "성공 사례 미리보기", preview: true },
+    ],
   },
   {
     chapter: "Chapter 1",
     title: "마인드셋과 도구 준비하기",
-    preview: true,
-    subtopics: ["성장형 사고방식 만들기", "필수 도구 세팅 가이드", "효율적인 워크플로우 구축"],
+    subtopics: [
+      { title: "성장형 사고방식 만들기", preview: true },
+      { title: "필수 도구 세팅 가이드", preview: false },
+      { title: "효율적인 워크플로우 구축", preview: false },
+    ],
   },
   {
     chapter: "Chapter 2",
     title: "0원에서 100만원을 만드는 핵심 알고리즘",
-    preview: false,
-    subtopics: ["수익화 구조 이해하기", "트래픽을 수익으로 전환하는 법", "실전 A/B 테스트 전략", "자동 수익 파이프라인 설계"],
+    subtopics: [
+      { title: "수익화 구조 이해하기", preview: false },
+      { title: "트래픽을 수익으로 전환하는 법", preview: false },
+      { title: "실전 A/B 테스트 전략", preview: false },
+      { title: "자동 수익 파이프라인 설계", preview: false },
+    ],
   },
   {
     chapter: "Chapter 3",
     title: "지속 가능한 수익을 위한 자동화 시스템",
-    preview: false,
-    subtopics: ["자동화 툴 비교 분석", "노코드로 시스템 구축하기", "유지보수 최소화 전략"],
+    subtopics: [
+      { title: "자동화 툴 비교 분석", preview: false },
+      { title: "노코드로 시스템 구축하기", preview: false },
+      { title: "유지보수 최소화 전략", preview: false },
+    ],
   },
   {
     chapter: "에필로그",
     title: "당신의 항해를 응원하며",
-    preview: false,
-    subtopics: ["앞으로의 로드맵", "커뮤니티 활용법"],
+    subtopics: [
+      { title: "앞으로의 로드맵", preview: false },
+      { title: "커뮤니티 활용법", preview: false },
+    ],
   },
 ];
 
-/** 데모용 챕터 본문. 실제로는 해당 챕터의 원고에서 가져온다. */
+/** 데모용 본문. 실제로는 해당 소제목의 원고에서 가져온다. */
 const previewBody = [
   "많은 사람이 수익화를 어렵게 느끼는 이유는 방법을 몰라서가 아니라, 무엇부터 손대야 할지 순서를 모르기 때문입니다. 순서가 잡히면 같은 노력으로도 결과가 달라집니다.",
   "이 챕터에서는 지금의 디지털 환경이 어떻게 바뀌었는지, 그리고 그 변화가 개인에게 어떤 기회를 만들어 주는지부터 짚습니다. 큰 그림을 먼저 봐야 이후에 나오는 실행 전략이 왜 그렇게 설계되었는지 이해할 수 있습니다.",
@@ -135,7 +150,7 @@ const BookDetail = () => {
   const book = sampleBooks.find((b) => b.id === id) || sampleBooks[0];
   const wished = isWished(book.id);
   const [isPurchased, setIsPurchased] = useState(false);
-  const [previewChapter, setPreviewChapter] = useState<number | null>(null);
+  const [previewAt, setPreviewAt] = useState<{ ci: number; si: number } | null>(null);
   const [selectedOption, setSelectedOption] = useState(0);
   const [reviewPage, setReviewPage] = useState(1);
   const [reviewRating, setReviewRating] = useState(0);
@@ -290,7 +305,7 @@ const BookDetail = () => {
     </h2>
   );
 
-  // 챕터 본문의 앞 30%만 남긴다. 나머지는 그라데이션 아래로 감춘다.
+  // 소제목 본문의 앞 30%만 남긴다. 나머지는 그라데이션 아래로 감춘다.
   const previewParagraphs = (() => {
     const full = previewBody.join("\n");
     const limit = Math.max(1, Math.round(full.length * 0.3));
@@ -514,19 +529,17 @@ const BookDetail = () => {
                 <div className="space-y-8">
                   {tableOfContents.map((section, si) => (
                     <div key={si}>
-                      <div className="flex items-center gap-2 mb-4">
-                        <h3 className="text-lg tablet:text-xl font-black">{section.chapter}. {section.title}</h3>
-                        {section.preview && (
-                          <button onClick={() => setPreviewChapter(si)} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0">
-                            미리보기
-                          </button>
-                        )}
-                      </div>
+                      <h3 className="text-lg tablet:text-xl font-black mb-4">{section.chapter}. {section.title}</h3>
                       <div className="space-y-0 divide-y divide-border">
                         {section.subtopics.map((sub, j) => (
                           <div key={j} className="flex items-center gap-3 py-3.5">
                             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-sm font-bold shrink-0">{j + 1}</span>
-                            <span className="text-sm flex-1">{sub}</span>
+                            <span className="text-sm flex-1">{sub.title}</span>
+                            {sub.preview && (
+                              <button onClick={() => setPreviewAt({ ci: si, si: j })} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0">
+                                미리보기
+                              </button>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -710,17 +723,7 @@ const BookDetail = () => {
               {tableOfContents.map((section, si) => (
                 <div key={si}>
                   {/* Chapter heading */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <h3 className="text-lg tablet:text-xl font-black">{section.chapter}. {section.title}</h3>
-                    {section.preview && (
-                      <button
-                        onClick={() => setPreviewChapter(si)}
-                        className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
-                      >
-                        미리보기
-                      </button>
-                    )}
-                  </div>
+                  <h3 className="text-lg tablet:text-xl font-black mb-4">{section.chapter}. {section.title}</h3>
                   {/* Subtopics */}
                   <div className="space-y-0 divide-y divide-border">
                     {section.subtopics.map((sub, j) => (
@@ -728,7 +731,15 @@ const BookDetail = () => {
                         <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-sm font-bold shrink-0">
                           {j + 1}
                         </span>
-                        <span className="text-sm flex-1">{sub}</span>
+                        <span className="text-sm flex-1">{sub.title}</span>
+                        {sub.preview && (
+                          <button
+                            onClick={() => setPreviewAt({ ci: si, si: j })}
+                            className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
+                          >
+                            미리보기
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -764,18 +775,20 @@ const BookDetail = () => {
         )}
       </div>
 
-      {/* 미리보기 — 목차에서 미리보기를 켠 챕터의 본문 앞 30%만 보여준다.
+      {/* 미리보기 — 목차에서 미리보기를 켠 소제목의 본문 앞 30%만 보여준다.
           아래쪽은 그라데이션으로 가려 나머지는 구매 후 볼 수 있게 안내한다. */}
-      <Dialog open={previewChapter !== null} onOpenChange={(open) => !open && setPreviewChapter(null)}>
+      <Dialog open={previewAt !== null} onOpenChange={(open) => !open && setPreviewAt(null)}>
         <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
-          {previewChapter !== null && (
+          {previewAt !== null && (
             <>
               <DialogHeader>
                 <DialogTitle>
-                  {tableOfContents[previewChapter].chapter}. {tableOfContents[previewChapter].title}
+                  {tableOfContents[previewAt.ci].subtopics[previewAt.si].title}
                 </DialogTitle>
               </DialogHeader>
-              <p className="text-xs text-muted-foreground">미리보기 · 이 챕터의 약 30%</p>
+              <p className="text-xs text-muted-foreground">
+                {tableOfContents[previewAt.ci].chapter}. {tableOfContents[previewAt.ci].title} · 미리보기는 약 30%까지 제공됩니다
+              </p>
 
               <div className="relative">
                 <div className="space-y-3 text-sm leading-relaxed text-foreground/90">
@@ -793,7 +806,7 @@ const BookDetail = () => {
                 </p>
                 <Button
                   className="w-full h-11 rounded-xl text-sm font-bold bg-brand text-white hover:bg-brand/90"
-                  onClick={() => { setPreviewChapter(null); handlePurchase(); }}
+                  onClick={() => { setPreviewAt(null); handlePurchase(); }}
                 >
                   지금 바로 구매하기
                 </Button>
