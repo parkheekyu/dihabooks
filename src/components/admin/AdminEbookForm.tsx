@@ -19,9 +19,8 @@ export interface NewEbook {
   /** 업로드된 전자책 원고 파일명. */
   pdfName: string;
   description: string;
-  toc: { chapter: string; startPage?: number; endPage?: number; subtopics: string[] }[];
-  /** 구매 전 무료로 공개할 페이지 범위. 상세 페이지 미리보기에 쓰인다. */
-  preview?: { start: number; end: number };
+  /** preview를 켠 챕터는 상세 페이지에서 본문 앞 30%까지 무료로 공개된다. */
+  toc: { chapter: string; startPage?: number; endPage?: number; preview: boolean; subtopics: string[] }[];
   /** 뷰어 오른쪽 '링크 · 자료' 탭에 페이지별로 노출된다. */
   links: ResourceLink[];
   files: ResourceFile[];
@@ -47,9 +46,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
   const [pageCount, setPageCount] = useState("");
   const [thumb, setThumb] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [toc, setToc] = useState([{ chapter: "", startPage: "", endPage: "", subtopics: "" }]);
-  const [previewStart, setPreviewStart] = useState("");
-  const [previewEnd, setPreviewEnd] = useState("");
+  const [toc, setToc] = useState([{ chapter: "", startPage: "", endPage: "", preview: false, subtopics: "" }]);
   const [links, setLinks] = useState<ResourceLink[]>([]);
   const [files, setFiles] = useState<ResourceFile[]>([]);
 
@@ -101,12 +98,6 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
     if (toc.some((r) => r.startPage && r.endPage && Number(r.endPage) < Number(r.startPage))) {
       return toast.error("목차의 끝 쪽은 시작 쪽보다 작을 수 없습니다.");
     }
-    if ((previewStart && !previewEnd) || (!previewStart && previewEnd)) {
-      return toast.error("미리보기는 시작 쪽과 끝 쪽을 함께 입력해주세요.");
-    }
-    if (previewStart && previewEnd && Number(previewEnd) < Number(previewStart)) {
-      return toast.error("미리보기 끝 쪽은 시작 쪽보다 작을 수 없습니다.");
-    }
 
     onSubmit({
       title: title.trim(),
@@ -125,12 +116,9 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
           chapter: r.chapter.trim(),
           startPage: r.startPage ? Number(r.startPage) : undefined,
           endPage: r.endPage ? Number(r.endPage) : undefined,
+          preview: r.preview,
           subtopics: r.subtopics.split("\n").map((s) => s.trim()).filter(Boolean),
         })),
-      preview:
-        previewStart && previewEnd
-          ? { start: Number(previewStart), end: Number(previewEnd) }
-          : undefined,
       links,
       files,
     });
@@ -277,7 +265,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
             <p className="text-xs text-muted-foreground mt-0.5">상세 페이지 &lsquo;전체목차&rsquo;에 표시됩니다.</p>
           </div>
           <Button variant="outline" size="sm" className="text-xs gap-1"
-            onClick={() => setToc((p) => [...p, { chapter: "", startPage: "", endPage: "", subtopics: "" }])}>
+            onClick={() => setToc((p) => [...p, { chapter: "", startPage: "", endPage: "", preview: false, subtopics: "" }])}>
             <Plus className="h-3 w-3" /> 챕터 추가
           </Button>
         </div>
@@ -309,6 +297,19 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
               <Input value={row.endPage} inputMode="numeric" aria-label="끝 쪽"
                 onChange={(e) => updateToc(i, "endPage", numeric(e.target.value))}
                 placeholder="끝" className="w-20 text-sm text-center" />
+
+              {/* 체크하면 상세 페이지 목차에 미리보기 버튼이 붙고, 본문 앞 30%가 공개된다. */}
+              <label className="flex items-center gap-1.5 ml-auto text-xs cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={row.preview}
+                  onChange={(e) =>
+                    setToc((prev) => prev.map((r, idx) => (idx === i ? { ...r, preview: e.target.checked } : r)))
+                  }
+                  className="h-3.5 w-3.5 accent-primary"
+                />
+                미리보기 허용
+              </label>
             </div>
             <textarea
               value={row.subtopics}
@@ -318,32 +319,6 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
             />
           </div>
         ))}
-      </section>
-
-      {/* 미리보기 */}
-      <section className="rounded-xl border border-border p-4 tablet:p-5 space-y-3">
-        <div>
-          <h3 className="text-sm font-semibold">미리보기</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            구매 전에 무료로 보여줄 페이지 범위입니다. 상세 페이지 &lsquo;미리보기&rsquo; 버튼을 누르면
-            해당 페이지가 이미지로 표시됩니다. 비워두면 미리보기 버튼이 나오지 않습니다.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Input value={previewStart} inputMode="numeric" aria-label="미리보기 시작 쪽"
-            onChange={(e) => setPreviewStart(numeric(e.target.value))}
-            placeholder="시작" className="w-24 text-sm text-center" />
-          <span className="text-xs text-muted-foreground">~</span>
-          <Input value={previewEnd} inputMode="numeric" aria-label="미리보기 끝 쪽"
-            onChange={(e) => setPreviewEnd(numeric(e.target.value))}
-            placeholder="끝" className="w-24 text-sm text-center" />
-          <span className="text-xs text-muted-foreground">쪽</span>
-          {previewStart && previewEnd && Number(previewEnd) >= Number(previewStart) && (
-            <span className="text-xs text-muted-foreground ml-1">
-              총 {Number(previewEnd) - Number(previewStart) + 1}쪽 공개
-            </span>
-          )}
-        </div>
       </section>
 
       <PageResourceFields

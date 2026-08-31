@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ArrowLeft, Share2, Send, ThumbsUp, ChevronLeft, ChevronRight, CircleCheck, BookOpen } from "lucide-react";
+import { Star, Heart, ArrowLeft, Share2, Send, ThumbsUp, ChevronLeft, ChevronRight, CircleCheck } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
@@ -11,52 +11,50 @@ import { useAuth } from "@/contexts/AuthContext";
 import { DEFAULT_AVATAR } from "@/lib/constants";
 import { useWishlist } from "@/contexts/WishlistContext";
 
+/**
+ * 미리보기(preview)는 챕터 단위로 켠다. 상품 등록의 목차 설정에서 체크한 값이며,
+ * 켜진 챕터는 본문 앞부분 30%까지만 보이고 나머지는 가려진다.
+ */
 const tableOfContents = [
   {
     chapter: "프롤로그",
     title: "왜 지금 이 기술이 필요한가",
-    subtopics: [
-      { title: "변화하는 디지털 경제 환경", preview: true },
-      { title: "이 책을 읽어야 하는 이유", preview: false },
-      { title: "성공 사례 미리보기", preview: true },
-    ],
+    preview: true,
+    subtopics: ["변화하는 디지털 경제 환경", "이 책을 읽어야 하는 이유", "성공 사례 미리보기"],
   },
   {
     chapter: "Chapter 1",
     title: "마인드셋과 도구 준비하기",
-    subtopics: [
-      { title: "성장형 사고방식 만들기", preview: true },
-      { title: "필수 도구 세팅 가이드", preview: false },
-      { title: "효율적인 워크플로우 구축", preview: false },
-    ],
+    preview: true,
+    subtopics: ["성장형 사고방식 만들기", "필수 도구 세팅 가이드", "효율적인 워크플로우 구축"],
   },
   {
     chapter: "Chapter 2",
     title: "0원에서 100만원을 만드는 핵심 알고리즘",
-    subtopics: [
-      { title: "수익화 구조 이해하기", preview: false },
-      { title: "트래픽을 수익으로 전환하는 법", preview: false },
-      { title: "실전 A/B 테스트 전략", preview: false },
-      { title: "자동 수익 파이프라인 설계", preview: false },
-    ],
+    preview: false,
+    subtopics: ["수익화 구조 이해하기", "트래픽을 수익으로 전환하는 법", "실전 A/B 테스트 전략", "자동 수익 파이프라인 설계"],
   },
   {
     chapter: "Chapter 3",
     title: "지속 가능한 수익을 위한 자동화 시스템",
-    subtopics: [
-      { title: "자동화 툴 비교 분석", preview: false },
-      { title: "노코드로 시스템 구축하기", preview: false },
-      { title: "유지보수 최소화 전략", preview: false },
-    ],
+    preview: false,
+    subtopics: ["자동화 툴 비교 분석", "노코드로 시스템 구축하기", "유지보수 최소화 전략"],
   },
   {
     chapter: "에필로그",
     title: "당신의 항해를 응원하며",
-    subtopics: [
-      { title: "앞으로의 로드맵", preview: false },
-      { title: "커뮤니티 활용법", preview: false },
-    ],
+    preview: false,
+    subtopics: ["앞으로의 로드맵", "커뮤니티 활용법"],
   },
+];
+
+/** 데모용 챕터 본문. 실제로는 해당 챕터의 원고에서 가져온다. */
+const previewBody = [
+  "많은 사람이 수익화를 어렵게 느끼는 이유는 방법을 몰라서가 아니라, 무엇부터 손대야 할지 순서를 모르기 때문입니다. 순서가 잡히면 같은 노력으로도 결과가 달라집니다.",
+  "이 챕터에서는 지금의 디지털 환경이 어떻게 바뀌었는지, 그리고 그 변화가 개인에게 어떤 기회를 만들어 주는지부터 짚습니다. 큰 그림을 먼저 봐야 이후에 나오는 실행 전략이 왜 그렇게 설계되었는지 이해할 수 있습니다.",
+  "특히 플랫폼이 트래픽을 배분하는 방식이 달라지면서, 예전에는 자본이 있어야 가능했던 노출을 이제는 기획과 꾸준함으로 만들 수 있게 되었습니다. 이 지점이 우리가 파고들 틈새입니다.",
+  "다만 기회가 열렸다고 해서 아무나 성공하는 것은 아닙니다. 대부분은 시작한 지 3주 안에 그만둡니다. 왜 그런지, 어떻게 하면 그 구간을 넘길 수 있는지를 구체적인 사례와 함께 살펴봅니다.",
+  "여기까지 읽으셨다면 이미 절반은 넘어오신 겁니다. 다음 장부터는 실제로 무엇을 어떤 순서로 해야 하는지, 하루에 얼마나 시간을 써야 하는지를 숫자로 정리해 드리겠습니다.",
 ];
 
 const bookReviews = [
@@ -137,7 +135,7 @@ const BookDetail = () => {
   const book = sampleBooks.find((b) => b.id === id) || sampleBooks[0];
   const wished = isWished(book.id);
   const [isPurchased, setIsPurchased] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewChapter, setPreviewChapter] = useState<number | null>(null);
   const [selectedOption, setSelectedOption] = useState(0);
   const [reviewPage, setReviewPage] = useState(1);
   const [reviewRating, setReviewRating] = useState(0);
@@ -292,6 +290,21 @@ const BookDetail = () => {
     </h2>
   );
 
+  // 챕터 본문의 앞 30%만 남긴다. 나머지는 그라데이션 아래로 감춘다.
+  const previewParagraphs = (() => {
+    const full = previewBody.join("\n");
+    const limit = Math.max(1, Math.round(full.length * 0.3));
+    const out: string[] = [];
+    let used = 0;
+    for (const para of previewBody) {
+      if (used >= limit) break;
+      const room = limit - used;
+      out.push(para.length <= room ? para : para.slice(0, room).trimEnd() + "…");
+      used += para.length;
+    }
+    return out;
+  })();
+
   // The heart IS the wishlist — there is deliberately no separate 장바구니 button.
   // h-12 matches the adjacent purchase Button exactly so the pair reads as one row.
   const wishButton = () => (
@@ -308,24 +321,6 @@ const BookDetail = () => {
         {book.reviewCount + (wished ? 1 : 0)}
       </span>
     </button>
-  );
-
-  // 상품 등록의 '미리보기' 설정값. 비어 있으면 미리보기 버튼을 내보내지 않는다.
-  const preview = { start: 1, end: 8 };
-  const previewPages = Array.from(
-    { length: preview.end - preview.start + 1 },
-    (_, i) => preview.start + i
-  );
-
-  const previewButton = () => (
-    <Button
-      variant="outline"
-      aria-label="미리보기 열기"
-      className="w-full h-12 rounded-xl text-base font-bold gap-2"
-      onClick={() => setPreviewOpen(true)}
-    >
-      <BookOpen className="h-4 w-4" /> 미리보기
-    </Button>
   );
 
   // All four fields come from 작가 프로필 설정 (/seller-profile).
@@ -519,17 +514,19 @@ const BookDetail = () => {
                 <div className="space-y-8">
                   {tableOfContents.map((section, si) => (
                     <div key={si}>
-                      <h3 className="text-lg tablet:text-xl font-black mb-4">{section.chapter}. {section.title}</h3>
+                      <div className="flex items-center gap-2 mb-4">
+                        <h3 className="text-lg tablet:text-xl font-black">{section.chapter}. {section.title}</h3>
+                        {section.preview && (
+                          <button onClick={() => setPreviewChapter(si)} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0">
+                            미리보기
+                          </button>
+                        )}
+                      </div>
                       <div className="space-y-0 divide-y divide-border">
                         {section.subtopics.map((sub, j) => (
                           <div key={j} className="flex items-center gap-3 py-3.5">
                             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-sm font-bold shrink-0">{j + 1}</span>
-                            <span className="text-sm flex-1">{sub.title}</span>
-                            {sub.preview && (
-                              <button onClick={() => setPreviewOpen(true)} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0">
-                                미리보기
-                              </button>
-                            )}
+                            <span className="text-sm flex-1">{sub}</span>
                           </div>
                         ))}
                       </div>
@@ -605,14 +602,11 @@ const BookDetail = () => {
                     <span className="text-sm font-bold">상품 금액</span>
                     <span className="text-xl font-black">{currentOption.price.toLocaleString()}원</span>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex gap-2">
-                      {wishButton()}
-                      <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
-                        지금 바로 구매하기
-                      </Button>
-                    </div>
-                    {previewButton()}
+                  <div className="flex gap-2">
+                    {wishButton()}
+                    <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
+                      지금 바로 구매하기
+                    </Button>
                   </div>
                 </div>
               )}
@@ -716,7 +710,17 @@ const BookDetail = () => {
               {tableOfContents.map((section, si) => (
                 <div key={si}>
                   {/* Chapter heading */}
-                  <h3 className="text-lg tablet:text-xl font-black mb-4">{section.chapter}. {section.title}</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-lg tablet:text-xl font-black">{section.chapter}. {section.title}</h3>
+                    {section.preview && (
+                      <button
+                        onClick={() => setPreviewChapter(si)}
+                        className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
+                      >
+                        미리보기
+                      </button>
+                    )}
+                  </div>
                   {/* Subtopics */}
                   <div className="space-y-0 divide-y divide-border">
                     {section.subtopics.map((sub, j) => (
@@ -724,15 +728,7 @@ const BookDetail = () => {
                         <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-sm font-bold shrink-0">
                           {j + 1}
                         </span>
-                        <span className="text-sm flex-1">{sub.title}</span>
-                        {sub.preview && (
-                          <button
-                            onClick={() => setPreviewOpen(true)}
-                            className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
-                          >
-                            미리보기
-                          </button>
-                        )}
+                        <span className="text-sm flex-1">{sub}</span>
                       </div>
                     ))}
                   </div>
@@ -759,54 +755,51 @@ const BookDetail = () => {
             지금 바로 읽기
           </Button>
         ) : (
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              {wishButton()}
-              <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
-                {currentOption.price.toLocaleString()}원 구매하기
-              </Button>
-            </div>
-            <Button variant="outline" aria-label="미리보기 열기" className="w-full h-10 rounded-xl text-sm font-bold gap-2" onClick={() => setPreviewOpen(true)}>
-              <BookOpen className="h-4 w-4" /> 미리보기
+          <div className="flex items-center gap-3">
+            {wishButton()}
+            <Button className="flex-1 h-12 rounded-xl text-base font-bold bg-brand text-white hover:bg-brand/90" onClick={handlePurchase}>
+              {currentOption.price.toLocaleString()}원 구매하기
             </Button>
           </div>
         )}
       </div>
 
-      {/* 미리보기 — 뷰어를 열지 않고 해당 페이지를 이미지로만 보여준다.
-          데모라 표지 이미지를 자리표시자로 쓰며, 실제로는 PDF의 해당 쪽을
-          이미지로 변환한 파일을 넣어야 한다. */}
-      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+      {/* 미리보기 — 목차에서 미리보기를 켠 챕터의 본문 앞 30%만 보여준다.
+          아래쪽은 그라데이션으로 가려 나머지는 구매 후 볼 수 있게 안내한다. */}
+      <Dialog open={previewChapter !== null} onOpenChange={(open) => !open && setPreviewChapter(null)}>
         <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>미리보기 · {preview.start}~{preview.end}쪽</DialogTitle>
-          </DialogHeader>
-          <p className="text-xs text-muted-foreground">
-            구매 전 무료로 공개되는 페이지입니다. 전체 {book.pageCount ?? "-"}쪽 중 {previewPages.length}쪽을 보여드립니다.
-          </p>
-          <div className="space-y-3">
-            {previewPages.map((page) => (
-              <div key={page} className="relative overflow-hidden rounded-lg border border-border bg-secondary/30">
-                <img
-                  src={book.image}
-                  alt={`${page}쪽 미리보기`}
-                  loading="lazy"
-                  className="w-full aspect-[3/4] object-cover"
-                />
-                <span className="absolute bottom-2 right-2 rounded-md bg-foreground/70 px-2 py-0.5 text-[11px] font-medium text-background">
-                  {page}쪽
-                </span>
+          {previewChapter !== null && (
+            <>
+              <DialogHeader>
+                <DialogTitle>
+                  {tableOfContents[previewChapter].chapter}. {tableOfContents[previewChapter].title}
+                </DialogTitle>
+              </DialogHeader>
+              <p className="text-xs text-muted-foreground">미리보기 · 이 챕터의 약 30%</p>
+
+              <div className="relative">
+                <div className="space-y-3 text-sm leading-relaxed text-foreground/90">
+                  {previewParagraphs.map((text, i) => (
+                    <p key={i}>{text}</p>
+                  ))}
+                </div>
+                {/* 잘린 지점이 자연스럽게 흐려지도록 덮는다. */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background via-background/85 to-transparent" />
               </div>
-            ))}
-          </div>
-          <div className="border-t border-border pt-4">
-            <Button
-              className="w-full h-11 rounded-xl text-sm font-bold bg-brand text-white hover:bg-brand/90"
-              onClick={() => { setPreviewOpen(false); handlePurchase(); }}
-            >
-              이어서 보려면 구매하기
-            </Button>
-          </div>
+
+              <div className="border-t border-border pt-4 space-y-3">
+                <p className="text-sm text-center text-muted-foreground">
+                  나머지 내용은 구매 후 보실 수 있습니다.
+                </p>
+                <Button
+                  className="w-full h-11 rounded-xl text-sm font-bold bg-brand text-white hover:bg-brand/90"
+                  onClick={() => { setPreviewChapter(null); handlePurchase(); }}
+                >
+                  지금 바로 구매하기
+                </Button>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
