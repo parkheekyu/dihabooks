@@ -104,12 +104,8 @@ const EbookForm = () => {
 
     const editorContent = editorRef.current?.innerHTML || "";
 
-    if (links.some((l) => !l.page || !l.label.trim() || !l.url.trim())) {
-      toast.error("링크는 페이지 번호·이름·주소를 모두 입력해주세요.");
-      return;
-    }
-    if (files.some((f) => !f.page)) {
-      toast.error("첨부 자료의 페이지 번호를 입력해주세요.");
+    if (links.some((l) => !l.label.trim() || !l.url.trim())) {
+      toast.error("링크는 이름과 주소를 입력해주세요.");
       return;
     }
 

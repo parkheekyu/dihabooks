@@ -21,7 +21,7 @@ const formatFileSize = (bytes: number) =>
     ? `${(bytes / 1024 / 1024).toFixed(1)} MB`
     : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 
-const pageInput = "w-16 shrink-0 text-sm text-center";
+const pageInput = "w-[68px] shrink-0 text-sm text-center";
 
 /**
  * 페이지별 링크·첨부 자료 입력. 등록 폼과 수정 폼이 같은 규격을 쓰도록
@@ -52,7 +52,8 @@ const PageResourceFields = ({ links, files, onLinksChange, onFilesChange, framed
       <div>
         {framed && <h3 className="text-sm font-semibold">페이지별 링크 · 자료</h3>}
         <p className="text-xs text-muted-foreground mt-0.5">
-          뷰어 오른쪽 &lsquo;링크 · 자료&rsquo; 탭에 표시됩니다. 페이지 번호를 적으면 그 페이지를 볼 때만 나옵니다.
+          뷰어 오른쪽 &lsquo;링크 · 자료&rsquo; 탭에 표시됩니다. 페이지 번호를 적으면 그 페이지에서만 보이고,
+          비워두면 모든 페이지에 표시됩니다.
         </p>
       </div>
 
@@ -80,9 +81,10 @@ const PageResourceFields = ({ links, files, onLinksChange, onFilesChange, framed
               <Input
                 value={l.page}
                 onChange={(e) => setLink(i, "page", e.target.value.replace(/[^0-9]/g, ""))}
-                placeholder="쪽"
+                placeholder="전체"
                 inputMode="numeric"
-                aria-label="페이지 번호"
+                aria-label="페이지 번호 (비우면 전체)"
+                title="비워두면 모든 페이지에 표시됩니다"
                 className={pageInput}
               />
               <Input
@@ -130,7 +132,7 @@ const PageResourceFields = ({ links, files, onLinksChange, onFilesChange, framed
 
         {files.length === 0 ? (
           <p className="rounded-lg bg-secondary/60 px-3 py-2.5 text-xs text-muted-foreground">
-            첨부된 자료가 없습니다. 구매자가 뷰어에서 내려받을 수 있습니다.
+            첨부된 자료가 없습니다. 구매자가 뷰어에서 내려받을 수 있고, 쪽을 비우면 모든 페이지에 표시됩니다.
           </p>
         ) : (
           files.map((f, i) => (
@@ -138,9 +140,10 @@ const PageResourceFields = ({ links, files, onLinksChange, onFilesChange, framed
               <Input
                 value={f.page}
                 onChange={(e) => setFilePage(i, e.target.value.replace(/[^0-9]/g, ""))}
-                placeholder="쪽"
+                placeholder="전체"
                 inputMode="numeric"
-                aria-label="페이지 번호"
+                aria-label="페이지 번호 (비우면 전체)"
+                title="비워두면 모든 페이지에 표시됩니다"
                 className={pageInput}
               />
               <div className="flex flex-1 min-w-0 items-center gap-2 rounded-md border border-input px-3 h-10">

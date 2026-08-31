@@ -64,6 +64,15 @@ const mockResources: Record<number, {
   },
 };
 
+/** 쪽을 지정하지 않은 자료. 모든 페이지에서 함께 보인다. */
+const commonResources: {
+  links: { label: string; url: string }[];
+  files: { name: string; size: string; url: string }[];
+} = {
+  links: [{ label: "디하클 카페 (질문·인증 게시판)", url: "https://cafe.naver.com/dinohighclass" }],
+  files: [{ name: "전체 실습자료 모음.zip", size: "4.8 MB", url: "#" }],
+};
+
 const emptyResources = { links: [], files: [] };
 
 const Reader = () => {
@@ -100,7 +109,12 @@ const Reader = () => {
     body2: "그렇다면 쇼핑검색 순위의 원리는 어떻게될까요?",
   };
 
-  const resources = mockResources[currentPage] ?? emptyResources;
+  const pageResources = mockResources[currentPage] ?? emptyResources;
+  // 쪽을 비워 등록한 자료는 어느 페이지에서든 함께 보여준다.
+  const resources = {
+    links: [...pageResources.links, ...commonResources.links],
+    files: [...pageResources.files, ...commonResources.files],
+  };
   const resourceCount = resources.links.length + resources.files.length;
 
   // TocContent와 마찬가지로 함수 호출식으로 쓴다. 본문 안에서 컴포넌트를
@@ -108,7 +122,7 @@ const Reader = () => {
   const ResourcePanel = () => (
     <div className="p-4">
       <p className="text-xs text-muted-foreground mb-4">
-        {currentPage}페이지에 등록된 링크와 자료입니다.
+        {currentPage}페이지에 등록된 링크와 자료입니다. 전체 자료도 함께 표시됩니다.
       </p>
 
       {resourceCount === 0 ? (
