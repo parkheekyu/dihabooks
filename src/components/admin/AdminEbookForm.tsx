@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
-import { ArrowLeft, ImagePlus, Plus, X, Upload, FileText } from "lucide-react";
+import { ArrowLeft, ImagePlus, Upload, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import RichTextEditor, { type RichTextEditorHandle } from "@/components/RichTextEditor";
 import PageResourceFields, { type ResourceLink, type ResourceFile } from "@/components/PageResourceFields";
+import TocFields, { type TocChapter } from "@/components/TocFields";
 import { categories } from "@/data/mockData";
 import { toast } from "sonner";
 
@@ -52,7 +53,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
   const [pageCount, setPageCount] = useState("");
   const [thumb, setThumb] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [toc, setToc] = useState([{ chapter: "", subtopics: [{ title: "", page: "", preview: false }] }]);
+  const [toc, setToc] = useState<TocChapter[]>([{ chapter: "", subtopics: [{ title: "", page: "", preview: false }] }]);
   const [links, setLinks] = useState<ResourceLink[]>([]);
   const [files, setFiles] = useState<ResourceFile[]>([]);
 
@@ -79,42 +80,6 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
       return toast.error("PDF 파일만 업로드할 수 있습니다.");
     }
     setPdfFile(file);
-  };
-
-  const updateToc = (i: number, key: "chapter", v: string) =>
-    setToc((prev) => prev.map((row, idx) => (idx === i ? { ...row, [key]: v } : row)));
-
-  // 소제목은 줄글이 아니라 항목별로 다뤄야 미리보기 체크를 붙일 수 있다.
-  const updateSub = (ci: number, si: number, patch: Partial<{ title: string; page: string; preview: boolean }>) =>
-    setToc((prev) =>
-      prev.map((row, i) =>
-        i === ci
-          ? { ...row, subtopics: row.subtopics.map((sub, j) => (j === si ? { ...sub, ...patch } : sub)) }
-          : row
-      )
-    );
-  const addSub = (ci: number) =>
-    setToc((prev) =>
-      prev.map((row, i) => (i === ci ? { ...row, subtopics: [...row.subtopics, { title: "", page: "", preview: false }] } : row))
-    );
-  const removeSub = (ci: number, si: number) =>
-    setToc((prev) =>
-      prev.map((row, i) => (i === ci ? { ...row, subtopics: row.subtopics.filter((_, j) => j !== si) } : row))
-    );
-
-  /**
-   * 소제목의 끝 쪽은 입력받지 않고, 뒤에 오는 첫 번째 시작 쪽에서 1을 뺀 값으로 본다.
-   * 마지막 항목은 전체 페이지 수까지로 본다.
-   */
-  const rangeLabel = (ci: number, si: number) => {
-    const flat = toc.flatMap((row, i) => row.subtopics.map((sub, j) => ({ i, j, page: sub.page })));
-    const at = flat.findIndex((x) => x.i === ci && x.j === si);
-    const start = flat[at]?.page;
-    if (!start) return "";
-    const next = flat.slice(at + 1).find((x) => x.page);
-    const end = next ? Number(next.page) - 1 : pageCount ? Number(pageCount) : null;
-    if (end === null || end < Number(start)) return `~ ?`;
-    return `~ ${end}쪽`;
   };
 
   const submit = () => {
@@ -303,84 +268,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
         <RichTextEditor ref={editorRef} minHeight="240px" placeholder="상품 소개를 작성해주세요. 이미지도 넣을 수 있습니다." />
       </section>
 
-      {/* 목차 */}
-      <section className="rounded-xl border border-border p-4 tablet:p-5 space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-semibold">목차</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              상세 페이지 &lsquo;전체목차&rsquo;에 표시됩니다. 소제목마다 시작 쪽만 넣으면 끝 쪽은 자동으로 잡힙니다.
-            </p>
-          </div>
-          <Button variant="outline" size="sm" className="text-xs gap-1"
-            onClick={() => setToc((p) => [...p, { chapter: "", subtopics: [{ title: "", page: "", preview: false }] }])}>
-            <Plus className="h-3 w-3" /> 챕터 추가
-          </Button>
-        </div>
-
-        {/* 자동 생성은 미구현. PDF 북마크(outline)를 읽어 채우는 방식으로 붙일 예정. */}
-        <p className="rounded-lg bg-secondary/60 px-3 py-2.5 text-xs text-muted-foreground">
-          PDF를 첨부하면 목차가 자동 생성됩니다. 자동 생성된 목차는 아래에서 수정할 수 있습니다.
-        </p>
-
-        {toc.map((row, i) => (
-          <div key={i} className="rounded-lg border border-border p-3 space-y-2">
-            <div className="flex items-center gap-2">
-              <Input value={row.chapter} onChange={(e) => updateToc(i, "chapter", e.target.value)}
-                placeholder={`챕터 ${i + 1} 제목`} className="text-sm" />
-              {toc.length > 1 && (
-                <button onClick={() => setToc((p) => p.filter((_, idx) => idx !== i))}
-                  className="p-1.5 rounded-md hover:bg-secondary shrink-0">
-                  <X className="h-3.5 w-3.5 text-muted-foreground" />
-                </button>
-              )}
-            </div>
-            {/* 소제목 — 체크한 항목만 상세 페이지 목차에 미리보기 버튼이 붙는다. */}
-            <div className="space-y-2 pt-1">
-              {row.subtopics.map((sub, j) => (
-                <div key={j} className="flex items-center gap-2">
-                  <Input
-                    value={sub.page}
-                    inputMode="numeric"
-                    aria-label="시작 쪽"
-                    onChange={(e) => updateSub(i, j, { page: numeric(e.target.value) })}
-                    placeholder="쪽"
-                    className="w-[68px] shrink-0 text-sm text-center"
-                  />
-                  <Input
-                    value={sub.title}
-                    onChange={(e) => updateSub(i, j, { title: e.target.value })}
-                    placeholder={`소제목 ${j + 1}`}
-                    className="text-sm flex-1 min-w-0"
-                  />
-                  {/* 끝 쪽은 다음 소제목의 시작 직전으로 자동 계산된다. */}
-                  <span className="w-16 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
-                    {rangeLabel(i, j)}
-                  </span>
-                  <label className="flex items-center gap-1.5 text-xs cursor-pointer select-none shrink-0">
-                    <input
-                      type="checkbox"
-                      checked={sub.preview}
-                      onChange={(e) => updateSub(i, j, { preview: e.target.checked })}
-                      className="h-3.5 w-3.5 accent-primary"
-                    />
-                    미리보기
-                  </label>
-                  {row.subtopics.length > 1 && (
-                    <button onClick={() => removeSub(i, j)} aria-label="소제목 삭제"
-                      className="p-1.5 rounded-md hover:bg-secondary shrink-0">
-                      <X className="h-3.5 w-3.5 text-muted-foreground" />
-                    </button>
-                  )}
-                </div>
-              ))}
-              <Button variant="outline" size="sm" className="text-xs gap-1" onClick={() => addSub(i)}>
-                <Plus className="h-3 w-3" /> 소제목 추가
-              </Button>
-            </div>
-          </div>
-        ))}
-      </section>
+      <TocFields value={toc} onChange={setToc} pageCount={pageCount} />
 
       <PageResourceFields
         links={links}

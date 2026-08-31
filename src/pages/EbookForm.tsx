@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PageResourceFields, { type ResourceLink, type ResourceFile } from "@/components/PageResourceFields";
+import TocFields, { type TocChapter } from "@/components/TocFields";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { categories } from "@/data/mockData";
@@ -37,9 +38,11 @@ const EbookForm = () => {
     content: true,
     price: true,
     file: true,
+    toc: true,
     resources: true,
   });
 
+  const [toc, setToc] = useState<TocChapter[]>([{ chapter: "", subtopics: [{ title: "", page: "", preview: false }] }]);
   const [links, setLinks] = useState<ResourceLink[]>([]);
   const [files, setFiles] = useState<ResourceFile[]>([]);
 
@@ -103,6 +106,15 @@ const EbookForm = () => {
     }
 
     const editorContent = editorRef.current?.innerHTML || "";
+
+    const tocPages = toc
+      .flatMap((r) => r.subtopics)
+      .filter((sub) => sub.title.trim() && sub.page)
+      .map((sub) => Number(sub.page));
+    if (tocPages.some((n, idx) => idx > 0 && n < tocPages[idx - 1])) {
+      toast.error("소제목의 시작 쪽은 목차 순서대로 커져야 합니다.");
+      return;
+    }
 
     if (links.some((l) => !l.label.trim() || !l.url.trim())) {
       toast.error("링크는 이름과 주소를 입력해주세요.");
@@ -373,6 +385,11 @@ const EbookForm = () => {
                 </label>
               )}
             </div>
+          </FormSection>
+
+          {/* ── 목차 ── */}
+          <FormSection title="목차" open={sections.toc} onToggle={() => toggleSection("toc")}>
+            <TocFields value={toc} onChange={setToc} framed={false} />
           </FormSection>
 
           {/* ── 페이지별 링크 · 자료 ── */}
