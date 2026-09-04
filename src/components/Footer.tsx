@@ -46,8 +46,12 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 tablet:mt-10 pt-4 tablet:pt-6 border-t border-white/10 text-[11px] tablet:text-xs text-white/40">
-          © 2026 DIHABOOKS. ALL RIGHTS RESERVED.
+        <div className="mt-8 tablet:mt-10 pt-4 tablet:pt-6 border-t border-white/10 space-y-2 text-[11px] tablet:text-xs text-white/40">
+          {/* 통신판매중개자 고지. 전자상거래법상 중개자임을 알려야 해 모든 페이지에 노출한다. */}
+          <p className="leading-relaxed">
+            디하북스는 통신판매중개자로서 중개하는 거래에 대하여 책임을 부담하지 않고, 모든 판매에 대한 책임은 각 작가에게 있습니다.
+          </p>
+          <p>© 2026 DIHABOOKS. ALL RIGHTS RESERVED.</p>
         </div>
       </div>
     </footer>
