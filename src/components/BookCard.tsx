@@ -43,9 +43,7 @@ const BookCard = ({ book }: BookCardProps) => {
 
   return (
     <Link to={`/book/${book.id}`} className="group block">
-      {/* 상세 페이지 상단과 같은 16:9. 두 곳 비율이 같아야 이미지 한 장으로
-          어디서도 여백 없이 꽉 찬다. */}
-      <div className="relative overflow-hidden rounded-lg tablet:rounded-xl bg-[#f4f4f6] aspect-video">
+      <div className="relative overflow-hidden rounded-lg tablet:rounded-xl bg-[#f4f4f6] aspect-[4/3]">
         <img
           src={book.image}
           alt={book.title}

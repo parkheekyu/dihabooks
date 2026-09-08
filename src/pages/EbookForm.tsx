@@ -212,7 +212,7 @@ const EbookForm = () => {
             <div>
               <Label className="text-sm font-semibold">대표 이미지 <span className="text-destructive">*</span></Label>
               <p className="text-xs text-muted-foreground mt-0.5">
-                스토어 목록과 상세 페이지에 같은 이미지가 쓰입니다. (권장: 1600 × 900px, 16:9 비율)
+                상세 페이지 상단에 노출되는 이미지입니다. (권장: 가로 1280px · 세로 720px, 16:9 비율)
               </p>
               <div className="mt-2">
                 {coverPreview ? (
