@@ -59,7 +59,7 @@ const Library = () => {
             <div className="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-4 tablet:gap-6">
               {purchasedBooks.map((book) => (
                 <div key={book.id} className="rounded-xl tablet:rounded-2xl border border-border overflow-hidden">
-                  <div className="aspect-[4/3] bg-secondary">
+                  <div className="aspect-video bg-secondary">
                     <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
                   </div>
                   <div className="p-3 tablet:p-4 space-y-2 tablet:space-y-3">

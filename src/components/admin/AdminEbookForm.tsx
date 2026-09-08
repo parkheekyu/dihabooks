@@ -152,9 +152,9 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
         <h3 className="text-sm font-semibold mb-3">썸네일 <span className="text-destructive">*</span></h3>
         <div className="flex items-center gap-4">
           {thumb ? (
-            <img src={thumb} alt="" className="w-28 h-[158px] rounded-lg object-cover border border-border" />
+            <img src={thumb} alt="" className="w-40 aspect-video rounded-lg object-cover border border-border" />
           ) : (
-            <div className="w-28 h-[158px] rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1.5">
+            <div className="w-40 aspect-video rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1.5">
               <ImagePlus className="h-5 w-5 text-muted-foreground" />
               <span className="text-[11px] text-muted-foreground">미선택</span>
             </div>
@@ -172,7 +172,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
                 제거
               </button>
             )}
-            <p className="text-[11px] text-muted-foreground">세로형(2:3) 표지 이미지를 권장합니다.</p>
+            <p className="text-[11px] text-muted-foreground">가로형 16:9, 1600 × 900px를 권장합니다. 스토어 목록과 상세 페이지에 같은 이미지가 쓰입니다.</p>
           </div>
         </div>
       </section>
