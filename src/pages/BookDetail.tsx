@@ -770,7 +770,18 @@ const BookDetail = () => {
         )}
       </div>
 
-      <Footer />
+      {/* 이 상품을 파는 작가의 정보를 푸터에 밝힌다. */}
+      <Footer
+        seller={{
+          nickname: sellerProfile.nickname,
+          freelancer: sellerProfile.freelancer,
+          businessName: sellerProfile.businessName,
+          representative: sellerProfile.representative,
+          businessNumber: sellerProfile.businessNumber,
+          sellerPhone: sellerProfile.sellerPhone,
+          sellerEmail: sellerProfile.sellerEmail,
+        }}
+      />
     </div>
   );
 };

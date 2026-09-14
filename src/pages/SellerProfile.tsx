@@ -47,6 +47,33 @@ const SellerProfile = () => {
     setSaved(true);
   };
 
+  // 판매자 정보. 상품 페이지 푸터에 그대로 노출된다.
+  const [freelancer, setFreelancer] = useState(sellerProfile.freelancer);
+  const [businessName, setBusinessName] = useState(sellerProfile.businessName);
+  const [representative, setRepresentative] = useState(sellerProfile.representative);
+  const [businessNumber, setBusinessNumber] = useState(sellerProfile.businessNumber);
+  const [sellerPhone, setSellerPhone] = useState(sellerProfile.sellerPhone);
+  const [sellerEmail, setSellerEmail] = useState(sellerProfile.sellerEmail);
+  const [sellerSaved, setSellerSaved] = useState(false);
+
+  const sellerDirty =
+    freelancer !== sellerProfile.freelancer ||
+    businessName !== sellerProfile.businessName ||
+    representative !== sellerProfile.representative ||
+    businessNumber !== sellerProfile.businessNumber ||
+    sellerPhone !== sellerProfile.sellerPhone ||
+    sellerEmail !== sellerProfile.sellerEmail;
+
+  // 사업자면 상호명·대표·등록번호까지, 프리랜서면 연락처·이메일만 있으면 된다.
+  const sellerComplete = freelancer
+    ? !!(sellerPhone.trim() && sellerEmail.trim())
+    : !!(businessName.trim() && representative.trim() && businessNumber.trim() && sellerPhone.trim() && sellerEmail.trim());
+
+  const handleSellerSave = () => {
+    updateSellerProfile({ freelancer, businessName, representative, businessNumber, sellerPhone, sellerEmail });
+    setSellerSaved(true);
+  };
+
   // 정산 계좌는 공개 프로필과 성격이 달라 별도 블록·별도 저장으로 둔다.
   const [bankName, setBankName] = useState(sellerProfile.bankName);
   const [accountNumber, setAccountNumber] = useState(sellerProfile.accountNumber);
@@ -173,6 +200,114 @@ const SellerProfile = () => {
                 <div className="flex items-center gap-3">
                   <Button size="sm" className="text-xs" onClick={handleSave} disabled={!dirty}>저장</Button>
                   {saved && !dirty && (
+                    <span className="flex items-center gap-1 text-xs text-primary">
+                      <Check className="h-3.5 w-3.5" /> 저장되었습니다
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* 판매자 정보 — 상품 페이지 푸터에 노출 */}
+              <div className="py-5 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-semibold">판매자 정보 <span className="text-destructive">*</span></h3>
+                  {!sellerComplete && (
+                    <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-destructive/10 text-destructive">
+                      미완성
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1 mb-4">
+                  전자상거래법상 상품 페이지에 판매 주체를 밝혀야 합니다. 여기 입력한 내용이 내 상품 페이지 맨 아래에 표시됩니다.
+                </p>
+
+                <label className="flex items-center gap-2 mb-4 text-sm cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={freelancer}
+                    onChange={(e) => { setFreelancer(e.target.checked); setSellerSaved(false); }}
+                    className="h-4 w-4 accent-primary"
+                  />
+                  사업자 없음 (프리랜서)
+                </label>
+
+                {freelancer ? (
+                  <p className="rounded-lg bg-secondary/60 px-3 py-2.5 text-xs text-muted-foreground mb-4">
+                    상호명 자리에 작가명 &lsquo;{nickname || sellerProfile.nickname}&rsquo;이(가) 표시되고, 사업자등록번호는 표시되지 않습니다.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 tablet:grid-cols-2 gap-3 mb-4">
+                    <div className="space-y-1.5">
+                      <label htmlFor="seller-biz-name" className="text-xs font-semibold">상호명</label>
+                      <Input
+                        id="seller-biz-name"
+                        value={businessName}
+                        onChange={(e) => { setBusinessName(e.target.value); setSellerSaved(false); }}
+                        placeholder="사업자등록증상 상호"
+                        className="text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label htmlFor="seller-rep" className="text-xs font-semibold">대표자명</label>
+                      <Input
+                        id="seller-rep"
+                        value={representative}
+                        onChange={(e) => { setRepresentative(e.target.value); setSellerSaved(false); }}
+                        placeholder="대표자 이름"
+                        className="text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5 tablet:col-span-2">
+                      <label htmlFor="seller-biz-no" className="text-xs font-semibold">사업자등록번호</label>
+                      <Input
+                        id="seller-biz-no"
+                        inputMode="numeric"
+                        value={businessNumber}
+                        onChange={(e) => {
+                          // 숫자와 하이픈만
+                          setBusinessNumber(e.target.value.replace(/[^0-9-]/g, ""));
+                          setSellerSaved(false);
+                        }}
+                        placeholder="000-00-00000"
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 tablet:grid-cols-2 gap-3 mb-4">
+                  <div className="space-y-1.5">
+                    <label htmlFor="seller-phone" className="text-xs font-semibold">연락처</label>
+                    <Input
+                      id="seller-phone"
+                      inputMode="tel"
+                      value={sellerPhone}
+                      onChange={(e) => { setSellerPhone(e.target.value.replace(/[^0-9-]/g, "")); setSellerSaved(false); }}
+                      placeholder="010-0000-0000"
+                      className="text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="seller-email" className="text-xs font-semibold">이메일</label>
+                    <Input
+                      id="seller-email"
+                      type="email"
+                      value={sellerEmail}
+                      onChange={(e) => { setSellerEmail(e.target.value); setSellerSaved(false); }}
+                      placeholder="contact@example.com"
+                      className="text-sm"
+                    />
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground mb-4">
+                  연락처와 이메일은 구매자에게 공개됩니다. 개인 번호가 부담되면 업무용 번호를 쓰시는 걸 권합니다.
+                </p>
+
+                <div className="flex items-center gap-3">
+                  <Button size="sm" className="text-xs" onClick={handleSellerSave} disabled={!sellerDirty || !sellerComplete}>
+                    저장
+                  </Button>
+                  {sellerSaved && !sellerDirty && (
                     <span className="flex items-center gap-1 text-xs text-primary">
                       <Check className="h-3.5 w-3.5" /> 저장되었습니다
                     </span>

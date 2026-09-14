@@ -26,6 +26,18 @@ interface SellerProfile {
   bankName: string;
   accountNumber: string;
   accountHolder: string;
+
+  /**
+   * 판매자 정보. 전자상거래법상 상품 페이지에서 판매 주체를 밝혀야 하므로
+   * 상품 페이지 푸터에 그대로 노출된다.
+   * freelancer(사업자 없음)면 상호명 대신 닉네임을 쓰고 사업자등록번호는 표시하지 않는다.
+   */
+  freelancer: boolean;
+  businessName: string;
+  representative: string;
+  businessNumber: string;
+  sellerPhone: string;
+  sellerEmail: string;
 }
 
 /** 첫 소셜 로그인 직후 반드시 받아야 하는 값. */
@@ -65,6 +77,12 @@ const defaultSellerProfile: SellerProfile = {
   bankName: "",
   accountNumber: "",
   accountHolder: "",
+  freelancer: false,
+  businessName: "디하랩스",
+  representative: "김디하",
+  businessNumber: "123-45-67890",
+  sellerPhone: "010-1234-5678",
+  sellerEmail: "author@example.com",
 };
 
 const AuthContext = createContext<AuthContextType>({

@@ -1,10 +1,57 @@
 import { Link } from "react-router-dom";
 import { asset } from "@/lib/constants";
 
-const Footer = () => {
+/** 상품 페이지 푸터에 밝혀야 하는 판매자(작가) 정보. */
+export type FooterSeller = {
+  nickname: string;
+  freelancer: boolean;
+  businessName: string;
+  representative: string;
+  businessNumber: string;
+  sellerPhone: string;
+  sellerEmail: string;
+};
+
+const MEDIATION_NOTICE =
+  "디하북스는 통신판매중개자로서 중개하는 거래에 대하여 책임을 부담하지 않고, 모든 판매에 대한 책임은 각 작가에게 있습니다.";
+
+interface Props {
+  /** 상품 페이지처럼 판매 주체가 정해진 화면에서만 넘긴다. */
+  seller?: FooterSeller;
+}
+
+const Footer = ({ seller }: Props) => {
+  // 사업자가 없으면 상호명 대신 닉네임을 쓰고 대표·사업자등록번호는 빼둔다.
+  const sellerItems = seller
+    ? [
+        seller.freelancer ? seller.nickname : seller.businessName || seller.nickname,
+        !seller.freelancer && seller.representative ? `대표 : ${seller.representative}` : "",
+        !seller.freelancer && seller.businessNumber ? `사업자등록번호 : ${seller.businessNumber}` : "",
+        seller.sellerPhone ? `연락처 : ${seller.sellerPhone}` : "",
+        seller.sellerEmail ? `이메일 : ${seller.sellerEmail}` : "",
+      ].filter(Boolean)
+    : [];
+
   return (
     <footer className="bg-footer-bg text-footer-foreground">
       <div className="container px-4 py-8 tablet:py-12">
+        {/* 판매자 정보 — 기존 푸터 위에 구분선을 두고 그 위에 놓는다. */}
+        {seller && (
+          <div className="pb-6 tablet:pb-8 mb-6 tablet:mb-8 border-b border-white/10 space-y-2">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] tablet:text-xs">
+              {sellerItems.map((text, i) => (
+                <span key={text} className="flex items-center gap-3">
+                  {i > 0 && <span className="text-white/20">|</span>}
+                  <span className={i === 0 ? "font-bold text-white" : ""}>{text}</span>
+                </span>
+              ))}
+            </div>
+            <p className="text-[11px] tablet:text-xs text-white/40 leading-relaxed">
+              {MEDIATION_NOTICE}
+            </p>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 tablet:grid-cols-3 gap-6 tablet:gap-8">
           {/* Brand */}
           <div className="space-y-3 col-span-2 tablet:col-span-1">
@@ -47,10 +94,8 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 tablet:mt-10 pt-4 tablet:pt-6 border-t border-white/10 space-y-2 text-[11px] tablet:text-xs text-white/40">
-          {/* 통신판매중개자 고지. 전자상거래법상 중개자임을 알려야 해 모든 페이지에 노출한다. */}
-          <p className="leading-relaxed">
-            디하북스는 통신판매중개자로서 중개하는 거래에 대하여 책임을 부담하지 않고, 모든 판매에 대한 책임은 각 작가에게 있습니다.
-          </p>
+          {/* 통신판매중개자 고지. 판매자 정보를 위에서 이미 밝힌 화면에서는 겹치므로 생략한다. */}
+          {!seller && <p className="leading-relaxed">{MEDIATION_NOTICE}</p>}
           <p>© 2026 DIHABOOKS. ALL RIGHTS RESERVED.</p>
         </div>
       </div>
