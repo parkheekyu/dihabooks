@@ -93,7 +93,7 @@ const Footer = ({ seller }: Props) => {
           </div>
         </div>
 
-        <div className="mt-8 tablet:mt-10 pt-4 tablet:pt-6 border-t border-white/10 space-y-2 text-[11px] tablet:text-xs text-white/40">
+        <div className="mt-8 tablet:mt-10 space-y-2 text-[11px] tablet:text-xs text-white/40">
           {/* 통신판매중개자 고지. 판매자 정보를 위에서 이미 밝힌 화면에서는 겹치므로 생략한다. */}
           {!seller && <p className="leading-relaxed">{MEDIATION_NOTICE}</p>}
           <p>© 2026 DIHABOOKS. ALL RIGHTS RESERVED.</p>
