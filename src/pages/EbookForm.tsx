@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PageResourceFields, { type ResourceLink, type ResourceFile } from "@/components/PageResourceFields";
 import TocFields, { type TocChapter } from "@/components/TocFields";
+import EbookFileFields, { type EbookVersion } from "@/components/EbookFileFields";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { categories } from "@/data/mockData";
@@ -27,7 +28,7 @@ const EbookForm = () => {
   const [tags, setTags] = useState("");
 
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [versions, setVersions] = useState<EbookVersion[]>([{ label: "기본", fileName: "", size: "", base: true }]);
 
   // Rich editor ref
   const editorRef = useRef<HTMLDivElement>(null);
@@ -59,15 +60,6 @@ const EbookForm = () => {
     }
   };
 
-  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type === "application/pdf") {
-      setPdfFile(file);
-    } else {
-      toast.error("PDF 파일만 업로드 가능합니다.");
-    }
-  };
-
   // Editor commands
   const execCommand = useCallback((command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -89,6 +81,32 @@ const EbookForm = () => {
       }
     };
     input.click();
+  };
+
+  /** 기준 판본 PDF의 북마크에서 목차를 읽어온다. 실제 파싱은 서버에서 한다. */
+  const importOutline = () => {
+    const base = versions.find((v) => v.base);
+    if (!base?.fileName) {
+      toast.error("기준 판본 PDF를 먼저 올려주세요.");
+      return;
+    }
+    setToc([
+      {
+        chapter: "1. 시작하기",
+        subtopics: [
+          { title: "들어가며", page: "1", preview: false },
+          { title: "이 책을 읽는 법", page: "8", preview: false },
+        ],
+      },
+      {
+        chapter: "2. 본론",
+        subtopics: [
+          { title: "기본 개념 잡기", page: "16", preview: false },
+          { title: "실전 적용", page: "34", preview: false },
+        ],
+      },
+    ]);
+    toast.success("PDF 북마크에서 목차를 불러왔습니다.");
   };
 
   const handleSubmit = (submitForReview: boolean) => {
@@ -130,8 +148,16 @@ const EbookForm = () => {
         toast.error("전자책 소개를 작성해주세요.");
         return;
       }
-      if (!pdfFile) {
-        toast.error("PDF 파일을 업로드해주세요.");
+      if (versions.some((v) => !v.label.trim())) {
+        toast.error("판본 이름을 입력해주세요.");
+        return;
+      }
+      if (versions.some((v) => !v.fileName)) {
+        toast.error("판본마다 PDF 파일을 올려주세요.");
+        return;
+      }
+      if (!versions.some((v) => v.base)) {
+        toast.error("쪽수 기준이 될 판본을 지정해주세요.");
         return;
       }
       toast.success("심사 요청이 완료되었습니다. 검토 후 승인됩니다.");
@@ -357,39 +383,14 @@ const EbookForm = () => {
             </div>
           </FormSection>
 
-          {/* ── PDF 파일 ── */}
-          <FormSection title="콘텐츠 파일 (PDF)" required open={sections.file} onToggle={() => toggleSection("file")}>
-            <div>
-              <Label className="text-sm font-semibold">PDF 파일 업로드 <span className="text-destructive">*</span></Label>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                구매자에게 제공될 PDF 파일을 업로드해주세요. 웹 뷰어로만 열람 가능하며 다운로드는 불가합니다.
-              </p>
-
-              {pdfFile ? (
-                <div className="mt-2 flex items-center gap-3 rounded-xl border border-border bg-secondary/30 p-3">
-                  <FileText className="h-8 w-8 text-primary shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">{pdfFile.name}</p>
-                    <p className="text-xs text-muted-foreground">{(pdfFile.size / 1024 / 1024).toFixed(1)} MB</p>
-                  </div>
-                  <button onClick={() => setPdfFile(null)} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
-                    <X className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </div>
-              ) : (
-                <label className="mt-2 flex flex-col items-center justify-center h-28 rounded-xl border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors">
-                  <Upload className="h-6 w-6 text-muted-foreground mb-1" />
-                  <span className="text-sm text-muted-foreground">PDF 파일을 선택해주세요</span>
-                  <span className="text-xs text-muted-foreground mt-0.5">최대 200MB</span>
-                  <input type="file" accept=".pdf" className="hidden" onChange={handlePdfUpload} />
-                </label>
-              )}
-            </div>
+          {/* ── 전자책 파일 (판본별) ── */}
+          <FormSection title="전자책 파일" required open={sections.file} onToggle={() => toggleSection("file")}>
+            <EbookFileFields value={versions} onChange={setVersions} framed={false} />
           </FormSection>
 
           {/* ── 목차 ── */}
           <FormSection title="목차" open={sections.toc} onToggle={() => toggleSection("toc")}>
-            <TocFields value={toc} onChange={setToc} framed={false} />
+            <TocFields value={toc} onChange={setToc} framed={false} onImportOutline={importOutline} />
           </FormSection>
 
           {/* ── 페이지별 링크 · 자료 ── */}

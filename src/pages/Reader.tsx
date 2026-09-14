@@ -1,6 +1,6 @@
 import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, List, X, CheckCircle2, Paperclip, Link2, FileText, Download, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, X, CheckCircle2, Paperclip, Link2, FileText, Download, Lock, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const mockToc = [
@@ -76,6 +76,18 @@ const commonResources: {
 
 const emptyResources = { links: [], files: [] };
 
+/**
+ * 작가가 올린 글자 크기별 판본. 실제로는 상품 데이터에서 내려받고,
+ * base 판본이 목차·미리보기·링크 자료의 쪽수 기준이다.
+ */
+const ebookVersions = [
+  { id: "base", label: "기본", scale: 100 },
+  { id: "large", label: "큰글씨", scale: 125 },
+  { id: "xlarge", label: "아주 큰글씨", scale: 150 },
+];
+
+const VERSION_KEY = "diha:reader-version";
+
 const Reader = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -91,7 +103,24 @@ const Reader = () => {
   const previewTo = Math.max(previewFrom, Number(params.get("to")) || previewFrom);
 
   const [currentPage, setCurrentPage] = useState(isPreview ? previewFrom : 1);
-  const [zoom, setZoom] = useState(100);
+  // 고른 판본은 기기에 기억해 다음에 열 때도 유지한다.
+  const [versionId, setVersionId] = useState(() => {
+    try {
+      const saved = localStorage.getItem(VERSION_KEY);
+      if (saved && ebookVersions.some((v) => v.id === saved)) return saved;
+    } catch {
+      // 사생활 보호 모드 등에서 접근이 막힐 수 있다. 기본값으로 둔다.
+    }
+    return ebookVersions[0].id;
+  });
+
+  const version = ebookVersions.find((v) => v.id === versionId) ?? ebookVersions[0];
+  const zoom = version.scale;
+
+  const pickVersion = (id: string) => {
+    setVersionId(id);
+    try { localStorage.setItem(VERSION_KEY, id); } catch { /* 저장 실패는 무시 */ }
+  };
   const [tocOpen, setTocOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [completedSections, setCompletedSections] = useState<string[]>(["1-0", "1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "1-7", "1-8", "1-9"]);
@@ -287,21 +316,22 @@ const Reader = () => {
           {currentPage} / {isPreview ? maxPage : totalPages}
         </span>
         <div className="flex items-center gap-1 tablet:gap-2">
-          <button
-            onClick={() => setZoom((z) => Math.max(70, z - 10))}
-            aria-label="글자 작게"
-            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <ZoomOut className="h-4 w-4" />
-          </button>
-          <span className="text-muted-foreground text-[11px] tablet:text-xs w-8 tablet:w-10 text-center">{zoom}%</span>
-          <button
-            onClick={() => setZoom((z) => Math.min(200, z + 10))}
-            aria-label="글자 크게"
-            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <ZoomIn className="h-4 w-4" />
-          </button>
+          {/* 확대가 아니라 작가가 올린 판본을 고르는 방식. PDF는 확대하면
+              글자가 뭉개지므로 글자 크기별 원고를 따로 받아 바꿔 준다. */}
+          <label className="flex items-center gap-1.5">
+            <Type className="h-4 w-4 text-muted-foreground" />
+            <span className="sr-only">글자 크기</span>
+            <select
+              value={versionId}
+              onChange={(e) => pickVersion(e.target.value)}
+              aria-label="글자 크기"
+              className="h-8 rounded-lg border border-border bg-card px-2 text-xs tablet:text-sm text-foreground"
+            >
+              {ebookVersions.map((v) => (
+                <option key={v.id} value={v.id}>{v.label}</option>
+              ))}
+            </select>
+          </label>
           <button
             onClick={() => setPanelOpen((v) => !v)}
             aria-label="링크 · 자료"
@@ -355,9 +385,9 @@ const Reader = () => {
 
         {/* Content Area */}
         <div className="flex-1 relative overflow-auto">
-          {/* Sizes below are in `em` so the zoom control on the top bar actually
-              cascades. Fixed `text-sm`-style classes would override the parent's
-              percentage font-size and leave the zoom buttons doing nothing. */}
+          {/* 아래 크기는 em이라 판본 배율이 그대로 먹는다. text-sm 같은 고정 클래스를
+              쓰면 부모의 퍼센트 글자 크기를 덮어써서 판본을 바꿔도 티가 안 난다.
+              실제 서비스에서는 판본별 PDF를 갈아 끼우는 자리다. */}
           <div className="max-w-3xl mx-auto px-4 tablet:px-8 py-6 tablet:py-10" style={{ fontSize: `${zoom}%` }}>
             <h2 className="text-[1.2em] font-bold text-foreground mb-6 tablet:mb-8">
               {currentContent.chapterTitle}

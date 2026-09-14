@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import RichTextEditor, { type RichTextEditorHandle } from "@/components/RichTextEditor";
 import PageResourceFields, { type ResourceLink, type ResourceFile } from "@/components/PageResourceFields";
 import TocFields, { type TocChapter } from "@/components/TocFields";
+import EbookFileFields, { type EbookVersion } from "@/components/EbookFileFields";
 import { categories } from "@/data/mockData";
 import { toast } from "sonner";
 
@@ -17,8 +18,8 @@ export interface NewEbook {
   badge?: "BEST" | "NEW" | "TOP";
   pageCount?: number;
   image: string;
-  /** 업로드된 전자책 원고 파일명. */
-  pdfName: string;
+  /** 글자 크기별 판본. base로 지정한 판본이 쪽수 기준이 된다. */
+  versions: EbookVersion[];
   description: string;
   /**
    * 소제목마다 시작 쪽만 받는다. 끝 쪽은 다음 소제목의 시작 직전으로 계산되므로
@@ -52,7 +53,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
   const [badge, setBadge] = useState("");
   const [pageCount, setPageCount] = useState("");
   const [thumb, setThumb] = useState("");
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [versions, setVersions] = useState<EbookVersion[]>([{ label: "기본", fileName: "", size: "", base: true }]);
   const [toc, setToc] = useState<TocChapter[]>([{ chapter: "", subtopics: [{ title: "", page: "", preview: false }] }]);
   const [links, setLinks] = useState<ResourceLink[]>([]);
   const [files, setFiles] = useState<ResourceFile[]>([]);
@@ -73,13 +74,30 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
     setThumb(URL.createObjectURL(file));
   };
 
-  const pickPdf = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-      return toast.error("PDF 파일만 업로드할 수 있습니다.");
-    }
-    setPdfFile(file);
+  /**
+   * 기준 판본 PDF의 북마크에서 목차를 읽어온다. 실제로는 서버에서 PDF outline을
+   * 파싱해 챕터·소제목·시작 쪽을 내려주고, 여기서는 그 결과를 그대로 채운다.
+   */
+  const importOutline = () => {
+    const base = versions.find((v) => v.base);
+    if (!base?.fileName) return toast.error("기준 판본 PDF를 먼저 올려주세요.");
+    setToc([
+      {
+        chapter: "1. 시작하기",
+        subtopics: [
+          { title: "들어가며", page: "1", preview: false },
+          { title: "이 책을 읽는 법", page: "8", preview: false },
+        ],
+      },
+      {
+        chapter: "2. 본론",
+        subtopics: [
+          { title: "기본 개념 잡기", page: "16", preview: false },
+          { title: "실전 적용", page: "34", preview: false },
+        ],
+      },
+    ]);
+    toast.success("PDF 북마크에서 목차를 불러왔습니다.");
   };
 
   const submit = () => {
@@ -95,7 +113,15 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
     if (!description.replace(/<[^>]*>/g, "").trim()) {
       return toast.error("상세 설명을 입력해주세요.");
     }
-    if (!pdfFile) return toast.error("전자책 PDF 파일을 업로드해주세요.");
+    if (versions.some((v) => !v.label.trim())) {
+      return toast.error("판본 이름을 입력해주세요.");
+    }
+    if (versions.some((v) => !v.fileName)) {
+      return toast.error("판본마다 PDF 파일을 올려주세요.");
+    }
+    if (!versions.some((v) => v.base)) {
+      return toast.error("쪽수 기준이 될 판본을 지정해주세요.");
+    }
     if (links.some((l) => !l.label.trim() || !l.url.trim())) {
       return toast.error("링크는 이름과 주소를 입력해주세요.");
     }
@@ -116,7 +142,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
       badge: (badge || undefined) as NewEbook["badge"],
       pageCount: pageCount ? Number(pageCount) : undefined,
       image: thumb,
-      pdfName: pdfFile.name,
+      versions,
       description,
       toc: toc
         .filter((r) => r.chapter.trim())
@@ -236,30 +262,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
         </div>
       </section>
 
-      {/* 전자책 파일 */}
-      <section className="rounded-xl border border-border p-4 tablet:p-5">
-        <h3 className="text-sm font-semibold mb-1">전자책 파일 <span className="text-destructive">*</span></h3>
-        <p className="text-xs text-muted-foreground mb-3">구매자가 뷰어에서 읽게 될 원고입니다. PDF만 업로드할 수 있습니다.</p>
-
-        {pdfFile ? (
-          <div className="flex items-center gap-3 rounded-xl border border-border bg-secondary/30 p-3">
-            <FileText className="h-8 w-8 text-primary shrink-0" />
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium truncate">{pdfFile.name}</p>
-              <p className="text-xs text-muted-foreground">{(pdfFile.size / 1024 / 1024).toFixed(1)} MB</p>
-            </div>
-            <button onClick={() => setPdfFile(null)} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
-              <X className="h-4 w-4 text-muted-foreground" />
-            </button>
-          </div>
-        ) : (
-          <label className="flex flex-col items-center justify-center h-28 rounded-xl border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors">
-            <Upload className="h-6 w-6 text-muted-foreground mb-1" />
-            <span className="text-sm text-muted-foreground">클릭해서 PDF 파일 선택</span>
-            <input type="file" accept="application/pdf,.pdf" onChange={pickPdf} className="hidden" />
-          </label>
-        )}
-      </section>
+      <EbookFileFields value={versions} onChange={setVersions} />
 
       {/* 상세 설명 */}
       <section className="rounded-xl border border-border p-4 tablet:p-5">
@@ -268,7 +271,7 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
         <RichTextEditor ref={editorRef} minHeight="240px" placeholder="상품 소개를 작성해주세요. 이미지도 넣을 수 있습니다." />
       </section>
 
-      <TocFields value={toc} onChange={setToc} pageCount={pageCount} />
+      <TocFields value={toc} onChange={setToc} pageCount={pageCount} onImportOutline={importOutline} />
 
       <PageResourceFields
         links={links}
