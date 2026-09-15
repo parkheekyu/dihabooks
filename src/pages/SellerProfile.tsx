@@ -16,7 +16,7 @@ const BANKS = [
 ];
 
 const SellerProfile = () => {
-  const { user, isLoggedIn, sellerProfile, updateSellerProfile } = useAuth();
+  const { isLoggedIn, sellerProfile, updateSellerProfile } = useAuth();
 
   // Draft copy of the 작가 프로필 — committed to context on 저장.
   const [nickname, setNickname] = useState(sellerProfile.nickname);
@@ -106,21 +106,8 @@ const SellerProfile = () => {
               <h1 className="text-lg font-bold mb-4 desktop:hidden">마이페이지</h1>
               <h2 className="hidden desktop:block text-lg font-bold mb-6">작가 프로필 설정</h2>
 
-              {/* Profile Header */}
-              <div className="flex flex-col items-center text-center gap-3 pb-5 border-b border-border tablet:flex-row tablet:text-left tablet:items-center tablet:gap-4 tablet:pb-6">
-                <img
-                  src={user?.profileImage}
-                  alt=""
-                  className="h-14 w-14 tablet:h-16 tablet:w-16 rounded-full object-cover border border-border"
-                />
-                <div>
-                  <p className="font-bold text-sm tablet:text-base">{user?.nickname}</p>
-                  <p className="text-xs tablet:text-sm text-muted-foreground">{user?.email}</p>
-                </div>
-              </div>
-
               {/* 작가 프로필 — 상품 페이지 하단 작가 소개에 그대로 노출 */}
-              <div className="py-5 border-b border-border">
+              <div className="pb-5 border-b border-border">
                 <h3 className="text-sm font-semibold">작가 프로필 <span className="text-destructive">*</span></h3>
                 <p className="text-xs text-muted-foreground mt-1 mb-4">
                   여기서 설정한 내용이 상품 페이지 맨 아래 &lsquo;작가 소개&rsquo;에 그대로 표시됩니다.
