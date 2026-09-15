@@ -64,10 +64,10 @@ const SellerProfile = () => {
     sellerPhone !== sellerProfile.sellerPhone ||
     sellerEmail !== sellerProfile.sellerEmail;
 
-  // 사업자면 상호명·대표·등록번호까지, 프리랜서면 연락처·이메일만 있으면 된다.
+  // 필수값: 사업자면 상호명·대표자명·이메일, 사업자 없음이면 이메일만.
   const sellerComplete = freelancer
-    ? !!(sellerPhone.trim() && sellerEmail.trim())
-    : !!(businessName.trim() && representative.trim() && businessNumber.trim() && sellerPhone.trim() && sellerEmail.trim());
+    ? !!sellerEmail.trim()
+    : !!(businessName.trim() && representative.trim() && sellerEmail.trim());
 
   const handleSellerSave = () => {
     updateSellerProfile({ freelancer, businessName, representative, businessNumber, sellerPhone, sellerEmail });
@@ -238,7 +238,7 @@ const SellerProfile = () => {
                 ) : (
                   <div className="grid grid-cols-1 tablet:grid-cols-2 gap-3 mb-4">
                     <div className="space-y-1.5">
-                      <label htmlFor="seller-biz-name" className="text-xs font-semibold">상호명</label>
+                      <label htmlFor="seller-biz-name" className="text-xs font-semibold">상호명 <span className="text-destructive">*</span></label>
                       <Input
                         id="seller-biz-name"
                         value={businessName}
@@ -248,7 +248,7 @@ const SellerProfile = () => {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label htmlFor="seller-rep" className="text-xs font-semibold">대표자명</label>
+                      <label htmlFor="seller-rep" className="text-xs font-semibold">대표자명 <span className="text-destructive">*</span></label>
                       <Input
                         id="seller-rep"
                         value={representative}
@@ -288,7 +288,7 @@ const SellerProfile = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label htmlFor="seller-email" className="text-xs font-semibold">이메일</label>
+                    <label htmlFor="seller-email" className="text-xs font-semibold">이메일 <span className="text-destructive">*</span></label>
                     <Input
                       id="seller-email"
                       type="email"
