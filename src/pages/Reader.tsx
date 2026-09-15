@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, List, X, CheckCircle2, Paperclip, Link2, FileText, Download, Lock, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const mockToc = [
   {
@@ -78,14 +79,50 @@ const commonResources: {
 const emptyResources = { links: [], files: [] };
 
 /**
- * 작가가 올린 글자 크기별 판본. 실제로는 상품 데이터에서 내려받고,
- * base 판본이 목차·미리보기·링크 자료의 쪽수 기준이다.
+ * 작가가 올린 글자 크기별 판본. 실제로는 상품 데이터에서 내려받는다.
+ * 글자가 커지면 쪽수가 늘어나므로 소제목 시작 쪽도 판본마다 다르다.
+ * 데모에서는 pageFactor로 늘어난 쪽수를 흉내 낸다. 실제로는 작가가 판본별로 입력한 값이다.
  */
 const ebookVersions = [
-  { id: "base", label: "기본", scale: 100 },
-  { id: "large", label: "큰글씨", scale: 125 },
-  { id: "xlarge", label: "아주 큰글씨", scale: 150 },
+  { id: "base", label: "기본", scale: 100, pageFactor: 1 },
+  { id: "large", label: "큰글씨", scale: 125, pageFactor: 1.3 },
+  { id: "xlarge", label: "아주 큰글씨", scale: 150, pageFactor: 1.6 },
 ];
+type EbookVersionDef = (typeof ebookVersions)[number];
+
+/** 기본 판본 기준 전체 쪽수. URL의 미리보기 구간과 링크 자료 쪽수도 이 기준이다. */
+const BASE_TOTAL_PAGES = 85;
+const tocItems = mockToc.flatMap((c) => c.items);
+
+const scalePage = (basePage: number, v: EbookVersionDef) => Math.round((basePage - 1) * v.pageFactor) + 1;
+const totalPagesOf = (v: EbookVersionDef) => scalePage(BASE_TOTAL_PAGES, v);
+/** 판본별 소제목 시작 쪽. 마지막에 '끝 다음 쪽'을 붙여 구간 계산을 단순하게 한다. */
+const anchorsOf = (v: EbookVersionDef) => [...tocItems.map((it) => scalePage(it.page, v)), totalPagesOf(v) + 1];
+
+/** 쪽이 속한 소제목 순번. 첫 소제목보다 앞이면 0으로 본다. */
+const sectionIndexAt = (page: number, v: EbookVersionDef) => {
+  const a = anchorsOf(v);
+  let i = 0;
+  while (i + 1 < a.length - 1 && a[i + 1] <= page) i++;
+  return i;
+};
+
+/**
+ * 판본 사이에서 같은 위치를 찾는다. 쪽을 단순히 비율로 늘리지 않고, 먼저 같은 소제목을 찾은 뒤
+ * 그 소제목 안에서 몇 % 지점인지를 옮긴다. 판본마다 소제목 길이가 들쭉날쭉해도 위치가 맞는다.
+ */
+const mapPage = (page: number, from: EbookVersionDef, to: EbookVersionDef) => {
+  if (from.id === to.id) return page;
+  const af = anchorsOf(from);
+  const at = anchorsOf(to);
+  const i = sectionIndexAt(page, from);
+  const ratio = (page - af[i]) / Math.max(1, af[i + 1] - af[i]);
+  // 반올림해야 판본을 오가도 원래 쪽으로 돌아온다. 다음 소제목으로 넘어가지 않게 구간 안에 묶는다.
+  const mapped = Math.min(at[i + 1] - 1, at[i] + Math.round(ratio * Math.max(1, at[i + 1] - at[i])));
+  return Math.min(totalPagesOf(to), Math.max(1, mapped));
+};
+
+const baseVersion = ebookVersions[0];
 
 const VERSION_KEY = "diha:reader-version";
 
@@ -103,7 +140,6 @@ const Reader = () => {
   const previewFrom = Math.max(1, Number(params.get("from")) || 1);
   const previewTo = Math.max(previewFrom, Number(params.get("to")) || previewFrom);
 
-  const [currentPage, setCurrentPage] = useState(isPreview ? previewFrom : 1);
   // 고른 판본은 기기에 기억해 다음에 열 때도 유지한다.
   const [versionId, setVersionId] = useState(() => {
     try {
@@ -118,19 +154,40 @@ const Reader = () => {
   const version = ebookVersions.find((v) => v.id === versionId) ?? ebookVersions[0];
   const zoom = version.scale;
 
-  const pickVersion = (id: string) => {
-    setVersionId(id);
-    try { localStorage.setItem(VERSION_KEY, id); } catch { /* 저장 실패는 무시 */ }
-  };
+  // 미리보기 구간은 기본 판본 쪽으로 넘어오므로 지금 판본의 쪽으로 옮긴다.
+  const previewRangeOf = (v: EbookVersionDef) => ({
+    min: mapPage(previewFrom, baseVersion, v),
+    max: Math.max(mapPage(previewFrom, baseVersion, v), mapPage(previewTo + 1, baseVersion, v) - 1),
+  });
+
+  const [currentPage, setCurrentPage] = useState(() => (isPreview ? previewRangeOf(version).min : 1));
   const [tocOpen, setTocOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [completedSections, setCompletedSections] = useState<string[]>(["1-0", "1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "1-7", "1-8", "1-9"]);
-  const totalPages = 85;
+  const totalPages = totalPagesOf(version);
   // 미리보기에서는 허용 구간 밖으로 나가지 못하게 막는다.
-  const minPage = isPreview ? previewFrom : 1;
-  const maxPage = isPreview ? Math.min(previewTo, totalPages) : totalPages;
+  const boundsOf = (v: EbookVersionDef) =>
+    isPreview
+      ? { min: previewRangeOf(v).min, max: Math.min(previewRangeOf(v).max, totalPagesOf(v)) }
+      : { min: 1, max: totalPagesOf(v) };
+  const { min: minPage, max: maxPage } = boundsOf(version);
   const goPage = (p: number) => setCurrentPage(Math.min(maxPage, Math.max(minPage, p)));
   const atPreviewEnd = isPreview && currentPage >= maxPage;
+
+  /** 판본을 바꾸면 보던 소제목의 같은 지점으로 옮겨 준다. 처음부터 다시 찾지 않게. */
+  const pickVersion = (id: string) => {
+    const next = ebookVersions.find((v) => v.id === id);
+    if (!next || next.id === version.id) return;
+    const b = boundsOf(next);
+    const mapped = Math.min(b.max, Math.max(b.min, mapPage(currentPage, version, next)));
+    setVersionId(next.id);
+    setCurrentPage(mapped);
+    try { localStorage.setItem(VERSION_KEY, next.id); } catch { /* 저장 실패는 무시 */ }
+    const section = tocItems[sectionIndexAt(mapped, next)];
+    toast(`'${next.label}' 판본으로 바꿨습니다`, {
+      description: section ? `읽던 곳 · ${section.title} (${mapped}쪽)` : `${mapped}쪽`,
+    });
+  };
 
   // 워터마크에는 읽는 사람을 특정할 수 있는 값을 넣는다. 유출본이 나오면 누구 계정인지 알 수 있게.
   // 로그인 없이 보는 미리보기에서는 계정이 없으므로 서비스명으로 대신한다.
@@ -162,7 +219,8 @@ const Reader = () => {
     body2: "그렇다면 쇼핑검색 순위의 원리는 어떻게될까요?",
   };
 
-  const pageResources = mockResources[currentPage] ?? emptyResources;
+  // 링크·자료 쪽수는 판본별로 따로 입력되지만, 데모 자료는 기본 판본 쪽으로만 있어 옮겨서 찾는다.
+  const pageResources = mockResources[mapPage(currentPage, version, baseVersion)] ?? emptyResources;
   // 쪽을 비워 등록한 자료는 어느 페이지에서든 함께 보여준다.
   const resources = {
     links: [...pageResources.links, ...commonResources.links],
@@ -249,14 +307,15 @@ const Reader = () => {
           <div className="space-y-1">
             {chapter.items.map((item) => {
               const isCompleted = completedSections.includes(item.id);
-              const isActive = currentPage === item.page;
+              const itemPage = scalePage(item.page, version);
+              const isActive = tocItems[sectionIndexAt(currentPage, version)]?.id === item.id;
               return (
                 <div
                   key={item.id}
                   className={`flex items-start gap-2 py-2.5 px-2 rounded-lg cursor-pointer transition-colors ${
                     isActive ? "bg-primary/10" : "hover:bg-muted"
                   }`}
-                  onClick={() => handleTocClick(item.page)}
+                  onClick={() => handleTocClick(itemPage)}
                 >
                   <button
                     onClick={(e) => {

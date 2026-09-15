@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PageResourceFields, { type ResourceLink, type ResourceFile } from "@/components/PageResourceFields";
 import TocFields, { type TocChapter } from "@/components/TocFields";
+import { applyOutline, findVersionProblem } from "@/lib/ebookVersions";
 import EbookFileFields, { type EbookVersion } from "@/components/EbookFileFields";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -28,7 +29,7 @@ const EbookForm = () => {
   const [tags, setTags] = useState("");
 
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [versions, setVersions] = useState<EbookVersion[]>([{ label: "기본", fileName: "", size: "", base: true }]);
+  const [versions, setVersions] = useState<EbookVersion[]>([{ id: "base", label: "기본", fileName: "", size: "", base: true }]);
 
   // Rich editor ref
   const editorRef = useRef<HTMLDivElement>(null);
@@ -43,7 +44,9 @@ const EbookForm = () => {
     resources: true,
   });
 
-  const [toc, setToc] = useState<TocChapter[]>([{ chapter: "", subtopics: [{ title: "", page: "", preview: false }] }]);
+  const [toc, setToc] = useState<TocChapter[]>([{ chapter: "", subtopics: [{ title: "", pages: {}, preview: false }] }]);
+  // 목차와 링크·자료가 같은 판본 탭을 보도록 한곳에서 쥔다.
+  const [activeVersion, setActiveVersion] = useState("base");
   const [links, setLinks] = useState<ResourceLink[]>([]);
   const [files, setFiles] = useState<ResourceFile[]>([]);
 
@@ -84,29 +87,16 @@ const EbookForm = () => {
   };
 
   /** 기준 판본 PDF의 북마크에서 목차를 읽어온다. 실제 파싱은 서버에서 한다. */
-  const importOutline = () => {
-    const base = versions.find((v) => v.base);
-    if (!base?.fileName) {
-      toast.error("기준 판본 PDF를 먼저 올려주세요.");
+  /** 고른 판본 PDF의 북마크에서 소제목별 시작 쪽을 읽어 채운다. 파싱은 서버 몫. */
+  const importOutline = (versionId: string) => {
+    const idx = versions.findIndex((v) => v.id === versionId);
+    const v = versions[idx];
+    if (!v?.fileName) {
+      toast.error(`'${v?.label.trim() || "이"}' 판본 PDF를 먼저 올려주세요.`);
       return;
     }
-    setToc([
-      {
-        chapter: "1. 시작하기",
-        subtopics: [
-          { title: "들어가며", page: "1", preview: false },
-          { title: "이 책을 읽는 법", page: "8", preview: false },
-        ],
-      },
-      {
-        chapter: "2. 본론",
-        subtopics: [
-          { title: "기본 개념 잡기", page: "16", preview: false },
-          { title: "실전 적용", page: "34", preview: false },
-        ],
-      },
-    ]);
-    toast.success("PDF 북마크에서 목차를 불러왔습니다.");
+    setToc((prev) => applyOutline(prev, versionId, idx));
+    toast.success(`'${v.label.trim() || `판본 ${idx + 1}`}' PDF 북마크에서 시작 쪽을 불러왔습니다.`);
   };
 
   const handleSubmit = (submitForReview: boolean) => {
@@ -125,13 +115,16 @@ const EbookForm = () => {
 
     const editorContent = editorRef.current?.innerHTML || "";
 
-    const tocPages = toc
-      .flatMap((r) => r.subtopics)
-      .filter((sub) => sub.title.trim() && sub.page)
-      .map((sub) => Number(sub.page));
-    if (tocPages.some((n, idx) => idx > 0 && n < tocPages[idx - 1])) {
-      toast.error("소제목의 시작 쪽은 목차 순서대로 커져야 합니다.");
-      return;
+    // 심사 요청 때만 판본별 쪽수를 엄격히 본다. 임시 저장은 덜 채워도 된다.
+    // 문제가 있으면 그 판본 탭으로 옮겨 바로 고치게 한다.
+    if (submitForReview) {
+      const problem = findVersionProblem(versions, toc, links, files);
+      if (problem) {
+        setActiveVersion(problem.versionId);
+        setSections((prev) => ({ ...prev, [problem.section]: true }));
+        toast.error(problem.message);
+        return;
+      }
     }
 
     if (links.some((l) => !l.label.trim() || !l.url.trim())) {
@@ -390,7 +383,15 @@ const EbookForm = () => {
 
           {/* ── 목차 ── */}
           <FormSection title="목차" open={sections.toc} onToggle={() => toggleSection("toc")}>
-            <TocFields value={toc} onChange={setToc} framed={false} onImportOutline={importOutline} />
+            <TocFields
+              value={toc}
+              onChange={setToc}
+              versions={versions}
+              activeVersion={activeVersion}
+              onActiveVersionChange={setActiveVersion}
+              framed={false}
+              onImportOutline={importOutline}
+            />
           </FormSection>
 
           {/* ── 페이지별 링크 · 자료 ── */}
@@ -400,6 +401,9 @@ const EbookForm = () => {
               files={files}
               onLinksChange={setLinks}
               onFilesChange={setFiles}
+              versions={versions}
+              activeVersion={activeVersion}
+              onActiveVersionChange={setActiveVersion}
               framed={false}
             />
           </FormSection>

@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
  * base는 목차·미리보기·링크 자료의 쪽수 기준이 되는 판본이며 하나만 지정한다.
  */
 export type EbookVersion = {
+  /** 이름을 바꿔도 목차·자료의 판본별 쪽수가 따라가도록 고정 id로 묶는다. */
+  id: string;
   label: string;
   fileName: string;
   size: string;
@@ -14,6 +16,7 @@ export type EbookVersion = {
 };
 
 const newVersion = (label = ""): EbookVersion => ({
+  id: `v${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
   label,
   fileName: "",
   size: "",

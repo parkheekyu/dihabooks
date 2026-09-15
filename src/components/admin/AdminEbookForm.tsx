@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import RichTextEditor, { type RichTextEditorHandle } from "@/components/RichTextEditor";
 import PageResourceFields, { type ResourceLink, type ResourceFile } from "@/components/PageResourceFields";
 import TocFields, { type TocChapter } from "@/components/TocFields";
+import { applyOutline, findVersionProblem } from "@/lib/ebookVersions";
 import EbookFileFields, { type EbookVersion } from "@/components/EbookFileFields";
 import { categories } from "@/data/mockData";
 import { toast } from "sonner";
@@ -22,12 +23,12 @@ export interface NewEbook {
   versions: EbookVersion[];
   description: string;
   /**
-   * 소제목마다 시작 쪽만 받는다. 끝 쪽은 다음 소제목의 시작 직전으로 계산되므로
-   * 따로 입력받지 않는다. preview를 켠 소제목은 본문 앞 30%까지 무료로 공개된다.
+   * 목차 구조는 한 벌, 시작 쪽은 판본 id별. 끝 쪽은 같은 판본의 다음 소제목 직전으로 본다.
+   * preview를 켠 소제목은 본문 앞 30%까지 무료로 공개된다.
    */
   toc: {
     chapter: string;
-    subtopics: { title: string; page?: number; preview: boolean }[];
+    subtopics: { title: string; pages: Record<string, number>; preview: boolean }[];
   }[];
   /** 뷰어 오른쪽 '링크 · 자료' 탭에 페이지별로 노출된다. */
   links: ResourceLink[];
@@ -53,8 +54,10 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
   const [badge, setBadge] = useState("");
   const [pageCount, setPageCount] = useState("");
   const [thumb, setThumb] = useState("");
-  const [versions, setVersions] = useState<EbookVersion[]>([{ label: "기본", fileName: "", size: "", base: true }]);
-  const [toc, setToc] = useState<TocChapter[]>([{ chapter: "", subtopics: [{ title: "", page: "", preview: false }] }]);
+  const [versions, setVersions] = useState<EbookVersion[]>([{ id: "base", label: "기본", fileName: "", size: "", base: true }]);
+  const [toc, setToc] = useState<TocChapter[]>([{ chapter: "", subtopics: [{ title: "", pages: {}, preview: false }] }]);
+  // 목차와 링크·자료가 같은 판본 탭을 보도록 한곳에서 쥔다.
+  const [activeVersion, setActiveVersion] = useState("base");
   const [links, setLinks] = useState<ResourceLink[]>([]);
   const [files, setFiles] = useState<ResourceFile[]>([]);
 
@@ -74,30 +77,13 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
     setThumb(URL.createObjectURL(file));
   };
 
-  /**
-   * 기준 판본 PDF의 북마크에서 목차를 읽어온다. 실제로는 서버에서 PDF outline을
-   * 파싱해 챕터·소제목·시작 쪽을 내려주고, 여기서는 그 결과를 그대로 채운다.
-   */
-  const importOutline = () => {
-    const base = versions.find((v) => v.base);
-    if (!base?.fileName) return toast.error("기준 판본 PDF를 먼저 올려주세요.");
-    setToc([
-      {
-        chapter: "1. 시작하기",
-        subtopics: [
-          { title: "들어가며", page: "1", preview: false },
-          { title: "이 책을 읽는 법", page: "8", preview: false },
-        ],
-      },
-      {
-        chapter: "2. 본론",
-        subtopics: [
-          { title: "기본 개념 잡기", page: "16", preview: false },
-          { title: "실전 적용", page: "34", preview: false },
-        ],
-      },
-    ]);
-    toast.success("PDF 북마크에서 목차를 불러왔습니다.");
+  /** 고른 판본 PDF의 북마크에서 소제목별 시작 쪽을 읽어 채운다. 파싱은 서버 몫. */
+  const importOutline = (versionId: string) => {
+    const idx = versions.findIndex((v) => v.id === versionId);
+    const v = versions[idx];
+    if (!v?.fileName) return toast.error(`'${v?.label.trim() || "이"}' 판본 PDF를 먼저 올려주세요.`);
+    setToc((prev) => applyOutline(prev, versionId, idx));
+    toast.success(`'${v.label.trim() || `판본 ${idx + 1}`}' PDF 북마크에서 시작 쪽을 불러왔습니다.`);
   };
 
   const submit = () => {
@@ -125,12 +111,11 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
     if (links.some((l) => !l.label.trim() || !l.url.trim())) {
       return toast.error("링크는 이름과 주소를 입력해주세요.");
     }
-    const pages = toc
-      .flatMap((r) => r.subtopics)
-      .filter((sub) => sub.title.trim() && sub.page)
-      .map((sub) => Number(sub.page));
-    if (pages.some((n, idx) => idx > 0 && n < pages[idx - 1])) {
-      return toast.error("소제목의 시작 쪽은 목차 순서대로 커져야 합니다.");
+    // 판본별 쪽수가 비었거나 순서가 어긋나면 그 판본 탭으로 옮겨 바로 고치게 한다.
+    const problem = findVersionProblem(versions, toc, links, files);
+    if (problem) {
+      setActiveVersion(problem.versionId);
+      return toast.error(problem.message);
     }
 
     onSubmit({
@@ -152,7 +137,9 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
             .filter((sub) => sub.title.trim())
             .map((sub) => ({
               title: sub.title.trim(),
-              page: sub.page ? Number(sub.page) : undefined,
+              pages: Object.fromEntries(
+                Object.entries(sub.pages).filter(([, p]) => p).map(([id, p]) => [id, Number(p)])
+              ),
               preview: sub.preview,
             })),
         })),
@@ -271,13 +258,23 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
         <RichTextEditor ref={editorRef} minHeight="240px" placeholder="상품 소개를 작성해주세요. 이미지도 넣을 수 있습니다." />
       </section>
 
-      <TocFields value={toc} onChange={setToc} pageCount={pageCount} onImportOutline={importOutline} />
+      <TocFields
+        value={toc}
+        onChange={setToc}
+        versions={versions}
+        activeVersion={activeVersion}
+        onActiveVersionChange={setActiveVersion}
+        onImportOutline={importOutline}
+      />
 
       <PageResourceFields
         links={links}
         files={files}
         onLinksChange={setLinks}
         onFilesChange={setFiles}
+        versions={versions}
+        activeVersion={activeVersion}
+        onActiveVersionChange={setActiveVersion}
       />
 
       <div className="flex items-center justify-end gap-2 pb-4">
