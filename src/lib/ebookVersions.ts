@@ -85,3 +85,40 @@ export const applyOutline = (toc: TocChapter[], versionId: string, versionIndex:
     }),
   }));
 };
+
+/* ── 상품 주소(slug) ── */
+
+/** 상품 주소에 쓸 수 없는 예약어. 라우트와 겹치면 페이지가 열리지 않는다. */
+const RESERVED_SLUGS = ["new", "edit", "admin", "store", "search", "preview"];
+
+export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * 제목에서 주소 후보를 만든다. 영문·숫자만 남기므로 한글만 있는 제목이면 비어 나오고,
+ * 그때는 짧은 임의 주소를 만든다.
+ */
+export const suggestSlug = (title: string) => {
+  const latin = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60)
+    .replace(/-+$/g, "");
+  return latin.length >= 3 ? latin : `ebook-${Math.random().toString(36).slice(2, 7)}`;
+};
+
+export type SlugCheck = { ok: boolean; message: string };
+
+export const checkSlug = (slug: string, taken: string[]): SlugCheck => {
+  if (!slug) return { ok: false, message: "상품 주소를 입력해주세요." };
+  if (slug.length < 3 || slug.length > 60) return { ok: false, message: "3~60자로 입력해주세요." };
+  if (!SLUG_PATTERN.test(slug)) {
+    return { ok: false, message: "영문 소문자·숫자·하이픈(-)만 쓸 수 있고, 하이픈으로 시작하거나 끝날 수 없습니다." };
+  }
+  if (RESERVED_SLUGS.includes(slug)) return { ok: false, message: "시스템에서 쓰는 주소라 사용할 수 없습니다." };
+  if (taken.includes(slug)) return { ok: false, message: "이미 다른 상품이 쓰고 있는 주소입니다." };
+  return { ok: true, message: "사용할 수 있는 주소입니다." };
+};
+
+/** 상품 주소 앞부분. 화면 표시와 공유 링크에 같이 쓴다. */
+export const SHOP_ORIGIN = "dihabooks.com/book/";

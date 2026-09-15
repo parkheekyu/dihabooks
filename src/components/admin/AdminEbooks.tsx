@@ -12,6 +12,9 @@ import hero2 from "@/assets/hero-2.jpg";
 type Ebook = {
   id: string; title: string; author: string; price: number;
   sales: number; status: string; image: string; description?: string;
+  /** 상품 주소와 공개 범위. 일부공개는 목록·검색에 안 나오고 주소로만 열린다. */
+  slug?: string;
+  visibility?: "public" | "unlisted";
   pdfName?: string;
   toc?: { chapter: string; subtopics: { title: string; page?: number; preview: boolean }[] }[];
   links?: { page: string; label: string; url: string }[];
@@ -19,8 +22,8 @@ type Ebook = {
 };
 
 const initialEbooks: Ebook[] = [
-  { id: "1", title: "유튜브 알고리즘 마스터", author: "크리에이터 김", price: 19000, sales: 67, status: "승인", image: hero1 },
-  { id: "2", title: "인스타 릴스로 월 500만원", author: "인스타 마스터", price: 15000, sales: 52, status: "승인", image: hero2 },
+  { id: "1", title: "유튜브 알고리즘 마스터", author: "크리에이터 김", price: 19000, sales: 67, status: "승인", image: hero1, slug: "youtube-algorithm", visibility: "public" },
+  { id: "2", title: "인스타 릴스로 월 500만원", author: "인스타 마스터", price: 15000, sales: 52, status: "승인", image: hero2, slug: "insta-reels", visibility: "unlisted" },
   {
     id: "3", title: "제휴마케팅 완전 가이드", author: "마케터 박", price: 12000, sales: 12,
     status: "심사대기", image: hero1, pdfName: "제휴마케팅_완전가이드_v3.pdf",
@@ -91,6 +94,8 @@ const AdminEbooks = ({ filter = "all" }: AdminEbooksProps) => {
         status: "승인",
         image: b.image,
         description: b.description,
+        slug: b.slug,
+        visibility: b.visibility,
       },
       ...prev,
     ]);
@@ -101,7 +106,13 @@ const AdminEbooks = ({ filter = "all" }: AdminEbooksProps) => {
   const priceLabel = (p: number) => (p === 0 ? "무료" : `₩${p.toLocaleString()}`);
 
   if (mode === "create") {
-    return <AdminEbookForm onCancel={() => setMode("list")} onSubmit={addEbook} />;
+    return (
+      <AdminEbookForm
+        onCancel={() => setMode("list")}
+        onSubmit={addEbook}
+        takenSlugs={ebooks.map((e) => e.slug).filter((x): x is string => !!x)}
+      />
+    );
   }
 
   return (
@@ -136,7 +147,17 @@ const AdminEbooks = ({ filter = "all" }: AdminEbooksProps) => {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <img src={book.image} alt="" className="w-10 h-14 rounded-lg object-cover" />
-                    <span className="text-sm font-medium">{book.title}</span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-medium">{book.title}</span>
+                        {book.visibility === "unlisted" && (
+                          <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-secondary text-muted-foreground">
+                            일부공개
+                          </span>
+                        )}
+                      </div>
+                      {book.slug && <p className="text-[11px] text-muted-foreground truncate">/book/{book.slug}</p>}
+                    </div>
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm">{book.author}</td>
@@ -171,7 +192,14 @@ const AdminEbooks = ({ filter = "all" }: AdminEbooksProps) => {
             <div className="flex gap-3">
               <img src={book.image} alt="" className="w-14 h-20 rounded-lg object-cover shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{book.title}</p>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <p className="text-sm font-medium truncate">{book.title}</p>
+                  {book.visibility === "unlisted" && (
+                    <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-secondary text-muted-foreground">
+                      일부공개
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">{book.author}</p>
                 <p className="text-sm font-semibold mt-1">{priceLabel(book.price)} · {book.sales}권</p>
                 <div className="flex items-center gap-2 mt-2">
