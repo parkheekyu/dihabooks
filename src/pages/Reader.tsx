@@ -1,6 +1,9 @@
 import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, List, X, CheckCircle2, Paperclip, Link2, FileText, Download, Lock, Type } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, X, CheckCircle2, Paperclip, Link2, FileText, Download, Lock, Check, ChevronDown, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -152,7 +155,10 @@ const Reader = () => {
   });
 
   const version = ebookVersions.find((v) => v.id === versionId) ?? ebookVersions[0];
-  const zoom = version.scale;
+  // 판본(작가가 올린 글자 크기별 원고)과 확대(독자가 화면에서 키우는 것)는 별개다.
+  // 판본은 원고 자체를 바꾸고, 확대는 그 원고를 화면에서 키운다.
+  const [zoom, setZoom] = useState(100);
+  const contentScale = (version.scale * zoom) / 100;
 
   // 미리보기 구간은 기본 판본 쪽으로 넘어오므로 지금 판본의 쪽으로 옮긴다.
   const previewRangeOf = (v: EbookVersionDef) => ({
@@ -381,22 +387,70 @@ const Reader = () => {
           {currentPage} / {isPreview ? maxPage : totalPages}
         </span>
         <div className="flex items-center gap-1 tablet:gap-2">
-          {/* 확대가 아니라 작가가 올린 판본을 고르는 방식. PDF는 확대하면
-              글자가 뭉개지므로 글자 크기별 원고를 따로 받아 바꿔 준다. */}
-          <label className="flex items-center gap-1.5">
-            <Type className="h-4 w-4 text-muted-foreground" />
-            <span className="sr-only">글자 크기</span>
-            <select
-              value={versionId}
-              onChange={(e) => pickVersion(e.target.value)}
-              aria-label="글자 크기"
-              className="h-8 rounded-lg border border-border bg-card px-2 text-xs tablet:text-sm text-foreground"
-            >
-              {ebookVersions.map((v) => (
-                <option key={v.id} value={v.id}>{v.label}</option>
-              ))}
-            </select>
-          </label>
+          {/* 확대·축소 — 지금 판본을 화면에서 키우고 줄인다. */}
+          <button
+            onClick={() => setZoom((z) => Math.max(70, z - 10))}
+            aria-label="축소"
+            disabled={zoom <= 70}
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-30"
+          >
+            <ZoomOut className="h-4 w-4" />
+          </button>
+          <span className="hidden tablet:inline text-muted-foreground text-xs w-10 text-center tabular-nums">{zoom}%</span>
+          <button
+            onClick={() => setZoom((z) => Math.min(200, z + 10))}
+            aria-label="확대"
+            disabled={zoom >= 200}
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-30"
+          >
+            <ZoomIn className="h-4 w-4" />
+          </button>
+
+          {/* 판본 선택 — '가' 크기가 다른 견본을 보여줘 무엇을 고르는지 바로 알게 한다. */}
+          {ebookVersions.length > 1 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  aria-label={`글자 크기 판본: ${version.label}`}
+                  className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card pl-1.5 pr-2 text-xs tablet:text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <span className="flex h-5 items-end gap-px rounded bg-muted px-1 font-bold leading-none" aria-hidden>
+                    <span className="text-[10px]">가</span>
+                    <span className="text-[14px]">가</span>
+                  </span>
+                  <span className="whitespace-nowrap">{version.label}</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                  글자 크기 판본
+                </DropdownMenuLabel>
+                {ebookVersions.map((v) => {
+                  const selected = v.id === version.id;
+                  return (
+                    <DropdownMenuItem
+                      key={v.id}
+                      onSelect={() => pickVersion(v.id)}
+                      className={`gap-3 py-2.5 ${selected ? "bg-primary/5" : ""}`}
+                    >
+                      {/* 판본 배율대로 키운 견본 글자. 이름보다 먼저 크기 차이가 눈에 들어온다. */}
+                      <span
+                        className={`w-12 shrink-0 font-bold leading-none ${selected ? "text-primary" : "text-foreground"}`}
+                        style={{ fontSize: `${(14 * v.scale) / 100}px` }}
+                        aria-hidden
+                      >
+                        가나
+                      </span>
+                      <span className={`flex-1 text-sm ${selected ? "font-semibold text-primary" : ""}`}>{v.label}</span>
+                      {selected && <Check className="h-4 w-4 text-primary" />}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
           <button
             onClick={() => setPanelOpen((v) => !v)}
             aria-label="링크 · 자료"
@@ -453,7 +507,7 @@ const Reader = () => {
           {/* 아래 크기는 em이라 판본 배율이 그대로 먹는다. text-sm 같은 고정 클래스를
               쓰면 부모의 퍼센트 글자 크기를 덮어써서 판본을 바꿔도 티가 안 난다.
               실제 서비스에서는 판본별 PDF를 갈아 끼우는 자리다. */}
-          <div className="max-w-3xl mx-auto px-4 tablet:px-8 py-6 tablet:py-10" style={{ fontSize: `${zoom}%` }}>
+          <div className="max-w-3xl mx-auto px-4 tablet:px-8 py-6 tablet:py-10" style={{ fontSize: `${contentScale}%` }}>
             <h2 className="text-[1.2em] font-bold text-foreground mb-6 tablet:mb-8">
               {currentContent.chapterTitle}
             </h2>
