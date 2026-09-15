@@ -2,6 +2,7 @@ import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom"
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, List, X, CheckCircle2, Paperclip, Link2, FileText, Download, Lock, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const mockToc = [
   {
@@ -131,7 +132,12 @@ const Reader = () => {
   const goPage = (p: number) => setCurrentPage(Math.min(maxPage, Math.max(minPage, p)));
   const atPreviewEnd = isPreview && currentPage >= maxPage;
 
-  const userEmail = "belleba@naver.com";
+  // 워터마크에는 읽는 사람을 특정할 수 있는 값을 넣는다. 유출본이 나오면 누구 계정인지 알 수 있게.
+  // 로그인 없이 보는 미리보기에서는 계정이 없으므로 서비스명으로 대신한다.
+  const { user } = useAuth();
+  const watermarkLines = user
+    ? [user.email, user.name || user.nickname].filter(Boolean)
+    : ["DIHABOOKS", "미리보기"];
 
   const handleTocClick = (page: number) => {
     goPage(page);
@@ -428,12 +434,16 @@ const Reader = () => {
             </div>
           )}
 
-          {/* Watermark overlay */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-16 tablet:gap-32 -rotate-[30deg] opacity-[0.07]">
-              {[...Array(30)].map((_, i) => (
-                <span key={i} className="text-muted-foreground text-sm tablet:text-lg whitespace-nowrap font-medium">
-                  {userEmail}
+          {/* 워터마크 — 가로로 크고 굵게, 거의 안 보일 만큼 옅게. 읽기는 방해하지 않되
+              캡처하면 계정 정보가 남는다. 이메일과 이름을 번갈아 세로로 반복한다. */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden select-none" aria-hidden>
+            <div className="flex flex-col gap-24 tablet:gap-32 pt-6 pl-6 tablet:pl-16">
+              {Array.from({ length: 12 }, (_, i) => (
+                <span
+                  key={i}
+                  className="whitespace-nowrap font-black leading-none tracking-tight text-foreground/[0.035] text-[44px] tablet:text-[80px]"
+                >
+                  {watermarkLines[i % watermarkLines.length]}
                 </span>
               ))}
             </div>
