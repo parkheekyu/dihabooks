@@ -249,14 +249,14 @@ const AdminEbookForm = ({ onCancel, onSubmit }: Props) => {
         </div>
       </section>
 
-      <EbookFileFields value={versions} onChange={setVersions} />
-
       {/* 상세 설명 */}
       <section className="rounded-xl border border-border p-4 tablet:p-5">
         <h3 className="text-sm font-semibold mb-1">상세 설명 <span className="text-destructive">*</span></h3>
         <p className="text-xs text-muted-foreground mb-3">상품 상세 페이지의 &lsquo;상세 설명&rsquo; 영역에 들어갑니다.</p>
         <RichTextEditor ref={editorRef} minHeight="240px" placeholder="상품 소개를 작성해주세요. 이미지도 넣을 수 있습니다." />
       </section>
+
+      <EbookFileFields value={versions} onChange={setVersions} />
 
       <TocFields
         value={toc}
