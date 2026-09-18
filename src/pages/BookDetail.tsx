@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { sampleBooks } from "@/data/mockData";
+import { sampleBooks, sellerByBook } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { DEFAULT_AVATAR } from "@/lib/constants";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -772,15 +772,17 @@ const BookDetail = () => {
 
       {/* 이 상품을 파는 작가의 정보를 푸터에 밝힌다. */}
       <Footer
-        seller={{
-          nickname: sellerProfile.nickname,
-          freelancer: sellerProfile.freelancer,
-          businessName: sellerProfile.businessName,
-          representative: sellerProfile.representative,
-          businessNumber: sellerProfile.businessNumber,
-          sellerPhone: sellerProfile.sellerPhone,
-          sellerEmail: sellerProfile.sellerEmail,
-        }}
+        seller={
+          sellerByBook[book.id] ?? {
+            nickname: sellerProfile.nickname,
+            freelancer: sellerProfile.freelancer,
+            businessName: sellerProfile.businessName,
+            representative: sellerProfile.representative,
+            businessNumber: sellerProfile.businessNumber,
+            sellerPhone: sellerProfile.sellerPhone,
+            sellerEmail: sellerProfile.sellerEmail,
+          }
+        }
       />
     </div>
   );

@@ -2,6 +2,7 @@ import { Book } from "@/components/BookCard";
 import { BookOpen, Youtube, Dumbbell, Handshake, Bot, Wallet, Sparkles, Palette, Megaphone, Code, LayoutGrid, CircleDollarSign, type LucideIcon } from "lucide-react";
 
 import { asset } from "@/lib/constants";
+import type { FooterSeller } from "@/components/Footer";
 
 // `label` is also the matching key for Book.category on the store/home filters,
 // so renaming one here means renaming it on every book below too.
@@ -184,6 +185,25 @@ export const sampleBooks: Book[] = [
     pageCount: 186,
   },
 ];
+
+/**
+ * 상품별 판매자(작가) 정보 예시. 실제로는 상품을 등록한 작가의 판매자 정보를 불러온다.
+ * 여기 없는 상품은 지금 로그인한 작가의 '작가 프로필 설정' 값을 그대로 보여준다.
+ *
+ * 2번은 사업자 없는 프리랜서 예시다. 상호명 자리에 작가명이 들어가고
+ * 대표·사업자등록번호는 표시되지 않는다.
+ */
+export const sellerByBook: Record<string, FooterSeller> = {
+  "2": {
+    nickname: "냐미",
+    freelancer: true,
+    businessName: "",
+    representative: "",
+    businessNumber: "",
+    sellerPhone: "010-2345-6789",
+    sellerEmail: "nyami.tarot@example.com",
+  },
+};
 
 /** 데모용 구매 내역. 구매 내역 화면과 1:1 문의(구매자 전용)에서 함께 사용. */
 export const mockPurchases = [
