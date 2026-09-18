@@ -190,33 +190,28 @@ export const sampleBooks: Book[] = [
  * 작가별 판매자 정보(데모 값). 상품 페이지 푸터에는 그 상품을 쓴 작가의 정보가 나온다.
  * 실제로는 작가가 '작가 프로필 설정 > 판매자 정보'에 입력한 값이다.
  *
- * 사업자 없는 작가(freelancer)는 상호명 자리에 작가명이 들어가고 대표·사업자등록번호가 빠진다.
- * 사업자 예시는 누가 봐도 견본인 값(홍길동, 000-00-00000)을 쓴다.
+ * 전부 사업자 형식 예시다. 상호명·대표자명·사업자등록번호·연락처는 임의로 만든 견본이며
+ * 실제 작가의 정보가 아니다. 이메일도 모두 example.com이다.
  */
-const freelancer = (nickname: string, sellerEmail: string, sellerPhone = ""): FooterSeller => ({
-  nickname, freelancer: true, businessName: "", representative: "", businessNumber: "", sellerPhone, sellerEmail,
+const business = (
+  nickname: string, businessName: string, representative: string,
+  businessNumber: string, sellerPhone: string, sellerEmail: string,
+): FooterSeller => ({
+  nickname, freelancer: false, businessName, representative, businessNumber, sellerPhone, sellerEmail,
 });
 
 export const sellerByAuthor: Record<string, FooterSeller> = {
-  "마라하기": freelancer("마라하기", "marahagi@example.com"),
-  "냐미": freelancer("냐미", "nyami.tarot@example.com", "010-2345-6789"),
-  "이동영 마케터": freelancer("이동영 마케터", "dongyoung.mkt@example.com"),
-  "임방": freelancer("임방", "imbang@example.com"),
-  "임반장": freelancer("임반장", "imbanjang@example.com"),
-  "위송": freelancer("위송", "wisong@example.com"),
-  "롤루랄라러리": {
-    nickname: "롤루랄라러리",
-    freelancer: false,
-    businessName: "샘플미디어",
-    representative: "홍길동",
-    businessNumber: "000-00-00000",
-    sellerPhone: "02-000-0000",
-    sellerEmail: "contact@sample-media.example.com",
-  },
-  "은군주": freelancer("은군주", "eungunju@example.com"),
-  "카라반": freelancer("카라반", "caravan@example.com"),
-  "나미": freelancer("나미", "nami@example.com"),
-  "유쾌한 게르보": freelancer("유쾌한 게르보", "gerbo@example.com"),
+  "마라하기": business("마라하기", "쇼츠랩", "김도윤", "211-38-40517", "070-4812-3301", "contact@shortslab.example.com"),
+  "냐미": business("냐미", "타로앤코드", "이서연", "305-12-88741", "070-7715-2046", "hello@tarotcode.example.com"),
+  "이동영 마케터": business("이동영 마케터", "스레드웍스", "박준호", "614-20-35198", "070-5023-8814", "biz@threadworks.example.com"),
+  "임방": business("임방", "방방스튜디오", "최민재", "418-27-30962", "070-8130-4472", "studio@bangbang.example.com"),
+  "임반장": business("임반장", "월억컴퍼니", "정하윤", "129-81-55307", "070-4409-1185", "help@wolukco.example.com"),
+  "위송": business("위송", "글로벌셀러랩", "강지훈", "220-45-19873", "070-6621-9037", "support@globalseller.example.com"),
+  "롤루랄라러리": business("롤루랄라러리", "벤츠미디어", "윤서진", "314-66-02489", "070-3398-5560", "contact@benzmedia.example.com"),
+  "은군주": business("은군주", "오토쇼츠", "한지민", "507-33-71640", "070-2256-7718", "auto@autoshorts.example.com"),
+  "카라반": business("카라반", "사주랩", "오태경", "138-09-64215", "070-9914-3302", "info@sajulab.example.com"),
+  "나미": business("나미", "클릭커넥트", "신유나", "612-24-37058", "070-4471-6629", "biz@clickconnect.example.com"),
+  "유쾌한 게르보": business("유쾌한 게르보", "게르보뮤직", "임채원", "402-58-91736", "070-8852-0147", "music@gerbo.example.com"),
 };
 
 /** 데모용 구매 내역. 구매 내역 화면과 1:1 문의(구매자 전용)에서 함께 사용. */
