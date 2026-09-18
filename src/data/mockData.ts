@@ -187,22 +187,36 @@ export const sampleBooks: Book[] = [
 ];
 
 /**
- * 상품별 판매자(작가) 정보 예시. 실제로는 상품을 등록한 작가의 판매자 정보를 불러온다.
- * 여기 없는 상품은 지금 로그인한 작가의 '작가 프로필 설정' 값을 그대로 보여준다.
+ * 작가별 판매자 정보(데모 값). 상품 페이지 푸터에는 그 상품을 쓴 작가의 정보가 나온다.
+ * 실제로는 작가가 '작가 프로필 설정 > 판매자 정보'에 입력한 값이다.
  *
- * 2번은 사업자 없는 프리랜서 예시다. 상호명 자리에 작가명이 들어가고
- * 대표·사업자등록번호는 표시되지 않는다.
+ * 사업자 없는 작가(freelancer)는 상호명 자리에 작가명이 들어가고 대표·사업자등록번호가 빠진다.
+ * 사업자 예시는 누가 봐도 견본인 값(홍길동, 000-00-00000)을 쓴다.
  */
-export const sellerByBook: Record<string, FooterSeller> = {
-  "2": {
-    nickname: "냐미",
-    freelancer: true,
-    businessName: "",
-    representative: "",
-    businessNumber: "",
-    sellerPhone: "010-2345-6789",
-    sellerEmail: "nyami.tarot@example.com",
+const freelancer = (nickname: string, sellerEmail: string, sellerPhone = ""): FooterSeller => ({
+  nickname, freelancer: true, businessName: "", representative: "", businessNumber: "", sellerPhone, sellerEmail,
+});
+
+export const sellerByAuthor: Record<string, FooterSeller> = {
+  "마라하기": freelancer("마라하기", "marahagi@example.com"),
+  "냐미": freelancer("냐미", "nyami.tarot@example.com", "010-2345-6789"),
+  "이동영 마케터": freelancer("이동영 마케터", "dongyoung.mkt@example.com"),
+  "임방": freelancer("임방", "imbang@example.com"),
+  "임반장": freelancer("임반장", "imbanjang@example.com"),
+  "위송": freelancer("위송", "wisong@example.com"),
+  "롤루랄라러리": {
+    nickname: "롤루랄라러리",
+    freelancer: false,
+    businessName: "샘플미디어",
+    representative: "홍길동",
+    businessNumber: "000-00-00000",
+    sellerPhone: "02-000-0000",
+    sellerEmail: "contact@sample-media.example.com",
   },
+  "은군주": freelancer("은군주", "eungunju@example.com"),
+  "카라반": freelancer("카라반", "caravan@example.com"),
+  "나미": freelancer("나미", "nami@example.com"),
+  "유쾌한 게르보": freelancer("유쾌한 게르보", "gerbo@example.com"),
 };
 
 /** 데모용 구매 내역. 구매 내역 화면과 1:1 문의(구매자 전용)에서 함께 사용. */
