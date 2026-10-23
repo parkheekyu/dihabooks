@@ -221,13 +221,13 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Bestsellers */}
+        {/* Recommended Books */}
         <section className="container px-4 mt-8 tablet:mt-10">
           <div className="flex items-end justify-between mb-4 tablet:mb-6">
             <div>
-              <h2 className="text-xl tablet:text-2xl font-bold">베스트셀러</h2>
+              <h2 className="text-xl tablet:text-2xl font-bold">추천 전자책</h2>
               <p className="text-xs tablet:text-sm text-muted-foreground mt-1">
-                가장 많이 판매된 전자책
+                전문가들이 직접 집필한 하이클래스 지식 콘텐츠
               </p>
             </div>
             <Link
@@ -238,7 +238,7 @@ const Index = () => {
             </Link>
           </div>
           <div className="grid grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-4 gap-3 tablet:gap-4 desktop:gap-6">
-            {bestsellerBooks.map((book) => (
+            {recommendedBooks.map((book) => (
               <BookCard key={book.id} book={book} />
             ))}
           </div>
@@ -325,13 +325,13 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Recommended Books */}
+        {/* Bestsellers */}
         <section className="container px-4 mt-12 tablet:mt-16">
           <div className="flex items-end justify-between mb-4 tablet:mb-6">
             <div>
-              <h2 className="text-xl tablet:text-2xl font-bold">추천 전자책</h2>
+              <h2 className="text-xl tablet:text-2xl font-bold">베스트셀러</h2>
               <p className="text-xs tablet:text-sm text-muted-foreground mt-1">
-                전문가들이 직접 집필한 하이클래스 지식 콘텐츠
+                가장 많이 판매된 전자책
               </p>
             </div>
             <Link
@@ -342,7 +342,7 @@ const Index = () => {
             </Link>
           </div>
           <div className="grid grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-4 gap-3 tablet:gap-4 desktop:gap-6">
-            {recommendedBooks.map((book) => (
+            {bestsellerBooks.map((book) => (
               <BookCard key={book.id} book={book} />
             ))}
           </div>
