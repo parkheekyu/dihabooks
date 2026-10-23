@@ -84,14 +84,11 @@ const Index = () => {
       ? sampleBooks
       : sampleBooks.filter((b) => b.category === categories.find(c => c.id === activeCategory)?.label);
 
-  // 베스트셀러: 판매량 순 8권. 인기: 후기 수 → 평점 순 8권. 추천: 등록 순 8권.
+  // 베스트셀러: 판매량 순 8권. 추천: 등록 순 8권.
   const bestsellerBooks = [...filteredBooks]
     .sort((a, b) => (b.salesCount ?? 0) - (a.salesCount ?? 0) || b.reviewCount - a.reviewCount)
     .slice(0, 8);
   const recommendedBooks = filteredBooks.slice(0, 8);
-  const popularBooks = [...filteredBooks]
-    .sort((a, b) => b.reviewCount - a.reviewCount || b.rating - a.rating)
-    .slice(0, 8);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -246,31 +243,6 @@ const Index = () => {
             ))}
           </div>
         </section>
-
-        {/* Popular Books */}
-        {popularBooks.length > 0 && (
-          <section className="container px-4 mt-12 tablet:mt-16">
-            <div className="flex items-end justify-between mb-4 tablet:mb-6">
-              <div>
-                <h2 className="text-xl tablet:text-2xl font-bold">인기 서적</h2>
-                <p className="text-xs tablet:text-sm text-muted-foreground mt-1">
-                  지금 독자들이 많이 보는 전자책
-                </p>
-              </div>
-              <Link
-                to="/store"
-                className="text-xs tablet:text-sm font-medium text-primary hover:underline flex items-center gap-1 shrink-0"
-              >
-                전체보기 <ArrowRight className="h-3.5 w-3.5 tablet:h-4 tablet:w-4" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 tablet:grid-cols-3 desktop:grid-cols-4 gap-3 tablet:gap-4 desktop:gap-6">
-              {popularBooks.map((book) => (
-                <BookCard key={book.id} book={book} />
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Reviews */}
         <section className="bg-secondary/60 py-10 tablet:py-16 mt-14 tablet:mt-20">
