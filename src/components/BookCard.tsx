@@ -12,6 +12,8 @@ export interface Book {
   originalPrice?: number;
   rating: number;
   reviewCount: number;
+  /** 누적 판매량. 메인 베스트셀러 정렬 기준. */
+  salesCount?: number;
   category: string;
   image: string;
   badge?: "BEST" | "NEW" | "TOP";
