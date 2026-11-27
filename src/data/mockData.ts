@@ -2,7 +2,6 @@ import { Book } from "@/components/BookCard";
 import { BookOpen, Youtube, Dumbbell, Handshake, Bot, Wallet, Sparkles, Palette, Megaphone, Code, LayoutGrid, CircleDollarSign, type LucideIcon } from "lucide-react";
 
 import { asset } from "@/lib/constants";
-import type { FooterSeller } from "@/components/Footer";
 
 // `label` is also the matching key for Book.category on the store/home filters,
 // so renaming one here means renaming it on every book below too.
@@ -199,8 +198,19 @@ export const sampleBooks: Book[] = [
   },
 ];
 
+/** 상품 페이지 '작가 소개'에 밝혀야 하는 판매자(작가) 정보. */
+export type SellerInfo = {
+  nickname: string;
+  freelancer: boolean;
+  businessName: string;
+  representative: string;
+  businessNumber: string;
+  sellerPhone: string;
+  sellerEmail: string;
+};
+
 /**
- * 작가별 판매자 정보(데모 값). 상품 페이지 푸터에는 그 상품을 쓴 작가의 정보가 나온다.
+ * 작가별 판매자 정보(데모 값). 상품 페이지 작가 소개에는 그 상품을 쓴 작가의 정보가 나온다.
  * 실제로는 작가가 '작가 프로필 설정 > 판매자 정보'에 입력한 값이다.
  *
  * 전부 사업자 형식 예시다. 상호명·대표자명·사업자등록번호·연락처는 임의로 만든 견본이며
@@ -209,11 +219,11 @@ export const sampleBooks: Book[] = [
 const business = (
   nickname: string, businessName: string, representative: string,
   businessNumber: string, sellerPhone: string, sellerEmail: string,
-): FooterSeller => ({
+): SellerInfo => ({
   nickname, freelancer: false, businessName, representative, businessNumber, sellerPhone, sellerEmail,
 });
 
-export const sellerByAuthor: Record<string, FooterSeller> = {
+export const sellerByAuthor: Record<string, SellerInfo> = {
   "마라하기": business("마라하기", "쇼츠랩", "김도윤", "211-38-40517", "070-4812-3301", "contact@shortslab.example.com"),
   "냐미": business("냐미", "타로앤코드", "이서연", "305-12-88741", "070-7715-2046", "hello@tarotcode.example.com"),
   "이동영 마케터": business("이동영 마케터", "스레드웍스", "박준호", "614-20-35198", "070-5023-8814", "biz@threadworks.example.com"),
