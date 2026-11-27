@@ -4,7 +4,6 @@ import { ChevronLeft, ShieldCheck, CreditCard, Smartphone, Building2, CheckCircl
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -40,10 +39,6 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState("card");
-  const [agreeAll, setAgreeAll] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [agreePrivacy, setAgreePrivacy] = useState(false);
-  const [agreeRefund, setAgreeRefund] = useState(false);
   // 구매자 정보는 회원 정보에서 그대로 가져온다. 연락처만 이 주문에 한해 고칠 수 있다.
   const [phone, setPhone] = useState(user?.phone || "");
   const [couponCode, setCouponCode] = useState("");
@@ -87,17 +82,7 @@ const Checkout = () => {
     }
   };
 
-  const handleAgreeAll = (checked: boolean) => {
-    setAgreeAll(checked);
-    setAgreeTerms(checked);
-    setAgreePrivacy(checked);
-    setAgreeRefund(checked);
-  };
-
-  const allAgreed = agreeTerms && agreePrivacy && agreeRefund;
-
   const handlePayment = () => {
-    if (!allAgreed) return;
     setIsProcessing(true);
     setTimeout(() => {
       markPurchased(items.map((i) => i.id));
@@ -244,54 +229,6 @@ const Checkout = () => {
                 })}
               </RadioGroup>
             </section>
-
-            {/* Agreements */}
-            <section className="rounded-xl border border-border p-4 tablet:p-5">
-              <h2 className="text-sm font-bold mb-3">약관 동의</h2>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2.5 pb-3 border-b border-border">
-                  <Checkbox
-                    id="agree-all"
-                    checked={agreeAll}
-                    onCheckedChange={(checked) => handleAgreeAll(checked as boolean)}
-                  />
-                  <label htmlFor="agree-all" className="text-sm font-semibold cursor-pointer">전체 동의</label>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <Checkbox
-                      id="agree-terms"
-                      checked={agreeTerms}
-                      onCheckedChange={(checked) => { setAgreeTerms(checked as boolean); if (!checked) setAgreeAll(false); }}
-                    />
-                    <label htmlFor="agree-terms" className="text-xs cursor-pointer">[필수] 이용약관 동의</label>
-                  </div>
-                  <Link to="/terms" className="text-[11px] text-muted-foreground underline">보기</Link>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <Checkbox
-                      id="agree-privacy"
-                      checked={agreePrivacy}
-                      onCheckedChange={(checked) => { setAgreePrivacy(checked as boolean); if (!checked) setAgreeAll(false); }}
-                    />
-                    <label htmlFor="agree-privacy" className="text-xs cursor-pointer">[필수] 개인정보 수집·이용 동의</label>
-                  </div>
-                  <Link to="/privacy" className="text-[11px] text-muted-foreground underline">보기</Link>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <Checkbox
-                      id="agree-refund"
-                      checked={agreeRefund}
-                      onCheckedChange={(checked) => { setAgreeRefund(checked as boolean); if (!checked) setAgreeAll(false); }}
-                    />
-                    <label htmlFor="agree-refund" className="text-xs cursor-pointer">[필수] 디지털 콘텐츠 환불 정책 동의</label>
-                  </div>
-                  <Link to="/refund" className="text-[11px] text-muted-foreground underline">보기</Link>
-                </div>
-              </div>
-            </section>
           </div>
 
           {/* Right: Payment summary (desktop) */}
@@ -317,7 +254,7 @@ const Checkout = () => {
               <Button
                 className="w-full mt-5 rounded-lg bg-foreground text-background hover:bg-foreground/90"
                 size="lg"
-                disabled={!allAgreed || isProcessing}
+                disabled={isProcessing}
                 onClick={handlePayment}
               >
                 {isProcessing ? (
@@ -348,7 +285,7 @@ const Checkout = () => {
         <Button
           className="w-full rounded-lg bg-foreground text-background hover:bg-foreground/90"
           size="lg"
-          disabled={!allAgreed || isProcessing}
+          disabled={isProcessing}
           onClick={handlePayment}
         >
           {isProcessing ? (
