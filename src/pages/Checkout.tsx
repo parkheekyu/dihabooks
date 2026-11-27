@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ChevronLeft, ShieldCheck, CreditCard, Smartphone, Building2, CheckCircle2, TicketPercent, X } from "lucide-react";
+import { ChevronLeft, ShieldCheck, CreditCard, CheckCircle2, TicketPercent, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { sampleBooks, mockCoupons } from "@/data/mockData";
 import { markPurchased } from "@/lib/purchased";
+import { asset } from "@/lib/constants";
 
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
@@ -29,11 +30,26 @@ const mockOrderItems: OrderItem[] = [
   { id: "5", title: "퇴사 후 한 달 만에 월 수익 300만원 달성한 비결", author: "프리랜서 후기", price: 25000, image: hero2 },
 ];
 
+// 간편결제는 각 서비스의 공식 로고를 쓴다. 카카오페이는 검정 로고를 카카오 노랑 배지 위에 올린다.
 const paymentMethods = [
-  { id: "card", label: "신용/체크카드", icon: CreditCard },
-  { id: "kakao", label: "카카오페이", icon: Smartphone },
-  { id: "bank", label: "무통장입금", icon: Building2 },
+  { id: "card", label: "신용/체크카드" },
+  { id: "kakao", label: "카카오페이" },
+  { id: "toss", label: "토스페이" },
 ];
+
+const paymentLogo = (id: string, selected: boolean) => {
+  if (id === "kakao") {
+    return (
+      <span className="flex h-6 shrink-0 items-center rounded-full bg-[#ffeb00] px-2">
+        <img src={asset("/brand/pay/kakaopay.png")} alt="" className="h-3 w-auto" />
+      </span>
+    );
+  }
+  if (id === "toss") {
+    return <img src={asset("/brand/pay/toss.svg")} alt="" className="h-4 w-auto shrink-0" />;
+  }
+  return <CreditCard className={`h-5 w-5 shrink-0 ${selected ? "text-primary" : "text-muted-foreground"}`} />;
+};
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -209,7 +225,6 @@ const Checkout = () => {
               <h2 className="text-sm font-bold mb-3">결제 수단</h2>
               <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="grid grid-cols-1 tablet:grid-cols-3 gap-2">
                 {paymentMethods.map((method) => {
-                  const Icon = method.icon;
                   const isSelected = paymentMethod === method.id;
                   return (
                     <label
@@ -221,7 +236,7 @@ const Checkout = () => {
                       }`}
                     >
                       <RadioGroupItem value={method.id} className="sr-only" />
-                      <Icon className={`h-4.5 w-4.5 shrink-0 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                      {paymentLogo(method.id, isSelected)}
                       <span className={`text-sm ${isSelected ? "font-semibold" : ""}`}>{method.label}</span>
                       {isSelected && <CheckCircle2 className="h-4 w-4 text-primary ml-auto" />}
                     </label>
