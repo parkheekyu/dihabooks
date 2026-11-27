@@ -17,7 +17,7 @@ const ProfileEdit = () => {
 
   const [name, setName] = useState(user?.name || "");
   const [bio, setBio] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(user?.phone || "");
   const [profilePreview, setProfilePreview] = useState<string | null>(user?.profileImage || null);
 
   if (!isLoggedIn) {

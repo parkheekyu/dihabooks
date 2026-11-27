@@ -9,6 +9,7 @@ import { sampleBooks, sellerByAuthor } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { DEFAULT_AVATAR } from "@/lib/constants";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { isPurchasedBook } from "@/lib/purchased";
 
 /**
  * 상품 등록의 목차 설정에서 받은 값. page는 소제목이 시작하는 쪽이고,
@@ -108,44 +109,6 @@ const Stars = ({ value, on, off }: { value: number; on: string; off: string }) =
   </>
 );
 
-/* ── Option card with discount support ── */
-const OptionCard = ({
-  label, description, price, originalPrice, selected, onClick,
-}: {
-  label: string; description: string; price: number; originalPrice?: number;
-  selected: boolean; onClick: () => void;
-}) => {
-  const discountPercent = originalPrice
-    ? Math.round((1 - price / originalPrice) * 100)
-    : null;
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full rounded-xl border-2 p-4 text-left transition-colors ${
-        selected ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground/30"
-      }`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          {discountPercent && (
-            <span className="text-xs font-bold text-destructive">{discountPercent}% 할인</span>
-          )}
-          <p className="mt-0.5 text-sm font-bold leading-snug">{label}</p>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
-        </div>
-        <div className="shrink-0 text-right">
-          {originalPrice && (
-            <p className="text-xs text-muted-foreground line-through">{originalPrice.toLocaleString()}원</p>
-          )}
-          <p className="text-sm font-black">{price.toLocaleString()}원</p>
-        </div>
-      </div>
-    </button>
-  );
-};
-
 const BookDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -153,9 +116,8 @@ const BookDetail = () => {
   const { isWished, toggleWish } = useWishlist();
   const book = sampleBooks.find((b) => b.id === id) || sampleBooks[0];
   const wished = isWished(book.id);
-  const [isPurchased, setIsPurchased] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(0);
-  const [couponOpen, setCouponOpen] = useState(false);
+  // 결제는 주문서(/checkout)에서 끝난다. 거기서 남긴 구매 기록을 읽어 온다.
+  const isPurchased = isPurchasedBook(book.id);
   const [reviewPage, setReviewPage] = useState(1);
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewHover, setReviewHover] = useState(0);
@@ -291,23 +253,12 @@ const BookDetail = () => {
     );
   };
 
-  // Build purchase options from book data
-  const purchaseOptions = [
-    {
-      label: "전자책 (웹 뷰어)",
-      description: "구매 즉시 웹 뷰어로 읽기",
-      price: book.price,
-      originalPrice: book.originalPrice,
-    },
-  ];
-
-  const currentOption = purchaseOptions[selectedOption];
-  const discount = currentOption.originalPrice
-    ? Math.round((1 - currentOption.price / currentOption.originalPrice) * 100)
+  const discount = book.originalPrice
+    ? Math.round((1 - book.price / book.originalPrice) * 100)
     : null;
-  const priceText = `${currentOption.price.toLocaleString()}원`;
 
-  const handlePurchase = () => setIsPurchased(true);
+  // 옵션·쿠폰·결제 금액은 주문서에서 다룬다. 여기서는 가격과 구매 버튼만 둔다.
+  const handlePurchase = () => navigate(`/checkout?book=${book.id}`);
 
   const sectionHeading = (text: string) => (
     <h2 className="flex items-center gap-2 text-base font-bold tablet:text-lg">
@@ -673,63 +624,12 @@ const BookDetail = () => {
                     <div className="flex flex-wrap items-baseline gap-2">
                       <span className="text-lg font-bold text-destructive">{discount}%</span>
                       <span className="text-sm text-muted-foreground line-through">
-                        {currentOption.originalPrice?.toLocaleString()}원
+                        {book.originalPrice?.toLocaleString()}원
                       </span>
                     </div>
                   )}
-                  <p className="mt-1 text-3xl font-black leading-tight">{priceText}</p>
-
-                  <p className="mb-3 mt-5 text-sm font-bold">구매 옵션</p>
-                  <ul className="space-y-2">
-                    {purchaseOptions.map((opt, i) => (
-                      <li key={i}>
-                        <OptionCard
-                          label={opt.label}
-                          description={opt.description}
-                          price={opt.price}
-                          originalPrice={opt.originalPrice}
-                          selected={selectedOption === i}
-                          onClick={() => setSelectedOption(i)}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                    <span className="text-sm font-bold">상품 금액</span>
-                    <span className="text-xl font-black">{priceText}</span>
-                  </div>
-
-                  {/* 쿠폰 */}
-                  <div className="mt-5 space-y-3 border-t border-border pt-4">
-                    <button
-                      type="button"
-                      aria-expanded={couponOpen}
-                      onClick={() => setCouponOpen((open) => !open)}
-                      className="min-h-11 text-sm font-semibold text-primary"
-                    >
-                      쿠폰 사용
-                    </button>
-                    {couponOpen && (
-                      <p className="rounded-lg bg-secondary px-3 py-2.5 text-xs text-muted-foreground">
-                        사용할 수 있는 쿠폰이 없습니다.
-                      </p>
-                    )}
-                    <dl className="space-y-2 text-sm">
-                      <div className="flex items-center justify-between gap-3">
-                        <dt>상품금액</dt>
-                        <dd className="tabular-nums">{priceText}</dd>
-                      </div>
-                      <div className="flex items-center justify-between gap-3">
-                        <dt>쿠폰 할인</dt>
-                        <dd className="tabular-nums text-primary">-0원</dd>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 border-t border-border pt-3 font-bold">
-                        <dt>최종 결제금액</dt>
-                        <dd className="text-lg tabular-nums">{priceText}</dd>
-                      </div>
-                    </dl>
-                  </div>
+                  <p className="mt-1 text-3xl font-black leading-tight">{book.price.toLocaleString()}원</p>
+                  <p className="mt-2 text-xs text-muted-foreground">전자책 · 구매 즉시 웹 뷰어로 읽기</p>
 
                   <div className="mt-5 flex items-center gap-2">
                     {wishButton()}
@@ -741,6 +641,9 @@ const BookDetail = () => {
                       지금 바로 구매하기
                     </button>
                   </div>
+                  <p className="mt-3 text-center text-xs text-muted-foreground">
+                    쿠폰은 결제 단계에서 입력할 수 있어요.
+                  </p>
                 </div>
               )}
             </div>

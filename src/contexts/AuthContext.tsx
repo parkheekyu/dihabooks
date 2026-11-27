@@ -9,6 +9,8 @@ interface User {
   /** 화면에 보이는 이름. 디하클 카페 닉네임과 일치시키도록 안내한다. */
   nickname: string;
   email: string;
+  /** 연락처. 주문서의 구매자 정보에 그대로 채워진다. */
+  phone: string;
   avatar: string;
   profileImage: string;
   gender: Gender;
@@ -109,6 +111,7 @@ const mockUser: User = {
   name: "김샘플",
   nickname: "샘플러",
   email: "sample@dihabooks.com",
+  phone: "010-1234-5678",
   avatar: "김",
   profileImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=100&h=100&fit=crop&crop=center",
   gender: "male",
@@ -120,6 +123,7 @@ const freshKakaoUser: User = {
   name: "",
   nickname: "",
   email: "sample@dihabooks.com",
+  phone: "",
   avatar: "디",
   profileImage: "",
   gender: "",

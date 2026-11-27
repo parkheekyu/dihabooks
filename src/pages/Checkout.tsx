@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, ShieldCheck, CreditCard, Smartphone, Building2, CheckCircle2 } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { ChevronLeft, ShieldCheck, CreditCard, Smartphone, Building2, CheckCircle2, TicketPercent, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
+import { sampleBooks, mockCoupons } from "@/data/mockData";
+import { markPurchased } from "@/lib/purchased";
 
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
@@ -42,16 +44,48 @@ const Checkout = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeRefund, setAgreeRefund] = useState(false);
-  const [phone, setPhone] = useState("");
+  // 구매자 정보는 회원 정보에서 그대로 가져온다. 연락처만 이 주문에 한해 고칠 수 있다.
+  const [phone, setPhone] = useState(user?.phone || "");
   const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<(typeof mockCoupons)[number] | null>(null);
+  const [couponError, setCouponError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  
+  // 상품 페이지의 '구매하기'는 ?book=<id>로 넘어온다. 없으면 장바구니 주문으로 본다.
+  const [searchParams] = useSearchParams();
+  const book = sampleBooks.find((b) => b.id === searchParams.get("book"));
+  const items: OrderItem[] = book
+    ? [{ id: book.id, title: book.title, author: book.author, price: book.price, image: book.image }]
+    : mockOrderItems;
+  const backTo = book ? `/book/${book.id}` : "/cart";
 
-  const items = mockOrderItems;
   const subtotal = items.reduce((sum, i) => sum + i.price, 0);
-  const discount = 0;
+  const discount = appliedCoupon
+    ? Math.min(
+        subtotal,
+        appliedCoupon.type === "percent"
+          ? Math.floor((subtotal * appliedCoupon.value) / 100)
+          : appliedCoupon.value,
+      )
+    : 0;
   const total = subtotal - discount;
+
+  const applyCoupon = () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) return;
+    const coupon = mockCoupons.find((c) => c.code === code);
+    if (!coupon) {
+      setCouponError("유효하지 않은 쿠폰 코드입니다.");
+    } else if (coupon.status !== "활성") {
+      setCouponError("사용 기간이 지난 쿠폰입니다.");
+    } else if (subtotal < coupon.minPurchase) {
+      setCouponError(`${coupon.minPurchase.toLocaleString()}원 이상 구매할 때 쓸 수 있는 쿠폰입니다.`);
+    } else {
+      setAppliedCoupon(coupon);
+      setCouponError("");
+      setCouponCode("");
+    }
+  };
 
   const handleAgreeAll = (checked: boolean) => {
     setAgreeAll(checked);
@@ -66,6 +100,7 @@ const Checkout = () => {
     if (!allAgreed) return;
     setIsProcessing(true);
     setTimeout(() => {
+      markPurchased(items.map((i) => i.id));
       navigate("/order-complete", { state: { orderId: "ORD-20260331-001", total, itemCount: items.length } });
     }, 1500);
   };
@@ -76,7 +111,7 @@ const Checkout = () => {
       <main className="flex-1 container px-4 py-4 tablet:py-8 pb-32 tablet:pb-8">
         {/* Title */}
         <div className="flex items-center gap-2 mb-5 tablet:mb-6">
-          <Link to="/cart" className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
+          <Link to={backTo} aria-label="이전으로" className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
             <ChevronLeft className="h-5 w-5" />
           </Link>
           <h1 className="text-lg tablet:text-2xl font-bold">주문서</h1>
@@ -87,7 +122,15 @@ const Checkout = () => {
           <div className="flex-1 min-w-0 space-y-5">
             {/* Buyer info */}
             <section className="rounded-xl border border-border p-4 tablet:p-5">
-              <h2 className="text-sm font-bold mb-3">구매자 정보</h2>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h2 className="text-sm font-bold">구매자 정보</h2>
+                <Link to="/profile/edit" className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground">
+                  회원 정보 수정
+                </Link>
+              </div>
+              <p className="mb-3 rounded-lg bg-secondary/60 px-3 py-2 text-xs text-muted-foreground">
+                회원 정보에 등록된 내용을 불러왔습니다.
+              </p>
               <div className="space-y-3">
                 <div>
                   <Label className="text-xs text-muted-foreground">이름</Label>
@@ -133,18 +176,50 @@ const Checkout = () => {
 
             {/* Coupon */}
             <section className="rounded-xl border border-border p-4 tablet:p-5">
-              <h2 className="text-sm font-bold mb-3">쿠폰 / 할인</h2>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="쿠폰 코드를 입력하세요"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  className="flex-1"
-                />
-                <Button variant="outline" size="default" className="shrink-0 rounded-lg text-sm">
-                  적용
-                </Button>
-              </div>
+              <h2 className="text-sm font-bold mb-3">쿠폰</h2>
+              {appliedCoupon ? (
+                <div className="flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 px-3.5 py-3">
+                  <TicketPercent className="h-5 w-5 shrink-0 text-primary" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{appliedCoupon.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {appliedCoupon.code} · {discount.toLocaleString()}원 할인
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAppliedCoupon(null)}
+                    aria-label="쿠폰 적용 취소"
+                    className="rounded-md p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="쿠폰 번호를 입력하세요"
+                      value={couponCode}
+                      onChange={(e) => { setCouponCode(e.target.value); setCouponError(""); }}
+                      onKeyDown={(e) => { if (e.key === "Enter") applyCoupon(); }}
+                      aria-label="쿠폰 번호"
+                      aria-invalid={!!couponError}
+                      className="flex-1 uppercase placeholder:normal-case"
+                    />
+                    <Button
+                      variant="outline"
+                      size="default"
+                      className="shrink-0 rounded-lg text-sm"
+                      disabled={!couponCode.trim()}
+                      onClick={applyCoupon}
+                    >
+                      적용
+                    </Button>
+                  </div>
+                  {couponError && <p role="alert" className="mt-2 text-xs text-destructive">{couponError}</p>}
+                </>
+              )}
             </section>
 
             {/* Payment method */}
@@ -232,8 +307,8 @@ const Checkout = () => {
                   <span>{subtotal.toLocaleString()}원</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">할인</span>
-                  <span className="text-green-600">-{discount.toLocaleString()}원</span>
+                  <span className="text-muted-foreground">쿠폰 할인</span>
+                  <span className={discount ? "text-primary" : ""}>-{discount.toLocaleString()}원</span>
                 </div>
                 <div className="h-px bg-border my-3" />
                 <div className="flex justify-between font-bold text-base">

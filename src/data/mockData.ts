@@ -339,3 +339,11 @@ export const reviews = [
     date: "2026.07.17",
   },
 ];
+
+/** 데모용 쿠폰. 관리자 프로모션 화면과 주문서의 쿠폰 코드 입력이 같은 목록을 쓴다. */
+export const mockCoupons = [
+  { id: "C-001", name: "신규 가입 10% 할인", code: "WELCOME10", type: "percent", value: 10, minPurchase: 10000, used: 124, total: 500, startDate: "2026-01-01", endDate: "2026-06-30", status: "활성" },
+  { id: "C-002", name: "봄맞이 3000원 할인", code: "SPRING3K", type: "fixed", value: 3000, minPurchase: 15000, used: 89, total: 200, startDate: "2026-03-01", endDate: "2026-04-30", status: "활성" },
+  { id: "C-003", name: "VIP 20% 할인", code: "VIP20", type: "percent", value: 20, minPurchase: 20000, used: 15, total: 50, startDate: "2026-02-01", endDate: "2026-12-31", status: "활성" },
+  { id: "C-004", name: "설날 이벤트", code: "NEWYEAR", type: "percent", value: 15, minPurchase: 10000, used: 300, total: 300, startDate: "2026-01-25", endDate: "2026-02-10", status: "만료" },
+];
