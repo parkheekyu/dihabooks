@@ -55,8 +55,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState("card");
-  // 구매자 정보는 회원 정보에서 그대로 가져온다. 연락처만 이 주문에 한해 고칠 수 있다.
-  const [phone, setPhone] = useState(user?.phone || "");
+  // 구매자 정보(이름·이메일·연락처)는 카카오 로그인으로 받은 회원 정보라 주문서에서는 고칠 수 없다.
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<(typeof mockCoupons)[number] | null>(null);
   const [couponError, setCouponError] = useState("");
@@ -141,12 +140,7 @@ const Checkout = () => {
                 </div>
                 <div>
                   <Label className="text-xs text-muted-foreground">연락처</Label>
-                  <Input
-                    placeholder="010-0000-0000"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="mt-1"
-                  />
+                  <Input value={user?.phone || ""} disabled className="mt-1" />
                 </div>
               </div>
             </section>
