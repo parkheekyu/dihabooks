@@ -641,9 +641,6 @@ const BookDetail = () => {
                       지금 바로 구매하기
                     </button>
                   </div>
-                  <p className="mt-3 text-center text-xs text-muted-foreground">
-                    쿠폰은 결제 단계에서 입력할 수 있어요.
-                  </p>
                 </div>
               )}
             </div>
