@@ -128,9 +128,6 @@ const Checkout = () => {
                   회원 정보 수정
                 </Link>
               </div>
-              <p className="mb-3 rounded-lg bg-secondary/60 px-3 py-2 text-xs text-muted-foreground">
-                회원 정보에 등록된 내용을 불러왔습니다.
-              </p>
               <div className="space-y-3">
                 <div>
                   <Label className="text-xs text-muted-foreground">이름</Label>
