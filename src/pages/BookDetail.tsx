@@ -373,30 +373,33 @@ const BookDetail = () => {
   const authorSection = () => (
     <section id="sec-author" className="mt-8 scroll-mt-24">
       {sectionHeading("작가 소개")}
-      <div className="mt-3 flex items-start gap-3">
-        <img
-          src={sellerProfile.profileImage || DEFAULT_AVATAR}
-          alt=""
-          className="h-10 w-10 shrink-0 rounded-full object-cover"
-        />
-        <div className="min-w-0">
-          <p className="mb-1 text-sm font-semibold">{authorName}</p>
-          <p className="text-xs leading-relaxed text-muted-foreground whitespace-pre-line">
-            {sellerProfile.intro}
-          </p>
+      {/* 한 박스 안에 작가 프로필 → 구분선 → 판매자 정보 */}
+      <div className="mt-3 rounded-xl border border-border px-4 py-4 tablet:px-5 tablet:py-5">
+        <div className="flex items-start gap-3">
+          <img
+            src={sellerProfile.profileImage || DEFAULT_AVATAR}
+            alt=""
+            className="h-10 w-10 shrink-0 rounded-full object-cover"
+          />
+          <div className="min-w-0">
+            <p className="mb-1 text-sm font-semibold">{authorName}</p>
+            <p className="text-xs leading-relaxed text-muted-foreground whitespace-pre-line">
+              {sellerProfile.intro}
+            </p>
+          </div>
         </div>
-      </div>
-      {/* 판매자 정보 — 통신판매중개 고지에 따라 판매 주체를 밝힌다. */}
-      <div className="mt-4 rounded-xl border border-border bg-secondary/40 px-4 py-3.5 tablet:px-5 tablet:py-4">
-        <h3 className="text-xs font-bold text-foreground">판매자 정보</h3>
-        <dl className="mt-2.5 grid grid-cols-[auto_1fr] tablet:grid-cols-[auto_1fr_auto_1fr] gap-x-4 tablet:gap-x-5 gap-y-1.5 text-xs">
-          {sellerRows.map(([label, value]) => (
-            <Fragment key={label}>
-              <dt className="text-muted-foreground whitespace-nowrap">{label}</dt>
-              <dd className="font-medium text-foreground break-all">{value}</dd>
-            </Fragment>
-          ))}
-        </dl>
+        {/* 판매자 정보 — 통신판매중개 고지에 따라 판매 주체를 밝힌다. */}
+        <div className="mt-4 border-t border-border pt-4">
+          <h3 className="text-xs font-bold text-foreground">판매자 정보</h3>
+          <dl className="mt-2.5 grid grid-cols-[auto_1fr] tablet:grid-cols-[auto_1fr_auto_1fr] gap-x-4 tablet:gap-x-5 gap-y-1.5 text-xs">
+            {sellerRows.map(([label, value]) => (
+              <Fragment key={label}>
+                <dt className="text-muted-foreground whitespace-nowrap">{label}</dt>
+                <dd className="font-medium text-foreground break-all">{value}</dd>
+              </Fragment>
+            ))}
+          </dl>
+        </div>
       </div>
     </section>
   );
