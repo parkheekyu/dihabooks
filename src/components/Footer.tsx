@@ -22,6 +22,8 @@ const Footer = () => {
               <p>사업자등록번호: 313-18-03233</p>
               <p>주소: 경기도 용인시 기흥구 서천동로 94-1, 502호(농서동)</p>
               <p>문의: 070-808-2422</p>
+              {/* 통신판매중개자 고지 — 모든 화면에서 문의 바로 아래에 둔다. */}
+              <p className="!mt-2 text-white/40 [word-break:keep-all]">{MEDIATION_NOTICE}</p>
             </div>
           </div>
 
@@ -51,8 +53,6 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 tablet:mt-10 pt-4 tablet:pt-6 border-t border-white/10 space-y-2 text-[11px] tablet:text-xs text-white/40">
-          {/* 통신판매중개자 고지 — 메인과 상품 페이지 모두 같은 자리에 둔다. */}
-          <p className="leading-relaxed">{MEDIATION_NOTICE}</p>
           <p>© 2026 DIHABOOKS. ALL RIGHTS RESERVED.</p>
         </div>
       </div>
