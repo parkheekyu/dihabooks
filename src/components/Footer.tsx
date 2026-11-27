@@ -23,7 +23,7 @@ const Footer = () => {
               <p>주소: 경기도 용인시 기흥구 서천동로 94-1, 502호(농서동)</p>
               <p>문의: 070-808-2422</p>
               {/* 통신판매중개자 고지 — 모든 화면에서 문의 바로 아래에 둔다. */}
-              <p className="!mt-2 text-white/40 [word-break:keep-all]">{MEDIATION_NOTICE}</p>
+              <p className="!mt-5 text-white/40 [word-break:keep-all]">{MEDIATION_NOTICE}</p>
             </div>
           </div>
 
